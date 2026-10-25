@@ -92,20 +92,20 @@ Do NOT make Confidential Tokens a prerequisite for shipping the community vault 
 - document visible vs hidden fields and contracts, hashes and SDK limitations;
 - never claim direct confidential DeFindex vault support without demonstrated integration.
 
-OpenZeppelin code: https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/confidential
+OpenZeppelin code (verified `main` branch): https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/confidential
 Docs: https://docs.openzeppelin.com/stellar-contracts/tokens/confidential/build-with-the-sdk
 Workshop slides must be supplied to Claude separately if not present in this repo.
 
 ## 7. Official tools/resources
-**Raven (Stellar MCP):** https://raven.stellar.org/mcp — request authorization and verify actual tool connectivity in current Claude session. Use Raven for current technical docs, supported asset contract IDs, network requirements, Soroban signing, contract compatibility and transaction verification. Never invent Raven output if unavailable.
+**Raven (Stellar MCP):** https://raven.stellar.org/mcp — official connection docs: https://raven.stellar.org/docs ; this is an MCP/OAuth endpoint, not a human webpage. Request authorization and verify actual tool connectivity in current Claude session. Use Raven for current technical docs, supported asset contract IDs, network requirements, Soroban signing, contract compatibility and transaction verification. Never invent Raven output if unavailable.
 
-**DeFindex:** https://console.defindex.io/register ; SDK https://github.com/defindex-io/defindex-sdk ; docs https://docs.defindex.io/ .
+**DeFindex:** interactive console signup supplied by mentors https://console.defindex.io/register (automated public access not confirmed; fallback https://www.defindex.io/); SDK https://github.com/defindex-io/defindex-sdk ; docs https://docs.defindex.io/ ; machine-readable official docs index https://docs.defindex.io/llms.txt .
 SDK documented operations include `getVaultInfo`, `getVaultBalance`, `depositToVault`, `withdrawFromVault`, `withdrawShares`, `getVaultAPY`, `sendTransaction`. This is a **server-side-oriented API client**; API keys must not appear in Vite frontend builds. Building a transaction returns XDR for user signature, NOT an executed operation. Verify API/schema currently live, asset decimal precision and actual supported Testnet strategies. Do not invent vault IDs or real yield.
 
 **Pinata:** https://docs.pinata.cloud/ ; use authenticated, expiring upload flow without exposing JWT.
 **Stellar:** https://developers.stellar.org/ ; Testnet explorer URLs need real verified results.
-**HackMeridian:** https://www.hackmeridian.com/terms.html#submissions .
-**Original version visual reference:** https://plan4her-private-preview.sacred-cow-7485.chatgpt.site/#add-task — do not modify/publish through original channel.
+**HackMeridian:** actual build/submission instructions and deadline https://www.hackmeridian.com/build ; legal IP/submission terms only https://www.hackmeridian.com/terms.html#submissions .
+**Original version visual reference:** https://plan4her-private-preview.sacred-cow-7485.chatgpt.site/#add-task — user-provided preview URL; public/incognito reachability NOT independently verified, and it may require access or have changed; do not modify/publish through original channel.
 
 ## 8. Execution and non-regression phases
 **Phase 0 — inventory & guardrails:** confirm git remote is `Paolag93/plan4her-stellar`; new feature branch; read code and tests; run existing suite; document baseline and fixes needed. Inspect Cyra read-only. Document architecture choice, active blockers and actual service availability.
@@ -135,3 +135,6 @@ Create `docs/HACKMERIDIAN_EVIDENCE.md` with:
 **Final acceptance:** app can still plan tasks as before; user can join a challenge with no deposit, set distinct goals, share only consensual progress, operate a verified DeFindex Testnet deposit and withdrawal, save/recover encrypted test data, and access the demo without a GitHub or ChatGPT login. Everything unfinished is documented rather than disguised.
 
 **Important:** This brief authorizes work only in the separate project repository. DO NOT CHANGE THE ORIGINAL REPOSITORY OR THE EXISTING CHATGPT SITES DEPLOYMENT.
+
+## Link quality gate
+Read `docs/RESOURCE_LINK_AUDIT.md`. Links labeled interactive/auth-dependent or not publicly verified are NOT proven reachable by an automated browser. Use primary verified docs and test all user-facing demo links in an unauthenticated browser before submission.
