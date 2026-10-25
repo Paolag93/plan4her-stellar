@@ -20,7 +20,7 @@ This is the independent HackMeridian copy of Plan4Her. **Do not select or edit `
 > Our HackMeridian Scale submission is due **October 26, 2026 at 12:00 Lisbon time**; verify portal and reserve time to submit. Do not modify the original repo or existing Plan4Her preview/domain. Use a separate deployment.
 
 ## External accounts (only when implementation requires them)
-- DeFindex: https://console.defindex.io/register — interactive registration link provided at HackMeridian; not independently verifiable without browser login. If unavailable, use official https://www.defindex.io/ and docs https://docs.defindex.io/ for API key instructions. User controls registration/API credentials.
+- DeFindex: https://console.defindex.io/register — DeFindex's own official Get your API key link; interactive registration needs browser login. If unavailable, use official https://www.defindex.io/ and docs https://docs.defindex.io/ for API key instructions. User controls registration/API credentials.
 - Pinata: https://app.pinata.cloud/ — API tokens must be kept server-side, never committed or sent via public frontend.
 - Stellar Raven MCP: https://raven.stellar.org/mcp — optional authorized research tool, not a public webpage or a live payment system; setup docs: https://raven.stellar.org/docs.
 - GitHub source: https://github.com/Paolag93/plan4HER- — reference only.
