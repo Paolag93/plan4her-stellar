@@ -13,8 +13,12 @@ import{TodayPlanBlock}from'./TodayPlanBlock'
 import{EmptyTodayScreen}from'../system/ConditionalSystemScreens'
 import{localISO}from'../../domain/planner'
 import'./TodayScreen.css'
+import'../community/community.css'
+
+export interface TodayGoal{title:string;challengeTitle:string;summary:string;checkedInToday:boolean;onCheckIn:()=>void;onOpen:()=>void}
 
 export interface TodayScreenProps{
+ goal?:TodayGoal
  blocks?:PlanBlockData[]
  tasks?:DailyTaskData[]
  weekDays?:ReadonlyArray<{short:string;number:string;label?:string;date?:string;dateISO?:string}>
@@ -34,7 +38,7 @@ export interface TodayScreenProps{
  onEditBlock:(block:PlanBlockData)=>void
 }
 
-export function TodayScreen({blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
+export function TodayScreen({goal,blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
  const[day,setDay]=useState<DailyDayKey>(initialDay)
  const[meetingDone,setMeetingDone]=useState(Boolean(initialDone.meeting))
  const[groceriesDone,setGroceriesDone]=useState(Boolean(initialDone.groceries))
@@ -61,6 +65,7 @@ export function TodayScreen({blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayC
   <div className="today-screen__scroll">
    <nav className="today-date-strip" aria-label="Week">{strip.map(item=><button key={item.key} type="button" className={item.key===day?'today-date-chip today-date-chip--selected':'today-date-chip'} aria-current={item.key===day?'date':undefined} onClick={()=>{setDay(item.key);onDayChange?.(item.key)}}><span>{item.short}</span><strong>{item.number}</strong></button>)}</nav>
    {planBlock||dayTasks.length?<>{planBlock?<><p className="today-screen__section-label">AGENDA</p>{(controlled?dayBlocks:[planBlock]).map(block=><Fragment key={block.id}><TodayPlanBlock status={controlled?block.status:undefined} fixed={controlled?block.fixed:undefined} title={controlled?block.title:data.plan!.title} time={controlled?block.time:data.plan!.time} rationale={controlled?block.rationale:data.plan!.rationale} onMore={()=>setMenuBlock(block)}/><Button className="today-screen__plan-cta" hierarchy={!controlled&&day==='tue'?'secondary':'primary'} type="button" disabled={controlled&&block.status==='done'} onClick={()=>controlled||data.plan?.cta==='Update progress'?onUpdateProgress(block):onViewPlan()}>{controlled?(block.status==='done'?'Completed':'Update progress'):data.plan!.cta}</Button></Fragment>)}</>:null}<p className="today-screen__section-label">LATER TODAY</p>{dayTasks.map(task=><TaskCard key={task.id} title={task.title} meta={task.meta} kind={task.kind} done={tasks!==undefined?Boolean(task.done):day==='mon'&&(task.id==='meeting'?meetingDone:task.id==='groceries'?groceriesDone:false)} onOpen={()=>onTask(task.id)} onToggleDone={tasks!==undefined?()=>onToggleTaskDone?.(task.id):day==='mon'&&(task.id==='meeting'||task.id==='groceries')?()=>toggle(task.id):undefined}/>)}</>:<><h1 className="today-screen__empty-title">{controlled?`Nothing scheduled for ${weekDays?.[dayIndex]?.label??data.short}`:data.emptyHeadline}</h1><p className="today-screen__empty-body">{controlled?'Your accepted plan keeps this day open. Capture something new only if it needs attention.':data.emptyBody}</p><Button className="today-screen__review-tasks" hierarchy="secondary" type="button" onClick={()=>onNavigate('tasks')}>Review Tasks</Button></>}
+   {controlled&&goal&&selectedDate===localISO()?<><p className="today-screen__section-label">MY GOAL</p><section className="today-goal-card" aria-label="My goal"><button type="button" className="today-goal-card__open" onClick={goal.onOpen}><span>{goal.challengeTitle}</span><strong>{goal.title}</strong></button><p>{goal.summary}</p>{goal.checkedInToday?<p role="status">Checked in for today.</p>:<Button type="button" hierarchy="secondary" onClick={goal.onCheckIn}>Check in for today</Button>}</section></>:null}
    <p className="today-screen__section-label">CYCLE CONTEXT</p>
    <PhaseContextCard phase={cycleContext?(cycleContext.phase??'Cycle context'):undefined} tone={cycleContext?(cycleContext.phase??'neutral'):undefined} estimated={cycleContext?cycleStatus==='estimated':undefined} day={cycleContext?cycleDayLabel:data.phase.day} pattern={cycleContext?(cycleStatus==='estimated'?'Energy can vary':'Your preferences'):data.phase.pattern} planNote={cycleContext?cycleNote:data.phase.note} footnote={cycleContext&&cycleStatus!=='estimated'?'You can update your cycle preferences anytime.':undefined} onOpen={onPhase}/>
    <p className="today-screen__quick-rule">Quick capture saves new tasks as Unscheduled.</p>

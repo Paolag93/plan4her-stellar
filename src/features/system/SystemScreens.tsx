@@ -15,16 +15,23 @@ export interface PrivacyDataScreenProps extends BackProps {
   dataTools?: ReactNode
   analyticsEnabled?: boolean
   onAnalyticsChange?: (enabled: boolean) => void
+  /** Number of user-initiated encrypted IPFS uploads; changes copy only when > 0. */
+  encryptedUploads?: number
 }
-export function PrivacyDataScreen({ onBack, onClear, analyticsEnabled, onAnalyticsChange, dataTools }: PrivacyDataScreenProps) {
+export function PrivacyDataScreen({ onBack, onClear, analyticsEnabled, onAnalyticsChange, dataTools, encryptedUploads = 0 }: PrivacyDataScreenProps) {
   const [localAnalytics, setLocalAnalytics] = useState(false)
   const enabled = analyticsEnabled ?? localAnalytics
   const toggle = () => { setLocalAnalytics(!enabled); onAnalyticsChange?.(!enabled) }
   return <main className="system-screen" data-figma-node={enabled ? '4272:3476' : '4250:4101'}>
     <AppHeader title="Privacy & data" onBack={onBack} />
     <section className="system-content privacy-content">
-      <h2>Your data stays on this device</h2>
-      <p className="system-body">Your task, cycle and plan content stays local. Cloud sync is off.</p>
+      {encryptedUploads > 0 ? <>
+        <h2>Local, plus encrypted backups you chose</h2>
+        <p className="system-body">Your task, cycle and plan content stays local. You uploaded {encryptedUploads} encrypted backup{encryptedUploads === 1 ? '' : 's'} to IPFS that only your passphrase can open. Automatic cloud sync is off.</p>
+      </> : <>
+        <h2>Your data stays on this device</h2>
+        <p className="system-body">Your task, cycle and plan content stays local. Cloud sync is off.</p>
+      </>}
       <div className="privacy-summary"><span className="privacy-summary__icon"><img src={localDevice} alt="" /></span><div><strong>Local by default</strong><p>Tasks · cycle context · accepted plans</p></div></div>
       <div className="privacy-analytics"><p>Anonymous product analytics<br />{enabled ? 'Enabled · no task or cycle content is included.' : 'No task or cycle content is included.'}</p><button type="button" role="switch" aria-label="Anonymous product analytics" aria-checked={enabled} className={`privacy-switch${enabled ? ' privacy-switch--on' : ''}`} onClick={toggle}><img src={enabled ? analyticsOn : analyticsOff} alt="" /></button></div>
       {dataTools}

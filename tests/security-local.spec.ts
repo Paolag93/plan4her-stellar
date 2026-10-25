@@ -48,6 +48,8 @@ test('task markup stays literal after reload and analytics toggle sends no synth
  page.on('request',request=>{
   if(request.url().includes(secret)||request.postData()?.includes(secret))leaks.push(request.url())
  })
+ // A fixed Monday keeps the generated week from depending on the wall-clock time.
+ await page.clock.setFixedTime(new Date('2026-10-12T08:00:00Z'))
  await page.goto('/')
  await page.getByRole('button',{name:'Build my first week',exact:true}).click()
  await page.getByRole('button',{name:'Continue',exact:true}).click()
