@@ -75,3 +75,6 @@ The master explicitly says new product UI must use Plan4Her variables/components
 4. Do not edit the original Figma master, original repo or existing ChatGPT Sites deployment. If Claude has Figma access, use it for READ ONLY reference; obtain separate approval to edit/design-copy the Figma master.
 5. Test Playwright UI baselines and new flows (mobile 390×844 plus narrow/mobile/desktop); evaluate keyboard, focus, accessible names, 44px taps, visual regression and privacy copy.
 6. Include `docs/UX_VISUAL_QA.md` with what was compared, screenshots of implemented screens, discrepancies, and any unverified Figma access. Existing baseline pixel parity is not automatically proven for new features.
+
+## Initial screen map (planning aid)
+A proposed screen-by-screen entry-point and state inventory now exists at `docs/NEW_FEATURE_UX_MAP.md`. This is NOT an approved Figma design; Claude should refine it after inspecting current app screens and Figma references, then implement and test. Do not invent an entirely new navigation model.
