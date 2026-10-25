@@ -1,0 +1,30 @@
+.task-details-screen{width:390px;height:844px;position:relative;overflow:hidden;background:#fff;color:var(--color-text-primary)}
+.task-details-screen__content{position:absolute;left:0;top:64px;width:390px;height:780px;background:#fafafa}
+.task-details-screen__content>h2{position:absolute;left:16px;top:20px;width:358px;height:32px;margin:0;font-size:24px;line-height:32px;font-weight:700}
+.task-details-screen__intro{position:absolute;left:16px;top:60px;width:358px;height:40px;margin:0;color:var(--color-text-secondary);font-size:14px;line-height:20px;font-weight:400}
+.task-details-screen__card{position:absolute;left:16px;top:118px;width:358px;height:360px;border:1px solid #d1d4d9;border-radius:20px;background:#fefefe}
+.task-details-screen__card--fixed{height:452px}
+.task-details-screen__task{position:absolute;left:16px;top:16px;width:326px;height:76px}
+.task-details-screen__type-label,.task-details-screen__importance-label{position:absolute;left:16px;margin:0;color:var(--color-text-secondary);font-size:12px;line-height:16px;font-weight:500}
+.task-details-screen__type-label{top:104px;width:80px;height:16px}
+.task-details-screen__type{position:absolute;top:126px;width:159px;height:44px;padding:0;border:1px solid var(--color-border-default);border-radius:999px;background:#fff;color:#171717;font-size:14px;line-height:20px;font-weight:500;cursor:pointer}
+.task-details-screen__type--flex{left:16px}.task-details-screen__type--fixed{left:183px}.task-details-screen__type--selected{border-color:transparent;background:#82c0cc}
+.task-details-screen__duration{position:absolute;left:16px;top:186px;width:155px;height:76px}.task-details-screen__deadline{position:absolute;left:187px;top:186px;width:155px;height:76px}
+.task-details-screen__importance-label{top:278px;width:180px;height:16px}.task-details-screen__importance{position:absolute;left:16px;top:300px;width:326px;height:44px}
+.task-details-screen__date{position:absolute;left:16px;top:186px;width:326px;height:76px}.task-details-screen__start{position:absolute;left:16px;top:278px;width:155px;height:76px}.task-details-screen__fixed-duration{position:absolute;left:187px;top:278px;width:155px;height:76px}
+.task-details-screen__importance-label--fixed{top:370px}.task-details-screen__importance--fixed{top:392px}
+.task-details-screen__save{position:absolute;left:16px;top:498px;width:358px}.task-details-screen__delete{position:absolute;left:16px;top:566px;width:358px;height:44px;padding:0;border:0;border-radius:999px;background:transparent;color:var(--color-text-accent);font-size:14px;line-height:20px;font-weight:500;cursor:pointer}
+.task-details-screen__save--fixed{top:590px}.task-details-screen__delete--fixed{top:658px}
+@media(max-width:389px){.task-details-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}
+
+/* Optional live metadata grows naturally without changing canonical fixtures. */
+#root .task-details-screen--live { width: min(390px, 100vw); height: min(844px, 100dvh); }
+#root .task-details-screen--live .task-details-screen__content { padding: 20px 16px 28px; display: flex; flex-direction: column; gap: 16px; }
+#root .task-details-screen--live .task-details-screen__content > * { position: static; width: 100%; height: auto; flex-shrink: 0; }
+#root .task-details-screen--live .task-details-screen__card { padding: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 8px; }
+#root .task-details-screen--live .task-details-screen__card > * { position: static; width: 100%; min-width: 0; height: auto; grid-column: 1 / -1; }
+#root .task-details-screen--live .task-details-screen__card > :is(.task-details-screen__type, .task-details-screen__duration, .task-details-screen__deadline, .task-details-screen__start, .task-details-screen__fixed-duration) { grid-column: auto; }
+#root .task-details-screen--live .task-details-screen__type { min-height: 44px; padding: 10px 8px; }
+#root .task-details-screen--live .importance-selector { width: 100%; min-height: 44px; height: auto; }
+#root .task-details-screen--live .importance-selector__segment { min-width: 0; width: auto; min-height: 44px; height: auto; flex: 1; padding: 10px 2px; overflow-wrap: anywhere; }
+#root .task-details-screen--live .task-details-screen__content > button { min-height: 52px; }

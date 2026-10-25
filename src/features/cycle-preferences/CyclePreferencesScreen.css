@@ -1,0 +1,41 @@
+.cycle-preferences-screen {
+  position: relative; width: min(390px, 100vw); height: min(844px, 100dvh);
+  min-height: 0; overflow: hidden; background: var(--color-bg-canvas); color: var(--color-text-primary);
+}
+.cycle-preferences-screen__content { padding: 20px 16px 28px; display: flex; flex-direction: column; gap: 24px; min-height: 0; overflow-x: hidden; overflow-y: auto; scroll-padding-block: 20px 28px; }
+.cycle-preferences-screen__content > * { flex-shrink: 0; min-width: 0; }
+.cycle-preferences-screen__intro { padding: 20px; border-radius: 20px; background: var(--color-bg-brand-soft); }
+.cycle-preferences-screen__intro > span { color: var(--color-text-brand); font-size: 12px; font-weight: 500; line-height: 18px; }
+.cycle-preferences-screen__intro h2 { margin: 8px 0 12px; font-size: 24px; line-height: 32px; }
+.cycle-preferences-screen__intro p { margin: 0; font-size: 14px; line-height: 22px; }
+.cycle-preferences-screen fieldset { margin: 0; min-width: 0; }
+.cycle-preferences-screen__templates { padding: 0; border: 0; }
+.cycle-preferences-screen__templates > legend,
+.cycle-preferences-screen__mapping > h2 { margin: 0; padding: 0; font-size: 18px; line-height: 26px; font-weight: 600; }
+.cycle-preferences-screen__help { margin: 8px 0 16px; color: var(--color-text-secondary); font-size: 14px; line-height: 22px; }
+.cycle-preferences-screen__template {
+  display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; padding: 16px;
+  min-height: 44px; border: 1px solid var(--color-border-default); border-radius: 16px;
+  background: var(--color-bg-surface); cursor: pointer;
+}
+.cycle-preferences-screen__template--selected { border-color: var(--color-text-accent); background: #edf6f7; }
+.cycle-preferences-screen input { width: 20px; height: 20px; flex: 0 0 20px; margin: 3px 0 0; accent-color: var(--color-text-accent); cursor: pointer; }
+.cycle-preferences-screen__template > span { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cycle-preferences-screen__template strong { font-size: 16px; line-height: 24px; font-weight: 600; }
+.cycle-preferences-screen__template > span > span { font-size: 14px; line-height: 22px; color: var(--color-text-secondary); }
+.cycle-preferences-screen__mapping { display: flex; flex-direction: column; gap: 16px; }
+.cycle-preferences-screen__mapping > .cycle-preferences-screen__help { margin: -8px 0 0; }
+.cycle-preferences-screen__phase { padding: 12px; border: 1px solid var(--color-border-default); border-radius: 16px; background: var(--color-bg-surface); }
+.cycle-preferences-screen__phase > legend { padding: 0 4px; font-size: 16px; line-height: 24px; font-weight: 600; }
+.cycle-preferences-screen__phase-dot { display: inline-block; width: 12px; height: 12px; margin-right: 8px; border-radius: 50%; background: var(--color-bg-subtle); }
+.cycle-preferences-screen__phase[data-phase='menstrual'] .cycle-preferences-screen__phase-dot { background: var(--p4h-phase-menstrual); }
+.cycle-preferences-screen__phase[data-phase='follicular'] .cycle-preferences-screen__phase-dot { background: var(--p4h-phase-follicular); }
+.cycle-preferences-screen__phase[data-phase='ovulatory'] .cycle-preferences-screen__phase-dot { background: var(--p4h-phase-ovulatory); }
+.cycle-preferences-screen__phase[data-phase='luteal'] .cycle-preferences-screen__phase-dot { background: var(--p4h-phase-luteal); }
+.cycle-preferences-screen__estimated { display: inline-block; margin-left: 8px; color: var(--color-text-secondary); font-size: 12px; font-weight: 400; }
+.cycle-preferences-screen__work-type { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 4px; font-size: 14px; line-height: 22px; cursor: pointer; }
+.cycle-preferences-screen__work-type input { margin-top: 0; }
+.cycle-preferences-screen__notice { padding: 16px; border-radius: 16px; background: var(--color-bg-subtle); font-size: 14px; line-height: 22px; }
+.cycle-preferences-screen__notice strong { font-weight: 600; }
+.cycle-preferences-screen__notice p { margin: 8px 0 0; }
+.cycle-preferences-screen :is(p, h2, label, legend, button) { overflow-wrap: anywhere; }

@@ -1,0 +1,15 @@
+.plan-accepted-screen{width:390px;height:844px;position:relative;overflow:hidden;background:var(--color-bg-canvas);color:var(--color-text-primary)}
+.plan-accepted-screen__scroll{position:absolute;left:0;top:64px;width:390px;height:780px;padding:20px 16px 24px;display:flex;flex-direction:column;gap:16px;overflow-x:hidden;overflow-y:auto;background:var(--color-bg-canvas);scroll-behavior:smooth}
+.plan-accepted-screen__scroll>*{flex-shrink:0}
+.plan-accepted-screen__success{width:44px;height:44px;flex:0 0 44px;border-radius:22px;background:var(--p4h-brand-blue-300);display:flex;align-items:center;justify-content:center}
+.plan-accepted-screen__success svg{width:22px;height:22px;fill:none;stroke:#171717;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.plan-accepted-screen__scroll>h1,.plan-accepted-screen__intro,.plan-accepted-screen__section-label{width:358px;margin:0}
+.plan-accepted-screen__scroll>h1{height:32px;font-size:24px;line-height:32px;font-weight:700}
+.plan-accepted-screen__intro{height:60px;color:var(--color-text-secondary);font-size:14px;line-height:20px}
+.plan-accepted-screen__section-label{height:16px;font-size:12px;line-height:16px;font-weight:500;color:var(--color-text-accent)}
+.plan-accepted-screen__start{width:358px;flex:0 0 52px;margin-bottom:104px}
+.plan-accepted-screen__snackbar{position:absolute;left:16px;top:684px;width:358px;height:64px;border-radius:16px;background:#171717;color:#fff;z-index:20}
+.plan-accepted-screen__status-dot{position:absolute;left:16px;top:28px;width:8px;height:8px;border-radius:50%;background:#0b6b3a}
+.plan-accepted-screen__snackbar>span:nth-child(2){position:absolute;left:36px;top:22px;width:230px;height:20px;font-size:14px;line-height:20px}
+.plan-accepted-screen__snackbar>button{position:absolute;left:278px;top:10px;width:72px;height:44px;border:0;background:transparent;color:#fff;font-size:14px;line-height:20px;font-weight:500;cursor:pointer}
+@media(max-width:389px){.plan-accepted-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}

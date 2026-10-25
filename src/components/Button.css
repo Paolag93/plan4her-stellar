@@ -1,0 +1,28 @@
+.p4h-button {
+  min-width: 160px;
+  border-radius: var(--radius-full);
+  padding-inline: var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+  font-weight: 500;
+  transition: opacity 120ms ease;
+}
+.p4h-button--medium { height: var(--size-control-md); }
+.p4h-button--large { height: var(--size-control-lg); }
+.p4h-button--primary { background: var(--color-action-primary-bg); color: var(--color-action-primary-text); }
+.p4h-button--secondary { background: var(--color-action-secondary-bg); color: var(--color-action-secondary-text); border: 1px solid var(--color-text-primary); }
+.p4h-button--accent { background: var(--color-action-brand-bg); color: var(--color-action-brand-text); }
+.p4h-button--tertiary { background: transparent; color: var(--color-text-accent); }
+.p4h-button--destructive { background: var(--p4h-status-error-action); color: white; }
+.p4h-button:active:not(:disabled) { opacity: 0.82; }
+.p4h-button:disabled { opacity: 0.38; cursor: not-allowed; }
+.p4h-button__spinner {
+  width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent;
+  animation: p4h-spin 700ms linear infinite;
+}
+@keyframes p4h-spin { to { transform: rotate(360deg); } }

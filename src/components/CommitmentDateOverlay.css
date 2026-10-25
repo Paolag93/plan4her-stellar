@@ -1,0 +1,106 @@
+.commitment-overlay-layer{
+  position:absolute;
+  inset:0;
+  z-index:40;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  background:transparent;
+}
+.commitment-date-overlay{
+  width:358px;
+  height:330px;
+  position:relative;
+  pointer-events:auto;
+  border:1px solid #d1d4d9;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 8px 12px rgba(0,0,0,.14);
+}
+.commitment-date-overlay h2{
+  position:absolute;
+  left:16px;
+  top:16px;
+  margin:0;
+  font-size:16px;
+  line-height:20px;
+  font-weight:600;
+}
+.commitment-date-overlay__close{
+  position:absolute;
+  left:306px;
+  top:4px;
+  width:44px;
+  height:44px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  border:0;
+  border-radius:999px;
+  cursor:pointer;
+}
+.commitment-date-overlay__close svg{
+  width:18px;
+  height:18px;
+  fill:none;
+  stroke:#171717;
+  stroke-width:1.8;
+  stroke-linecap:round;
+}
+.commitment-date-overlay__weekdays{
+  position:absolute;
+  left:9px;
+  top:54px;
+  width:338px;
+  display:grid;
+  grid-template-columns:repeat(7,44px);
+  column-gap:5px;
+}
+.commitment-date-overlay__weekdays span{
+  height:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#6b6b6b;
+  font-size:12px;
+  line-height:16px;
+  font-weight:500;
+}
+.commitment-date-overlay__days{
+  position:absolute;
+  left:9px;
+  top:78px;
+  width:338px;
+  display:grid;
+  grid-template-columns:repeat(7,44px);
+  grid-auto-rows:44px;
+  column-gap:5px;
+  row-gap:5px;
+}
+.commitment-date-overlay__day{
+  width:44px;
+  height:44px;
+  padding:0;
+  border:0;
+  border-radius:22px;
+  background:transparent;
+  color:#171717;
+  font-size:12px;
+  line-height:16px;
+  font-weight:400;
+  cursor:pointer;
+}
+.commitment-date-overlay__day--selected{background:#82bfcc;}
+.commitment-date-overlay__day--empty{pointer-events:none;}
+.commitment-date-overlay__navigation{position:absolute;top:4px;right:54px;display:flex}
+.commitment-date-overlay__navigation button{width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--color-text-accent);font-size:24px;cursor:pointer}
+.commitment-date-overlay__entry{position:absolute;left:16px;right:16px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+.commitment-date-overlay__entry label{display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;font-size:12px;line-height:18px}
+.commitment-date-overlay__entry input{width:100%;height:48px;min-width:0;padding:0 10px;border:1px solid var(--color-border-default);border-radius:12px;background:#fff;font:inherit;font-size:16px}
+.commitment-date-overlay__entry button{height:48px;padding:0 12px;border:0;border-radius:12px;background:#82c0cc;font-size:13px;cursor:pointer}
+.commitment-date-overlay__entry button:disabled{opacity:.45;cursor:default}
+.commitment-date-overlay__entry p{width:100%;margin:0;color:#a12d22;font-size:12px;line-height:18px}
+.commitment-date-overlay__entry input:focus-visible,.commitment-date-overlay__entry button:focus-visible,.commitment-date-overlay__navigation button:focus-visible{outline:2px solid var(--color-text-accent);outline-offset:2px}

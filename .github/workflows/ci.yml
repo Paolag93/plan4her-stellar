@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "build/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Test planning domain
+        run: npm run test:domain
+
+      - name: Build
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Run Playwright
+        run: npm run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-diagnostics
+          path: |
+            test-results
+            playwright-report
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # Explicit allowlist: excludes credentials, .env files, .git and caches.
+      # Enables reproducing the same installed runtime in offline QA environments.
+      - name: Package visual QA reproducer
+        if: failure()
+        run: |
+          tar -czf /tmp/plan-parity-workspace.tgz --exclude='node_modules/.cache' \
+            src tests docs dist node_modules index.html package.json package-lock.json \
+            tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts playwright.config.ts
+
+      - name: Upload private QA reproducer
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan-parity-workspace
+          path: /tmp/plan-parity-workspace.tgz
+          retention-days: 1
+          if-no-files-found: ignore

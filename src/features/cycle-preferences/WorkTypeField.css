@@ -1,0 +1,9 @@
+.work-type-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.work-type-field > label { color: var(--color-text-secondary); font-size: 14px; line-height: 20px; }
+.work-type-field > select {
+  width: 100%; min-width: 0; min-height: 52px; padding: 12px;
+  border: 1px solid var(--color-border-default); border-radius: 12px;
+  background: var(--color-bg-surface); color: var(--color-text-primary);
+  font: inherit; font-size: 14px; line-height: 1.5; cursor: pointer;
+}
+.work-type-field > p { margin: 0; color: var(--color-text-secondary); font-size: 12px; line-height: 18px; overflow-wrap: anywhere; }

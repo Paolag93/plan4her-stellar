@@ -1,0 +1,315 @@
+import { expect, test, type Page } from '@playwright/test'
+import { createInitialState, STORAGE_KEY, validateState } from '../src/domain/persistence'
+import { generateWeeklyPlan } from '../src/domain/planner'
+import type { AppState } from '../src/domain/types'
+
+// Exercise real saved-state screens; canonical QA fixtures deliberately keep their original controls.
+test.use({ timezoneId: 'UTC' })
+
+async function saved(page: Page): Promise<AppState> {
+  return page.evaluate(key => JSON.parse(localStorage.getItem(key)!), STORAGE_KEY)
+}
+
+async function seedWeek(page: Page, cycle: AppState['cycleBasics'] = { lastPeriodStart: '2026-10-05', cycleLength: 28 }) {
+  await page.clock.setFixedTime(new Date('2026-10-12T08:00:00Z'))
+  const state = createInitialState()
+  state.tasks = [{ id: 'picker-anchor', title: 'Picker anchor', kind: 'Flexible', duration: '60 min', meta: '60 min', importance: 'Important' }]
+  state.cycleMode = cycle ? 'natural' : null
+  state.cycleBasics = cycle
+  state.acceptedPlan = generateWeeklyPlan({ ...state, weekStart: '2026-10-12' })
+  state.draftPlan = state.acceptedPlan
+  state.onboardingComplete = true
+  await page.addInitScript(({ key, state }) => {
+    if (!sessionStorage.getItem('picker-state-seeded')) {
+      localStorage.setItem(key, JSON.stringify(state))
+      sessionStorage.setItem('picker-state-seeded', 'yes')
+    }
+  }, { key: STORAGE_KEY, state })
+  await page.goto('/')
+  return state
+}
+
+async function nav(page: Page, name: 'Today' | 'Tasks' | 'Plan' | 'More') {
+  await page.getByRole('navigation', { name: 'Primary', exact: true }).getByRole('button', { name, exact: true }).click()
+}
+
+async function cycleSettings(page: Page) {
+  await nav(page, 'More')
+  await page.getByRole('button', { name: 'Cycle context', exact: true }).click()
+}
+
+async function beginSetup(page: Page, withCycle: boolean) {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Build my first week', exact: true }).click()
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  if (withCycle) {
+    await page.getByRole('radio', { name: /Natural menstrual cycle/ }).click()
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  } else {
+    await page.getByRole('button', { name: 'Continue without cycle context', exact: true }).click()
+  }
+}
+
+async function openCustom(page: Page, field: string) {
+  await page.getByRole('button', { name: field, exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await dialog.getByRole('button', { name: 'Custom', exact: true }).click()
+  return dialog
+}
+
+async function addTask(page: Page, title: string) {
+  await nav(page, 'Tasks')
+  await page.getByRole('button', { name: 'Add task', exact: true }).click()
+  await page.getByRole('button', { name: /Add with details/ }).click()
+  await page.getByRole('textbox', { name: 'Task', exact: true }).fill(title)
+}
+
+test('setup can select prior months and leap dates without persisting an invalid cycle-length draft', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-10-12T08:00:00Z'))
+  await beginSetup(page, true)
+  const date = page.getByRole('button', { name: 'Last period started', exact: true })
+  await date.click()
+  const dialog = page.getByRole('dialog', { name: 'Select last period start date', exact: true })
+  await expect(dialog.getByRole('button', { name: 'Next month', exact: true })).toBeDisabled()
+  await expect(dialog.getByRole('button', { name: '13', exact: true })).toBeDisabled()
+  await dialog.getByRole('button', { name: 'Previous month', exact: true }).click()
+  await expect(dialog.getByRole('heading', { name: 'September 2026', exact: true })).toBeVisible()
+  await dialog.getByRole('button', { name: '30', exact: true }).click()
+  await expect(date).toContainText('30 Sep')
+  await expect(date).toBeFocused()
+  const length = page.getByRole('textbox', { name: 'Typical cycle length · optional', exact: true })
+  await length.fill('30')
+  await length.fill('30x')
+  await date.click()
+  await expect(dialog.getByRole('button', { name: '30', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  const exact = dialog.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true })
+  for (const invalid of ['2025-02-29', '2026-02-30', '2026-10-13']) {
+    await exact.fill(invalid)
+    await expect(dialog.getByRole('button', { name: 'Use date', exact: true })).toBeDisabled()
+    await expect(exact).toHaveAttribute('aria-invalid', 'true')
+  }
+  await exact.fill('2024-02-29')
+  await exact.press('Enter')
+  await expect(length).toHaveValue('30x')
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled()
+  await expect(page.locator('.cycle-basics-screen__estimate')).toContainText('Check cycle length')
+  await expect.poll(async () => (await saved(page)).cycleBasics).toEqual({ lastPeriodStart: '2024-02-29', cycleLength: 30 })
+  expect(validateState(await saved(page))).toBe(true)
+  await expect(page.getByRole('alert')).toHaveCount(0)
+  await length.fill('29')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  // Returning through the cycle route keeps the exact full date, including its year.
+  await date.click()
+  await expect(dialog.getByRole('heading', { name: 'February 2024', exact: true })).toBeVisible()
+  await expect(dialog.getByRole('button', { name: '29', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await expect(dialog.getByRole('button', { name: '30', exact: true })).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect.poll(async () => (await saved(page)).cycleBasics).toEqual({ lastPeriodStart: '2024-02-29', cycleLength: 29 })
+})
+
+test('cycle settings preserve invalid Help drafts and can still turn context off safely', async ({ page }) => {
+  const original = await seedWeek(page)
+  await cycleSettings(page)
+  const length = page.getByRole('textbox', { name: 'Typical cycle length · optional', exact: true })
+  await length.fill('3e1')
+  await expect(length).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByRole('button', { name: 'Save cycle context', exact: true })).toBeDisabled()
+  await length.press('Tab')
+  await expect(page.getByRole('button', { name: 'How cycle context works', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'How cycle context works', exact: true }).click()
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  await expect(length).toHaveValue('3e1')
+  await expect(page.locator('.cycle-context-summary')).not.toContainText('NaN')
+  await page.getByRole('switch', { name: 'Use cycle context in planning', exact: true }).click()
+  await expect(page.locator('.cycle-context-summary')).toContainText('Planning context off')
+  await expect(page.locator('.cycle-context-summary').getByText('Estimated', { exact: true })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Save cycle context', exact: true }).click()
+  await expect.poll(async () => (await saved(page)).cycleMode).toBeNull()
+  await page.reload()
+  const state = await saved(page)
+  expect(state.cycleBasics).toEqual(original.cycleBasics)
+  expect(state.acceptedPlan).toEqual(original.acceptedPlan)
+  expect(validateState(state)).toBe(true)
+  await cycleSettings(page)
+  await expect(length).toHaveValue('28')
+  await page.getByRole('switch', { name: 'Use cycle context in planning', exact: true }).click()
+  await length.fill('31')
+  await page.getByRole('button', { name: 'Save cycle context', exact: true }).click()
+  await expect.poll(async () => (await saved(page)).cycleBasics?.cycleLength).toBe(31)
+})
+
+test('missing cycle date stays neutral until a valid earlier date is selected and saved', async ({ page }) => {
+  await seedWeek(page, null)
+  await cycleSettings(page)
+  await page.getByRole('switch', { name: 'Use cycle context in planning', exact: true }).click()
+  await expect(page.locator('.cycle-context-summary')).toContainText('No date added')
+  await expect(page.locator('.cycle-context-summary').getByText('Estimated', { exact: true })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Last period started', exact: true }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByRole('button', { name: '12', exact: true })).toHaveAttribute('aria-pressed', 'false')
+  await dialog.getByRole('button', { name: 'Previous month', exact: true }).click()
+  await dialog.getByRole('button', { name: '29', exact: true }).click()
+  await page.getByRole('button', { name: 'Last period started', exact: true }).click()
+  await expect(dialog.getByRole('heading', { name: 'September 2026', exact: true })).toBeVisible()
+  await expect(dialog.getByRole('button', { name: '29', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await dialog.getByRole('button', { name: 'Next month', exact: true }).click()
+  await expect(dialog.locator('[aria-pressed="true"]')).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Save cycle context', exact: true }).click()
+  await page.reload()
+  expect((await saved(page)).cycleBasics).toEqual({ lastPeriodStart: '2026-09-29', cycleLength: 28 })
+})
+
+test('duration draft survives preset visits with keyboard focus and dismissal preserves the committed value', async ({ page }) => {
+  await seedWeek(page)
+  await addTask(page, 'Draft duration')
+  const opener = page.getByRole('button', { name: 'Duration', exact: true })
+  let dialog = await openCustom(page, 'Duration')
+  await expect(dialog.getByRole('textbox', { name: 'Hours', exact: true })).toBeFocused()
+  await dialog.getByRole('textbox', { name: 'Hours', exact: true }).fill('2')
+  await dialog.getByRole('textbox', { name: 'Minutes', exact: true }).fill('7')
+  await dialog.getByRole('button', { name: 'Back to presets', exact: true }).press('Enter')
+  await expect(dialog.getByRole('button', { name: 'Custom', exact: true })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(dialog.getByRole('textbox', { name: 'Hours', exact: true })).toHaveValue('2')
+  await expect(dialog.getByRole('textbox', { name: 'Minutes', exact: true })).toHaveValue('7')
+  await page.keyboard.press('Escape')
+  await expect(opener).toBeFocused()
+  await expect(opener).toContainText('60 min')
+  dialog = await openCustom(page, 'Duration')
+  await expect(dialog.getByRole('textbox', { name: 'Hours', exact: true })).toHaveValue('1')
+  await expect(dialog.getByRole('textbox', { name: 'Minutes', exact: true })).toHaveValue('0')
+  await dialog.getByRole('textbox', { name: 'Minutes', exact: true }).fill('23')
+  await dialog.getByRole('button', { name: 'Use duration', exact: true }).click()
+  await page.getByRole('button', { name: 'Fixed', exact: true }).click()
+  await page.getByRole('button', { name: 'Flexible', exact: true }).click()
+  await expect(opener).toContainText('83 min')
+  await page.getByRole('button', { name: 'Save as Unscheduled', exact: true }).click()
+  await page.reload()
+  expect((await saved(page)).tasks.find(task => task.title === 'Draft duration')?.duration).toBe('83 min')
+})
+
+test('an optional deadline can be cleared without losing the rest of a new task', async ({ page }) => {
+  await seedWeek(page)
+  await addTask(page, 'No deadline after all')
+  const deadline = page.getByRole('button', { name: 'Deadline · optional', exact: true })
+  await deadline.click()
+  let dialog = page.getByRole('dialog', { name: 'Task deadline', exact: true })
+  await expect(dialog.getByRole('button', { name: 'Clear deadline', exact: true })).toHaveCount(0)
+  await dialog.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true }).fill('2026-11-02')
+  await dialog.getByRole('button', { name: 'Use date', exact: true }).click()
+  await deadline.click()
+  await expect(dialog.getByRole('heading', { name: 'November 2026', exact: true })).toBeVisible()
+  await dialog.getByRole('button', { name: 'Clear deadline', exact: true }).click()
+  await expect(deadline).toBeFocused()
+  await expect(deadline).toContainText('None')
+  await expect(page.getByRole('textbox', { name: 'Task', exact: true })).toHaveValue('No deadline after all')
+  await page.getByRole('button', { name: 'Fixed', exact: true }).click()
+  await page.getByRole('button', { name: 'Date', exact: true }).click()
+  dialog = page.getByRole('dialog', { name: 'Task fixed date', exact: true })
+  await expect(dialog.getByRole('button', { name: /Clear/ })).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await page.getByRole('button', { name: 'Flexible', exact: true }).click()
+  await page.getByRole('button', { name: 'Save as Unscheduled', exact: true }).click()
+  await page.reload()
+  const task = (await saved(page)).tasks.find(item => item.title === 'No deadline after all')
+  expect(task).toMatchObject({ kind: 'Flexible', duration: '60 min' })
+  expect(task?.deadline).toBeUndefined()
+})
+
+test('plan time and duration drafts survive preset visits and neither dismiss nor Back applies them', async ({ page }) => {
+  const original = await seedWeek(page)
+  await nav(page, 'Plan')
+  await page.getByRole('button', { name: 'Actions for Picker anchor', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: /Edit or move/ }).click()
+  let dialog = await openCustom(page, 'Start time')
+  await dialog.getByRole('textbox', { name: 'Exact time (HH:MM)', exact: true }).fill('12:17')
+  await dialog.getByRole('button', { name: 'Back to presets', exact: true }).click()
+  await expect(dialog.getByRole('button', { name: 'Custom', exact: true })).toBeFocused()
+  await dialog.getByRole('button', { name: 'Custom', exact: true }).press('Enter')
+  await expect(dialog.getByRole('textbox', { name: 'Exact time (HH:MM)', exact: true })).toHaveValue('12:17')
+  await dialog.getByRole('button', { name: 'Use time', exact: true }).click()
+  dialog = await openCustom(page, 'Duration')
+  await dialog.getByRole('textbox', { name: 'Hours', exact: true }).fill('0')
+  await dialog.getByRole('textbox', { name: 'Minutes', exact: true }).fill('47')
+  await dialog.getByRole('button', { name: 'Back to presets', exact: true }).click()
+  await expect(dialog.getByRole('button', { name: 'Custom', exact: true })).toBeFocused()
+  await dialog.getByRole('button', { name: 'Custom', exact: true }).click()
+  await expect(dialog.getByRole('textbox', { name: 'Minutes', exact: true })).toHaveValue('47')
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('button', { name: 'Duration', exact: true })).toContainText('60 min')
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  expect((await saved(page)).acceptedPlan).toEqual(original.acceptedPlan)
+})
+
+test('invalid edit dates explain how to recover and switching task kind keeps each timing draft', async ({ page }) => {
+  await seedWeek(page)
+  await nav(page, 'Tasks')
+  await page.getByRole('button', { name: /^Picker anchor/ }).click()
+  const deadline = page.getByRole('textbox', { name: 'Deadline · optional (YYYY-MM-DD)', exact: true })
+  await deadline.fill('2025-02-29')
+  await expect(deadline).toHaveAttribute('aria-invalid', 'true')
+  await expect(page.getByRole('alert')).toContainText('Enter a valid date')
+  await expect(page.getByRole('button', { name: 'Save task', exact: true })).toBeDisabled()
+  await page.getByRole('button', { name: 'Fixed', exact: true }).click()
+  const fixedDate = page.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true })
+  await expect(page.getByRole('button', { name: 'Save task', exact: true })).toBeEnabled()
+  await fixedDate.fill('2026-02-30')
+  await expect(fixedDate).toHaveAccessibleDescription('Enter a valid date in YYYY-MM-DD format.')
+  await page.getByRole('button', { name: 'Flexible', exact: true }).click()
+  await expect(deadline).toHaveValue('2025-02-29')
+  await deadline.fill('')
+  await expect(page.getByRole('button', { name: 'Save task', exact: true })).toBeEnabled()
+  await page.getByRole('button', { name: 'Fixed', exact: true }).click()
+  await expect(fixedDate).toHaveValue('2026-02-30')
+  await fixedDate.fill('2026-10-13')
+  await page.getByRole('button', { name: 'Save task', exact: true }).click()
+  await page.reload()
+  expect((await saved(page)).tasks[0]).toMatchObject({ kind: 'Fixed', fixedDate: '2026-10-13' })
+  expect((await saved(page)).tasks[0].deadline).toBeUndefined()
+})
+
+test('custom availability remains visible after returning and invalid hidden days have a recovery path', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-10-12T08:00:00Z'))
+  await beginSetup(page, false)
+  const choices = page.getByRole('radiogroup', { name: 'Starter tasks', exact: true })
+  await choices.getByRole('radio').first().focus()
+  await page.keyboard.press('End')
+  await expect(choices.getByRole('radio', { name: /Life admin/ })).toHaveAttribute('aria-checked', 'true')
+  await page.keyboard.press('Home')
+  await expect(choices.locator('[tabindex="0"]')).toHaveCount(1)
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByRole('button', { name: 'Customize days', exact: true }).click()
+  const tuesday = page.getByRole('textbox', { name: 'Tuesday', exact: true })
+  await tuesday.fill('18:00–09:00')
+  await expect(tuesday).toHaveAttribute('aria-invalid', 'true')
+  await expect(tuesday).toHaveAccessibleDescription(/end after the start/)
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  await expect(page.getByRole('alert')).toContainText('Check Tuesday')
+  await expect(page.getByRole('button', { name: 'Continue', exact: true })).toBeDisabled()
+  await page.getByRole('button', { name: 'Customize days', exact: true }).click()
+  await expect(tuesday).toHaveValue('18:00–09:00')
+  await tuesday.fill('10:15–14:30')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Customize availability', exact: true })).toBeVisible()
+  await expect(tuesday).toHaveValue('10:15–14:30')
+  await expect(page.getByRole('textbox', { name: 'Monday', exact: true })).toHaveValue('09:00–18:00')
+  await page.getByRole('button', { name: 'Use weekday defaults', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'When can flexible work fit?', exact: true })).toBeVisible()
+  expect((await saved(page)).availability.Tuesday).toBe('09:00–18:00')
+})
+
+test.describe('cycle dates across daylight saving', () => {
+  test.use({ timezoneId: 'America/New_York' })
+  test('setup counts local calendar days across the spring clock change', async ({ page }) => {
+    await page.clock.setFixedTime(new Date('2026-03-10T16:00:00Z'))
+    await beginSetup(page, true)
+    await page.getByRole('button', { name: 'Last period started', exact: true }).click()
+    const dialog = page.getByRole('dialog')
+    await dialog.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true }).fill('2026-03-05')
+    await dialog.getByRole('button', { name: 'Use date', exact: true }).click()
+    await expect(page.locator('.cycle-basics-screen__estimate')).toContainText('Day 6 · Follicular')
+  })
+})

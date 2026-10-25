@@ -1,0 +1,16 @@
+.daily-phase-context{width:358px;height:224px;flex:0 0 224px;padding:20px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;border:0;border-radius:20px;background:var(--p4h-phase-follicular);color:#171717;text-align:left;cursor:pointer}
+.daily-phase-context[data-phase="menstrual"]{background:var(--p4h-phase-menstrual)}
+.daily-phase-context[data-phase="ovulatory"]{background:var(--p4h-phase-ovulatory)}
+.daily-phase-context[data-phase="luteal"]{background:var(--p4h-phase-luteal)}
+.daily-phase-context[data-phase="neutral"]{background:var(--color-bg-subtle)}
+.daily-phase-context__header{width:318px;height:50px;display:flex;align-items:center;gap:12px;overflow:hidden}
+.daily-phase-context__title-group{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.daily-phase-context__title-group>span{font-size:12px;line-height:16px;font-weight:500}
+.daily-phase-context__title-group>strong{font-size:24px;line-height:32px;font-weight:700}
+.daily-phase-context__estimated{height:28px;padding:6px 8px;border-radius:999px;background:#e8f4f7;color:#16697a;font-size:12px;line-height:16px;font-weight:500}
+.daily-phase-context__pattern{width:318px;font-size:18px;line-height:26px;font-weight:600}
+.daily-phase-context__note{width:318px;font-size:14px;line-height:20px;font-weight:400}
+.daily-phase-context small{width:318px;font-size:12px;line-height:16px;font-weight:400;opacity:.72}
+.daily-phase-context:focus-visible{outline:2px solid #16697a;outline-offset:2px}
+/* The menstrual fill needs opaque small text to retain readable contrast. */
+.daily-phase-context[data-phase="menstrual"] small{opacity:1}

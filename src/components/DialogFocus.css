@@ -1,0 +1,4 @@
+/* Initial focus announces the dialog; visible outlines belong on its controls. */
+.p4h-dialog-focus:focus {
+  outline: none;
+}

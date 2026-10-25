@@ -1,0 +1,92 @@
+{
+  "fileKey": "zctnzXqin1jZJLvxBlVxZz",
+  "retrieved": "2026-10-08",
+  "method": "Figma read-only exportAsync SVG_STRING after original asset download returned Site Unavailable HTML",
+  "assets": [
+    {
+      "name": "empty-today",
+      "id": "4406:5972",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "name": "ai-unavailable",
+      "id": "4406:5981",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "name": "basic-fallback",
+      "id": "4406:6000",
+      "width": 28,
+      "height": 28
+    },
+    {
+      "name": "nav-today-active",
+      "id": "I4250:4253;4110:51;4110:59",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "nav-plan",
+      "id": "I4250:4253;4110:61;4110:73",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "nav-tasks",
+      "id": "I4250:4253;4110:79;4549:5967",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "nav-more",
+      "id": "I4250:4253;4110:91;4110:101",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "nav-today",
+      "id": "I4250:4277;4110:106;4110:114",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "nav-plan-active",
+      "id": "I4250:4277;4110:116;4110:128",
+      "width": 24,
+      "height": 24
+    },
+    {
+      "name": "block-more",
+      "id": "I4250:4294;4665:6681",
+      "width": 20,
+      "height": 20
+    }
+  ],
+  "screenshotVerification": {
+    "verified": "2026-10-08",
+    "method": "Existing PNG pixels compared with fresh get_design_context screenshots; all identical; PNGs not changed.",
+    "dimensions": [
+      390,
+      844
+    ],
+    "snapshots": [
+      {
+        "name": "p6-empty-today-mobile-chromium-linux.png",
+        "node": "4250:4247",
+        "sha256": "72231ad9660aa9bff24a638f04fc74cb358336d81e58d8ce182f11116fa1ad3b"
+      },
+      {
+        "name": "p6-ai-unavailable-mobile-chromium-linux.png",
+        "node": "4250:4268",
+        "sha256": "7f140332c5890755c72674023efe203bd7b4fbe380d2a6a7df40f8fe67bb7616"
+      },
+      {
+        "name": "p6-basic-fallback-mobile-chromium-linux.png",
+        "node": "4250:4287",
+        "sha256": "b4cee3643933c2ec04329b10be2f0bba44a57b1abcb5f3312753c7f785e6db3b"
+      }
+    ]
+  }
+}

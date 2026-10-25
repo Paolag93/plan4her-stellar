@@ -1,0 +1,20 @@
+.today-screen{width:390px;height:844px;position:relative;overflow:hidden;background:var(--color-bg-canvas);color:var(--color-text-primary)}
+.today-screen__scroll{position:absolute;left:0;top:64px;width:390px;height:636px;padding:20px 16px 24px;display:flex;flex-direction:column;gap:16px;overflow-x:hidden;overflow-y:auto;background:var(--color-bg-canvas)}
+.today-screen__scroll>*{flex-shrink:0}
+.today-date-strip{width:358px;height:64px;display:flex;align-items:flex-start;justify-content:space-between;overflow:hidden}
+.today-date-chip{width:44px;height:64px;padding:0;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;border:1px solid var(--color-border-strong);border-radius:16px;background:#fff;color:var(--color-text-primary);cursor:pointer}
+.today-date-chip span{font-size:12px;line-height:16px;color:var(--color-text-secondary);font-weight:400}.today-date-chip strong{font-size:16px;line-height:20px;font-weight:500}
+.today-date-chip--selected{border:2px solid var(--p4h-brand-blue-300);background:var(--p4h-brand-blue-300)}.today-date-chip--selected span{color:var(--color-text-primary)}.today-date-chip--selected strong{font-weight:600}
+.today-screen__section-label{width:358px;height:16px;margin:0;color:var(--color-text-accent);font-size:12px;line-height:16px;font-weight:500}
+.today-screen__plan-cta{width:358px;flex:0 0 52px}
+.today-screen__quick-rule{width:358px;height:32px;margin:0;color:var(--color-text-secondary);font-size:12px;line-height:16px}
+.today-screen__empty-title{width:358px;height:64px;margin:0;font-size:24px;line-height:32px;font-weight:700}
+.today-screen__empty-body{width:358px;height:40px;margin:0;color:var(--color-text-secondary);font-size:14px;line-height:20px}
+.today-screen__review-tasks{width:160px;flex:0 0 52px}
+.today-screen__fab{position:absolute;left:318px;top:692px;width:56px;height:56px;padding:0;border:0;border-radius:28px;background:#171717;color:#fff;font-size:24px;line-height:56px;font-weight:500;z-index:15;cursor:pointer}
+@media(max-width:389px){.today-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}
+
+/* Verified against the Tuesday prototype: these future tasks are read-only cards. */
+.today-screen--tuesday-fixture .p4h-task-card__check-touch{display:none}
+.today-screen--tuesday-fixture .p4h-task-card__content{left:16px;width:326px}
+.today-screen--tuesday-fixture .p4h-task-card__top,.today-screen--tuesday-fixture .p4h-task-card__title,.today-screen--tuesday-fixture .p4h-task-card__meta{width:326px}

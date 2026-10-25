@@ -1,0 +1,7 @@
+.delete-task-screen{width:390px;height:844px;position:relative;overflow:hidden;background:#fff;color:var(--color-text-primary)}
+.delete-task-screen__content{position:absolute;left:0;top:64px;width:390px;height:780px;background:#fafafa}
+.delete-task-screen__content>h2{position:absolute;left:16px;top:20px;width:358px;height:32px;margin:0;font-size:24px;line-height:32px;font-weight:700}
+.delete-task-screen__body{position:absolute;left:16px;top:68px;width:358px;height:80px;margin:0;color:var(--color-text-secondary);font-size:14px;line-height:20px;font-weight:400}
+.delete-task-screen__cancel{position:absolute;left:16px;top:164px;width:358px}
+.delete-task-screen__confirm{position:absolute;left:16px;top:232px;width:358px}
+@media(max-width:389px){.delete-task-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}

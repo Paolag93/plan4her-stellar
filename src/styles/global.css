@@ -1,0 +1,398 @@
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; margin: 0; }
+html { background: #e9e9e9; }
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-text-primary);
+  background: #e9e9e9;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+button, input, textarea { font: inherit; }
+button { border: 0; }
+#root {
+  min-height: 100vh;
+  display: grid;
+  place-items: start center;
+}
+@media (max-width: 390px) {
+  html, body, #root { background: var(--color-bg-canvas); }
+}
+
+.app-error { position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:1000;width:min(390px,100vw);padding:16px;background:var(--color-bg-canvas);border:1px solid currentColor;font-size:14px;box-shadow:0 4px 16px #0002; }
+.app-error button {display:block;min-height:44px;background:transparent;color:inherit;text-decoration:underline;}
+
+/* Keyboard focus is deliberately independent of the pointer-only Figma states. */
+#root :is(button, input, textarea, select, a[href], [tabindex]:not(.p4h-dialog-focus)):focus-visible {
+  outline: 2px solid var(--color-text-accent);
+  outline-offset: 2px;
+}
+/* The text stays vertically centered while the actual input receives a 44px hit area. */
+#root .p4h-text-field__input { min-height: 44px; }
+
+/* Preserve the 390 × 844 artboard exactly. Below it, reflow instead of scaling
+   the entire interface: scaling also shrinks text and 44px touch targets. */
+@media (max-width: 389px) {
+  #root { min-width: 0; grid-template-columns: minmax(0, 1fr); }
+  #root main {
+    min-width: 0;
+    width: 100%;
+    transform: none;
+  }
+  #root .p4h-app-header { width: 100%; }
+  #root .p4h-app-header__title { width: calc(100% - 32px); }
+  #root .p4h-app-header__title--detail { width: calc(100% - 84px); }
+  #root :is(.p4h-setup-header__label, .p4h-setup-header__track,
+    .cycle-mode-screen__progress-label, .cycle-mode-screen__progress-track) { width: calc(100% - 84px); }
+
+  /* Setup screens already use flex layout; remove only artboard constraints. */
+  #root :is(.privacy-screen, .cycle-mode-screen, .cycle-basics-screen,
+    .no-exact-date-screen, .starter-tasks-screen, .availability-screen, .fixed-commitments-screen) {
+    height: auto; min-height: 100dvh; overflow: visible;
+  }
+  #root :is(.privacy-screen, .cycle-mode-screen, .cycle-basics-screen,
+    .no-exact-date-screen, .starter-tasks-screen, .availability-screen, .fixed-commitments-screen) > * {
+    max-width: 100%; flex-shrink: 0;
+  }
+  #root :is(.privacy-screen__title, .privacy-screen__description, .cycle-mode-screen__title,
+    .cycle-mode-screen__description, .cycle-mode-screen__note, .cycle-mode-screen__choices,
+    .p4h-consent-card, .p4h-choice-card) { height: auto; min-height: 0; }
+  #root .p4h-choice-card { min-height: 88px; width: 100%; }
+  #root :is(.privacy-principle, .starter-tasks-screen__choices, .availability-screen__day-fields) { width: 100%; }
+  #root .p4h-consent-card__title-row { flex-wrap: wrap; }
+  #root .p4h-consent-card__title { flex-basis: 100%; }
+  #root .cycle-mode-screen__skip { position: static; }
+  #root .cycle-basics-screen__estimate p { width: calc(100% - 28px); }
+  #root .cycle-basics-screen__estimate { min-height: 120px; }
+  #root :is(.fixed-commitments-screen__empty-card h2, .fixed-commitments-screen__empty-card p) { width: calc(100% - 90px); height: auto; }
+  #root .fixed-commitments-screen__empty-card { height: 210px; }
+  #root .fixed-commitments-screen__empty-card small { width: calc(100% - 30px); top: 155px; height: auto; }
+  #root :is(.fixed-commitments-screen__summary-card h2, .fixed-commitments-screen__summary-card p,
+    .fixed-commitments-screen__summary-card small) { width: calc(100% - 68px); height: auto; }
+
+  /* Start becomes a single readable column; no text or CTA is scaled. */
+  #root .start-screen { height: auto; min-height: 100dvh; padding: 16px; display: flex; flex-direction: column; gap: 20px; overflow: visible; }
+  #root .start-screen > * { position: static; width: 100%; flex-shrink: 0; }
+  #root .week-preview__row { width: 100%; gap: 6px; }
+  #root .week-preview__task { min-width: 0; width: auto; flex: 1; }
+  #root .week-preview__badge { flex-shrink: 0; }
+  #root .value-promise { height: auto; min-height: 72px; }
+  #root .trust-strip { height: auto; gap: 8px; flex-wrap: wrap; }
+  #root .trust-item { width: auto; }
+  #root .start-how { margin-top: auto; }
+
+  /* Every screen's top-level scroll pane shares the same 16px gutters. */
+  #root main > :is([class$='__content'], [class$='__scroll'], .system-content,
+    .tasks-screen__scroll--empty) { width: 100%; overflow-x: hidden; overflow-y: auto; }
+  #root main > :is([class$='__content'], [class$='__scroll'], .system-content) > * { max-width: 100%; }
+  #root main > :is([class$='__content'], [class$='__scroll'], .system-content) > :is(h1, h2, p) { height: auto; white-space: normal; }
+  #root :is(.p4h-bottom-nav) { width: 100%; display: flex; justify-content: space-around; }
+  #root .p4h-bottom-nav__item { position: relative; left: auto; flex: 0 0 72px; }
+  #root :is(.today-screen__fab, .tasks-screen__fab, .active-plan-screen__fab, .system-add-task) { left: auto; right: 16px; }
+  #root :is(.today-date-strip, .week-jump) { overflow-x: auto; gap: 6px; }
+  #root :is(.today-date-chip, .week-jump button) { flex: 0 0 44px; }
+  #root :is(.daily-phase-context, .cycle-context-summary) { height: auto; flex-basis: auto; }
+  #root :is(.daily-phase-context, .cycle-context-summary) > * { width: 100%; }
+  #root :is(.daily-phase-context__header, .cycle-context-summary header) { height: auto; flex-wrap: wrap; overflow: visible; }
+  #root .cycle-context-screen__switch-row { height: auto; overflow: visible; }
+  #root .cycle-context-screen__switch-row > span { width: auto; height: auto; flex: 1; }
+  #root .today-plan-block > strong { width: calc(100% - 32px); }
+  #root .today-plan-block > p { width: calc(100% - 32px); }
+  #root .today-plan-block--rationale { height: 210px; flex-basis: 210px; }
+  #root :is(.today-plan-block__more, .plan-block-card__more, .plan-rationale-screen__explained > button,
+    .recovery-applied-card > button) { left: auto; right: 16px; }
+  #root .p4h-task-card__content { width: calc(100% - 88px); }
+  #root :is(.p4h-task-card__top, .p4h-task-card__title, .p4h-task-card__meta) { width: 100%; }
+  #root .p4h-task-card--done .p4h-task-card__title { width: calc(100% - 56px); }
+  #root .p4h-task-card__status { left: auto; right: 0; }
+  #root .today-screen--tuesday-fixture .p4h-task-card__content { width: calc(100% - 32px); }
+  #root :is(.plan-day, .plan-day-empty, .scheduled-load, .scheduled-load__track, .plan-block-card,
+    .plan-day > header, .plan-day-empty > header, .plan-day-empty__title, .plan-day-empty__body,
+    .p4h-task-card, .adjust-scope-screen__choice, .complete-block-screen__choices) { max-width: 100%; }
+  #root :is(.plan-block-card__top, .recovery-applied-card__top, .plan-rationale-screen__explained > p) { width: calc(100% - 32px); }
+  #root :is(.plan-diff-card, .plan-diff-screen__protected, .restore-preview-screen__notice,
+    .plan-rationale-screen__signal) { height: auto; flex-basis: auto; }
+  #root :is(.plan-diff-card__top, .plan-diff-card__columns, .plan-diff-card > small) { width: 100%; height: auto; }
+  #root :is(.plan-diff-card__before, .plan-diff-card__after) { min-width: 0; flex: 1; width: auto; height: auto; }
+  #root :is(.plan-diff-card__before p, .plan-diff-card__after p) { width: 100%; }
+  #root :is(.recovery-option, .feasibility-resolution) { height: auto; min-height: 112px; flex-basis: auto; width: 100%; }
+  #root :is(.recovery-option__content, .feasibility-resolution__copy) { width: auto; min-width: 0; height: auto; flex: 1; overflow: visible; }
+  #root .recovery-option__selected { left: auto; right: 8px; }
+  #root .recovery-option--selected { padding-right: 38px; }
+  #root .feasibility-resolution__copy > * { height: auto; }
+  #root :is(.recovery-diff__top, .recovery-diff__columns, .recovery-diff > p) { width: calc(100% - 32px); }
+  #root .recovery-diff__columns > div { padding: 8px; }
+  #root .privacy-summary { height: auto; }
+  #root .privacy-summary > div { height: auto; }
+  #root .privacy-summary p { white-space: normal; }
+  #root .privacy-analytics { height: auto; overflow: visible; }
+  #root .privacy-analytics > p { min-width: 0; width: auto; flex: 1; }
+  #root .privacy-switch { flex: 0 0 52px; }
+
+  /* Absolute-position task forms need true reflow, including their field pairs. */
+  #root :is(.quick-capture-screen__content, .add-task-screen__content,
+    .task-details-screen__content, .delete-task-screen__content, .commitment-editor__content) {
+    padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 16px;
+  }
+  #root :is(.quick-capture-screen__content, .add-task-screen__content,
+    .task-details-screen__content, .delete-task-screen__content, .commitment-editor__content) > * {
+    position: static; width: 100%; height: auto; flex-shrink: 0;
+  }
+  #root :is(.add-task-screen__card, .task-details-screen__card, .commitment-editor__card) {
+    padding: 16px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 8px;
+  }
+  #root :is(.add-task-screen__card, .task-details-screen__card, .commitment-editor__card) > * {
+    position: static; width: 100%; min-width: 0; height: auto; grid-column: 1 / -1;
+  }
+  #root :is(.add-task-screen__type, .task-details-screen__type,
+    .add-task-screen__duration, .add-task-screen__deadline, .add-task-screen__start, .add-task-screen__end,
+    .task-details-screen__duration, .task-details-screen__deadline, .task-details-screen__start, .task-details-screen__fixed-duration,
+    .commitment-editor__field--start, .commitment-editor__field--end) { grid-column: auto; }
+  #root :is(.add-task-screen__type, .task-details-screen__type) { min-height: 44px; }
+  #root .importance-selector { width: 100%; }
+  #root .importance-selector__segment { width: auto; min-width: 0; flex: 1; font-size: 12px; }
+  #root :is(.quick-capture-screen__content, .add-task-screen__content,
+    .task-details-screen__content, .delete-task-screen__content, .commitment-editor__content) > button { min-height: 52px; }
+  #root .commitment-editor__header { width: 100%; }
+  #root .tasks-screen__scroll { padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+  #root .tasks-screen__scroll > * { position: static; width: 100%; height: auto; flex-shrink: 0; }
+  #root .tasks-screen__list .p4h-task-card { width: 100%; }
+  #root .tasks-screen__scroll > button { min-height: 52px; }
+  #root :is(.tasks-screen__snackbar, .active-plan-screen__snackbar, .plan-accepted-screen__snackbar,
+    .recovery-applied-screen__snackbar) { width: calc(100% - 32px); }
+  #root :is(.tasks-screen__snackbar, .active-plan-screen__snackbar, .plan-accepted-screen__snackbar) > button { left: auto; right: 8px; }
+  #root :is(.tasks-screen__snackbar > span, .active-plan-screen__snackbar > span:nth-child(2),
+    .plan-accepted-screen__snackbar > span:nth-child(2)) { width: calc(100% - 120px); top: 12px; height: auto; }
+
+  #root :is(.add-task-chooser, .plan-actions-overlay, .time-picker-overlay, .edit-block-selector-overlay) { max-width: calc(100% - 32px); }
+  #root :is(.add-task-chooser > h2, .add-task-chooser > p, .add-task-chooser__option,
+    .plan-actions-overlay__action, .time-picker-overlay__options, .edit-block-selector-overlay__options) { width: calc(100% - 32px); }
+  #root :is(.add-task-chooser__option strong, .add-task-chooser__option span,
+    .time-picker-overlay__option, .edit-block-selector-overlay__option) { width: 100%; }
+  #root :is(.plan-actions-overlay__close, .time-picker-overlay__close, .edit-block-selector-overlay__close,
+    .commitment-date-overlay__close) { left: auto; right: 4px; }
+  /* Seven 44px calendar targets still fit 320px; remove gaps, never shrink days. */
+  #root :is(.calendar-overlay, .commitment-date-overlay) { width: calc(100% - 4px); max-width: 358px; }
+  #root .calendar-overlay { padding-inline: 3px; }
+  #root :is(.calendar-overlay__weekdays, .calendar-overlay__days,
+    .commitment-date-overlay__weekdays, .commitment-date-overlay__days) {
+    width: 100%; grid-template-columns: repeat(7, minmax(44px, 1fr)); column-gap: 0;
+  }
+  #root :is(.commitment-date-overlay__weekdays, .commitment-date-overlay__days) { left: 3px; width: calc(100% - 6px); }
+}
+
+/* Short screens (including a software keyboard) keep primary navigation on
+   screen and give the content an independently scrollable, unobstructed area. */
+@media (max-height: 843px) {
+  #root main:has(> .p4h-app-header), #root .commitment-editor { height: 100dvh; }
+  #root main > :is([class$='__content'], [class$='__scroll'], .system-content,
+    .tasks-screen__scroll--empty) { height: calc(100% - 64px); overflow-y: auto; }
+  #root main > :is([class$='__content'], [class$='__scroll'], .system-content) > * { flex-shrink: 0; }
+  #root main:has(> .p4h-bottom-nav) > :is([class$='__content'], [class$='__scroll'], .system-content,
+    .tasks-screen__scroll--empty) { height: calc(100% - 208px); }
+  #root .p4h-bottom-nav { top: auto; bottom: 0; }
+  #root :is(.today-screen__fab, .tasks-screen__fab, .active-plan-screen__fab, .system-add-task) { top: auto; bottom: 96px; }
+  #root :is(.tasks-screen__snackbar, .active-plan-screen__snackbar, .plan-accepted-screen__snackbar,
+    .recovery-applied-screen__snackbar) { top: auto; bottom: 96px; }
+  #root :is(.privacy-screen, .cycle-mode-screen, .cycle-basics-screen, .no-exact-date-screen,
+    .starter-tasks-screen, .availability-screen, .fixed-commitments-screen) { overflow-y: auto; }
+  #root :is(.privacy-screen, .cycle-mode-screen, .cycle-basics-screen, .no-exact-date-screen,
+    .starter-tasks-screen, .availability-screen, .fixed-commitments-screen) > * { flex-shrink: 0; }
+}
+
+/* Keep a recovery preview mounted during a save error without adding a layout box. */
+.daily-preserved:not([hidden]), .screen-preserved:not([hidden]) { display: contents; }
+
+/* User-written cards need intrinsic rows. The fixed-size prototype fixtures
+   deliberately keep their original geometry; these modifiers are live-only. */
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) {
+  height: auto; min-height: 120px; flex-basis: auto; flex-shrink: 0;
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 2px 12px;
+  padding: 16px; overflow: visible;
+}
+#root .p4h-task-card--planning { min-height: 164px; }
+#root .p4h-task-card--planning.p4h-task-card--no-checkbox { grid-template-columns: minmax(0, 1fr); }
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) .p4h-task-card__check-touch {
+  position: static; grid-column: 1; grid-row: 1; align-self: start;
+}
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) .p4h-task-card__content {
+  position: static; width: 100%; min-width: 0; height: auto; min-height: 44px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 8px;
+}
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) .p4h-task-card__top {
+  position: static; width: 100%; height: auto; min-height: 26px;
+  display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px;
+}
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) .p4h-task-card__title {
+  position: static; width: auto; min-width: 0; height: auto; flex: 1 1 10ch;
+  white-space: normal; overflow: visible; overflow-wrap: anywhere;
+}
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) :is(.p4h-task-card__meta, .p4h-task-card__badge, .p4h-task-card__status) {
+  position: static; height: auto; width: auto; overflow-wrap: anywhere;
+}
+#root :is(.p4h-task-card--planning, .today-screen--live .p4h-task-card) .p4h-task-card__badge { align-self: flex-start; min-height: 28px; }
+#root .p4h-task-card--planning .p4h-task-card__done-action { position: static; grid-column: 2; justify-self: end; }
+#root .p4h-task-card--no-checkbox .p4h-task-card__done-action { grid-column: 1; }
+#root .tasks-screen__planning-error { overflow-wrap: anywhere; }
+#root .tasks-screen__selection-summary { flex-wrap: wrap; gap: 0 8px; }
+#root .tasks-screen--selection .tasks-screen__group { overflow-wrap: anywhere; }
+
+/* A growing title, navigation label or text-only zoom must not overlap the
+   content pane. Grid also reserves the real navigation height on short phones. */
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live,
+  .plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) {
+  display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live,
+  .plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) > .p4h-app-header {
+  position: relative; width: 100%; height: auto; min-height: 64px; padding: 19px 16px;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live,
+  .plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) .p4h-app-header__title {
+  position: static; width: 100%; height: auto; overflow-wrap: anywhere;
+}
+#root :is(.plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) .p4h-app-header__title--detail { margin-left: 52px; width: calc(100% - 52px); }
+#root :is(.plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) .p4h-app-header__back { top: 50%; transform: translateY(-50%); }
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live,
+  .plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) > :is([class$='__scroll'], [class$='__content'], .tasks-screen__scroll--selection, .tasks-screen__scroll--empty) {
+  position: relative; top: auto; left: auto; grid-row: 2; width: 100%; min-height: 0; height: auto !important; max-height: none !important;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) > :is(.tasks-screen__scroll, .today-screen__scroll, .active-plan-screen__scroll, .recovery-applied-screen__content) {
+  margin-bottom: 80px; padding-bottom: 28px; scroll-padding-block: 20px 28px;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) > .p4h-bottom-nav {
+  position: relative; grid-row: 3; top: auto; bottom: auto; width: 100%; height: auto; min-height: 80px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 7px 12px 8px;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) .p4h-bottom-nav__item {
+  position: static; width: 100%; min-width: 0; height: auto; min-height: 64px; padding: 6px 0;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) :is(.p4h-bottom-nav__indicator, .p4h-bottom-nav__label) { position: static; }
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) .p4h-bottom-nav__indicator { flex-shrink: 0; }
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) .p4h-bottom-nav__label { width: 100%; height: auto; overflow-wrap: anywhere; }
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .recovery-applied-screen--live) > :is(.tasks-screen__fab, .today-screen__fab, .active-plan-screen__fab, .tasks-screen__snackbar, .active-plan-screen__snackbar, .recovery-applied-screen__snackbar) {
+  grid-row: 2 / 3; grid-column: 1; top: auto; bottom: 16px;
+}
+#root .tasks-screen__selection-list { scroll-margin-top: 160px; }
+@media (max-height: 650px) {
+  /* A sticky summary can consume most of a short/keyboard-height viewport. */
+  #root .tasks-screen__selection-controls { position: static; }
+}
+
+#root .active-plan-screen--live .plan-block-card { height: auto; min-height: 146px; overflow: visible; }
+#root .active-plan-screen--live .plan-block-card__main {
+  position: static; height: auto; min-height: 144px; padding: 16px 16px 34px;
+  display: flex; flex-direction: column; align-items: stretch; gap: 12px;
+}
+#root .active-plan-screen--live .plan-block-card__top { position: static; width: 100%; height: auto; flex-wrap: wrap; align-items: flex-start; }
+#root .active-plan-screen--live .plan-block-card__top strong { flex: 1 1 10ch; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+#root .active-plan-screen--live .plan-block-card__top em { height: auto; }
+#root .active-plan-screen--live :is(.plan-block-card__time, .plan-block-card__badge) { position: static; height: auto; overflow-wrap: anywhere; }
+#root .active-plan-screen--live .plan-block-card__badge { align-self: flex-start; min-height: 28px; padding-block: 6px; max-width: calc(100% - 56px); }
+#root .active-plan-screen--live .plan-block-card__more { left: auto; right: 16px; top: auto; bottom: 26px; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block { height: auto; min-height: 146px; flex-basis: auto; display: flex; flex-direction: column; gap: 12px; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > :is(strong, span, p) { position: static; height: auto; width: 100%; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block__badge { align-self: flex-start; width: auto; max-width: calc(100% - 56px); min-height: 28px; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block__more { position: static; align-self: flex-end; margin-top: -48px; flex-shrink: 0; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block:has(> p) .today-plan-block__more { margin-top: 0; }
+#root :is(.today-screen--live, .active-plan-screen--live) :is(.today-screen__section-label, .today-screen__quick-rule, .today-screen__empty-title, .today-screen__empty-body, .active-plan-screen__scroll > h1, .active-plan-screen__intro, .active-plan-screen__hint, .active-plan-screen__section-label) { height: auto; }
+#root :is(.today-screen--live, .active-plan-screen--live) :is(.today-date-strip, .week-jump) { height: auto; min-height: 64px; flex-basis: auto; overflow-x: auto; gap: 6px; }
+#root :is(.today-screen--live, .active-plan-screen--live) :is(.today-date-chip, .week-jump button) { width: auto; min-width: 44px; height: auto; min-height: 64px; flex: 0 0 auto; padding: 8px 4px; }
+#root .active-plan-screen--live :is(.scheduled-load, .scheduled-load__head, .scheduled-load__foot, .plan-day-empty, .plan-day > header, .plan-day-empty > header) { height: auto; flex-basis: auto; }
+#root .active-plan-screen--live :is(.scheduled-load__head, .scheduled-load__foot, .plan-day > header, .plan-day-empty > header, .plan-day > header > div, .plan-day-empty > header > div) { flex-wrap: wrap; }
+#root .active-plan-screen--live .plan-day--current > header em { height: auto; }
+#root .today-screen--live .daily-phase-context { height: auto; min-height: 224px; flex-basis: auto; }
+#root .today-screen--live .daily-phase-context > * { width: 100%; overflow-wrap: anywhere; }
+#root .today-screen--live .daily-phase-context__header { height: auto; min-height: 50px; flex-wrap: wrap; overflow: visible; }
+#root .today-screen--live .daily-phase-context__title-group { flex-basis: 12ch; }
+#root .today-screen--live .daily-phase-context__title-group > strong { line-height: 1.5; }
+#root .today-screen--live .daily-phase-context__estimated { height: auto; }
+
+/* Preserve the normal text dimensions, but permit every change/restore row
+   and action to grow when text is enlarged independently of the viewport. */
+#root :is(.plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) :is(h1, .plan-diff-screen__intro, .recent-changes-screen__intro, .restore-preview-screen__intro, .restore-preview-screen__notice) { height: auto; }
+#root .plan-diff-screen--dynamic .plan-diff-screen__intro { min-height: 40px; }
+#root .recent-changes-screen__intro { min-height: 60px; }
+#root .restore-preview-screen__intro { min-height: 40px; }
+#root .restore-preview-screen__notice { min-height: 76px; }
+#root :is(.plan-diff-screen--dynamic .plan-diff-card__top, .recent-changes-screen--dynamic .recent-change-card header, .restore-preview-screen--dynamic .restore-preview-card header) { flex-wrap: wrap; }
+#root :is(.plan-diff-screen--dynamic .plan-diff-card__top, .recent-changes-screen--dynamic .recent-change-card header, .restore-preview-screen--dynamic .restore-preview-card header) strong { flex: 1 1 10ch; }
+#root :is(.plan-diff-screen--dynamic .plan-diff-card__badge, .recent-changes-screen--dynamic .recent-change-card__badge, .restore-preview-screen--dynamic .restore-preview-card__badge) { height: auto; min-height: 28px; padding-block: 6px; }
+#root :is(.tasks-screen--selection, .today-screen--live, .active-plan-screen--live, .plan-diff-screen--dynamic, .recent-changes-screen--dynamic, .restore-preview-screen--dynamic, .live-content-screen) .p4h-button { height: auto; min-height: 52px; flex-basis: auto; padding-block: 15px; }
+
+/* Validation adds real copy below fields; absolute prototype slots must give
+   it room before the next field and the save action. */
+#root .task-details-screen__content:has([aria-invalid='true']) {
+  padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
+}
+#root .task-details-screen__content:has([aria-invalid='true']) > * { position: static; width: 100%; height: auto; flex-shrink: 0; }
+#root .task-details-screen__card:has([aria-invalid='true']) { padding: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 8px; }
+#root .task-details-screen__card:has([aria-invalid='true']) > * { position: static; width: 100%; min-width: 0; height: auto; grid-column: 1 / -1; }
+#root .task-details-screen__card:has([aria-invalid='true']) > :is(.task-details-screen__type, .task-details-screen__duration, .task-details-screen__deadline, .task-details-screen__start, .task-details-screen__fixed-duration) { grid-column: auto; }
+#root .task-details-screen__card:has([aria-invalid='true']) .task-details-screen__type { min-height: 44px; }
+#root .task-details-screen__card:has([aria-invalid='true']) .importance-selector { width: 100%; }
+#root .task-details-screen__card:has([aria-invalid='true']) .importance-selector__segment { min-width: 0; width: auto; flex: 1; }
+#root .task-details-screen__content:has([aria-invalid='true']) > button { min-height: 52px; }
+#root .availability-screen:has([aria-invalid='true']) { overflow-y: auto; }
+#root .availability-screen:has([aria-invalid='true']) > * { flex-shrink: 0; }
+#root .cycle-context-summary { height: auto; min-height: 250px; }
+
+/* The exact-date form may gain a second error line in a six-week month. */
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) {
+  height: auto !important; max-height: calc(100% - 24px); overflow-y: auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) 88px 44px; gap: 8px 4px; padding: 8px 8px 16px;
+}
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) > h2 { position: static; align-self: center; overflow-wrap: anywhere; }
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) :is(.commitment-date-overlay__navigation, .commitment-date-overlay__close) { position: static; align-self: center; }
+#root .commitment-date-overlay__navigation button { min-height: 44px; height: auto; line-height: 1; }
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) > :is(.commitment-date-overlay__weekdays, .commitment-date-overlay__days) { position: static; grid-column: 1 / -1; width: 100%; }
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) .commitment-date-overlay__weekdays span { height: auto; min-height: 16px; }
+#root .commitment-date-overlay__entry { position: static; grid-column: 1 / -1; width: 100%; margin-top: 9px; }
+#root .commitment-date-overlay__clear {
+  position: static; grid-column: 1 / -1; width: 100%; min-height: 44px;
+  padding: 10px 12px; border: 0; border-radius: 12px; background: transparent;
+  color: var(--color-text-accent); font-size: 14px; font-weight: 500; cursor: pointer;
+}
+@media (max-width: 389px) {
+  #root .commitment-date-overlay:has(.commitment-date-overlay__entry) { padding-inline: 3px; }
+}
+
+/* Real recovery and rationale text can be much longer than the fixture copy. */
+#root .live-content-screen > [class$='__content'] { overflow-x: hidden; overflow-y: auto; }
+#root .live-content-screen > [class$='__content'] > :is(h1, h2, p) { height: auto; overflow-wrap: anywhere; }
+#root .live-content-screen :is(.recovery-diff, .recovery-applied-card, .plan-rationale-screen__explained) {
+  width: 100%; height: auto; min-height: 148px; display: flex; flex-direction: column; gap: 12px;
+}
+#root .live-content-screen :is(.recovery-diff__top, .recovery-diff__columns, .recovery-diff > p,
+  .recovery-applied-card__top, .recovery-applied-card > span, .recovery-applied-card > b,
+  .plan-rationale-screen__explained > strong, .plan-rationale-screen__explained > span,
+  .plan-rationale-screen__explained > em, .plan-rationale-screen__explained > p) {
+  position: static; width: 100%; height: auto; overflow: visible; white-space: normal; overflow-wrap: anywhere;
+}
+#root .live-content-screen :is(.recovery-diff__top, .recovery-applied-card__top, .missed-block-card__top) { flex-wrap: wrap; height: auto; }
+#root .live-content-screen :is(.recovery-diff__top strong, .recovery-applied-card__top strong, .missed-block-card__top strong) {
+  flex: 1 1 10ch; overflow: visible; white-space: normal; overflow-wrap: anywhere;
+}
+#root .live-content-screen :is(.recovery-diff__top > span, .recovery-applied-card__top em, .missed-block-card__top em) { height: auto; }
+#root .live-content-screen .recovery-diff__columns > div { overflow: visible; overflow-wrap: anywhere; }
+#root .live-content-screen :is(.recovery-applied-card > b, .plan-rationale-screen__explained > em) { width: max-content; max-width: 100%; min-height: 28px; padding-block: 6px; }
+#root .live-content-screen :is(.recovery-applied-card > button, .plan-rationale-screen__explained > button) { position: static; align-self: flex-end; flex-shrink: 0; }
+#root .live-content-screen .plan-rationale-screen__signal { height: auto; min-height: 76px; overflow-wrap: anywhere; }
+#root .live-content-screen .plan-rationale-screen__signal--cycle { min-height: 92px; }
+#root .live-content-screen .missed-block-card { width: 100%; height: auto; min-height: 120px; }
+#root .live-content-screen .missed-block-card > div { width: auto; min-width: 0; flex: 1; overflow: visible; }
+#root .live-content-screen :is(.missed-block-card__meta, .missed-block-card__badge) { height: auto; overflow-wrap: anywhere; }
+#root .complete-block-screen--live .p4h-choice-card { height: auto; min-height: 88px; }
+#root .complete-block-screen--live .p4h-choice-card__content { overflow: visible; overflow-wrap: anywhere; }
+#root .plan-actions-overlay--live {
+  height: auto; max-height: calc(100% - 32px); padding: 16px; overflow-y: auto;
+  display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 12px 8px;
+}
+#root .plan-actions-overlay--live h2 { position: static; width: 100%; height: auto; overflow-wrap: anywhere; }
+#root .plan-actions-overlay--live .plan-actions-overlay__close { position: static; }
+#root .plan-actions-overlay--live .plan-actions-overlay__action { position: static; grid-column: 1 / -1; width: 100%; height: auto; min-height: 54px; overflow-wrap: anywhere; }
+
+/* Exact-date entry remains a full row when text is enlarged. */
+#root .commitment-date-overlay__entry label { flex: 1 1 100%; overflow-wrap: anywhere; }
+#root .commitment-date-overlay:has(.commitment-date-overlay__entry) > h2 { line-height: 1.5; }

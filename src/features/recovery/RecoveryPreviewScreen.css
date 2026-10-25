@@ -1,0 +1,4 @@
+.recovery-preview-screen{width:390px;height:844px;position:relative;overflow:hidden;background:var(--color-bg-canvas);color:var(--color-text-primary)}
+.recovery-preview-screen__content{position:absolute;left:0;top:64px;width:390px;height:780px;padding:20px 16px 24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;background:var(--color-bg-canvas)}.recovery-preview-screen__content>*{flex-shrink:0}
+.recovery-preview-screen h1,.recovery-preview-screen__intro,.recovery-preview-screen__note{width:358px;margin:0}.recovery-preview-screen h1{height:32px;font-size:24px;line-height:32px;font-weight:700}.recovery-preview-screen__intro,.recovery-preview-screen__note{height:60px;color:var(--color-text-secondary);font-size:14px;line-height:20px}.recovery-preview-screen__keep,.recovery-preview-screen__apply{width:358px;flex:0 0 52px}
+@media(max-width:389px){.recovery-preview-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}

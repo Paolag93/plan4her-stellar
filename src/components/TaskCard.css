@@ -1,0 +1,26 @@
+.p4h-task-card{width:358px;height:120px;position:relative;border:1px solid var(--color-border-default);border-radius:16px;background:#fff;overflow:hidden}
+.p4h-task-card__check-touch{position:absolute;left:16px;top:16px;width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;background:transparent;cursor:pointer}
+.p4h-task-card__checkbox{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border:1px solid var(--color-border-default);border-radius:8px;background:#fff}
+.p4h-task-card__checkbox--done{border-color:#82c0cc;background:#82c0cc}
+.p4h-task-card__checkbox svg{width:16px;height:16px;fill:none;stroke:#171717;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.p4h-task-card__content{position:absolute;left:72px;top:16px;width:270px;height:86px;padding:0;border:0;background:transparent;text-align:left;cursor:pointer;color:var(--color-text-primary)}
+.p4h-task-card--done .p4h-task-card__content{height:88px}
+.p4h-task-card__top{position:absolute;left:0;top:0;width:270px;height:26px;display:block}
+.p4h-task-card--done .p4h-task-card__top{height:28px}
+.p4h-task-card__title{position:absolute;left:0;top:0;width:270px;height:26px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:18px;line-height:26px;font-weight:600}
+.p4h-task-card--done .p4h-task-card__title{top:1px;width:214px}
+.p4h-task-card__status{position:absolute;left:222px;top:0;width:48px;height:28px;padding:6px 8px;border-radius:999px;background:#e6f7ef;color:#0b6b3a;font-size:12px;line-height:16px;font-weight:500}
+.p4h-task-card__meta{position:absolute;left:0;top:34px;width:270px;height:16px;color:var(--color-text-secondary);font-size:12px;line-height:16px;font-weight:400}
+.p4h-task-card--done .p4h-task-card__meta{top:36px}
+.p4h-task-card__badge{position:absolute;left:0;top:58px;height:28px;padding:6px 8px;border-radius:999px;color:var(--color-text-primary);font-size:12px;line-height:16px;font-weight:500}
+.p4h-task-card--done .p4h-task-card__badge{top:60px}
+.p4h-task-card__badge--flexible{background:var(--p4h-brand-blue-300)}
+.p4h-task-card__badge--fixed{background:var(--p4h-neutral-100)}
+.p4h-task-card--selected{border-color:var(--color-text-accent);box-shadow:inset 0 0 0 1px var(--color-text-accent)}
+.p4h-task-card--planning{height:164px;flex-shrink:0}
+.p4h-task-card__check-touch:disabled{cursor:default;opacity:.45}
+.p4h-task-card__done-action{position:absolute;right:12px;bottom:6px;min-width:96px;min-height:44px;padding:8px;border:0;border-radius:8px;background:transparent;color:var(--color-text-accent);font-size:12px;font-weight:500;text-decoration:underline;cursor:pointer}
+.p4h-task-card--no-checkbox .p4h-task-card__content{left:16px;width:calc(100% - 32px)}
+.p4h-task-card--no-checkbox :is(.p4h-task-card__top,.p4h-task-card__title,.p4h-task-card__meta){width:100%}
+.p4h-task-card--no-checkbox.p4h-task-card--done .p4h-task-card__title{width:calc(100% - 56px)}
+.p4h-task-card--no-checkbox .p4h-task-card__status{left:auto;right:0}

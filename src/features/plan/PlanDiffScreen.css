@@ -1,0 +1,42 @@
+.plan-diff-screen{width:min(390px,100%);height:min(844px,100dvh);position:relative;overflow:hidden;background:var(--color-bg-canvas);color:var(--color-text-primary)}
+.plan-diff-screen__content{position:absolute;left:0;top:64px;width:100%;height:calc(100% - 64px);padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;background:var(--color-bg-canvas);overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;scroll-padding-block:20px 24px}
+.plan-diff-screen__content>*{flex-shrink:0}
+.plan-diff-screen__content>h1,.plan-diff-screen__intro{width:358px;margin:0}
+.plan-diff-screen__content>h1{height:32px;font-size:24px;line-height:32px;font-weight:700}
+.plan-diff-screen__intro{height:40px;font-size:14px;line-height:20px;color:var(--color-text-secondary)}
+.plan-diff-screen__protected{width:358px;height:76px;padding:12px 14px;border-radius:16px;background:#edefe3;display:flex;flex-direction:column;gap:4px}
+.plan-diff-screen__protected strong{font-size:12px;line-height:16px;font-weight:500}
+.plan-diff-screen__protected span{font-size:12px;line-height:16px;color:var(--color-text-secondary)}
+.plan-diff-card{width:358px;height:160px;padding:16px;border:1px solid #d1d1d6;border-radius:16px;background:#fff;display:flex;flex:0 0 160px;flex-direction:column;gap:12px}
+.plan-diff-card--split{height:192px;flex-basis:192px}
+.plan-diff-card__top{width:326px;height:28px;display:flex;align-items:center;gap:8px}
+.plan-diff-card__top strong{min-width:0;flex:1;font-size:18px;line-height:26px;font-weight:600}
+.plan-diff-card__badge{height:28px;padding:6px 8px;border-radius:999px;font-size:12px;line-height:16px;font-weight:500;font-style:normal;white-space:nowrap}
+.plan-diff-card__badge--moved{background:#e8f4f7;color:#16697a}
+.plan-diff-card__badge--split{background:#82c0cc;color:#171717}
+.plan-diff-card__columns{width:326px;display:flex;gap:12px;align-items:flex-start}
+.plan-diff-card__before,.plan-diff-card__after{width:157px;padding:12px;border-radius:12px;display:flex;flex:0 0 157px;flex-direction:column;gap:4px}
+.plan-diff-card__before{height:60px;background:#edefe3}
+.plan-diff-card__after{height:60px;background:#e8f4f7}
+.plan-diff-card--split .plan-diff-card__after{height:76px}
+.plan-diff-card__before span,.plan-diff-card__after span{font-size:12px;line-height:16px;font-weight:500}
+.plan-diff-card__before span{color:#666}
+.plan-diff-card__after span{color:#16697a}
+.plan-diff-card__before p,.plan-diff-card__after p{width:133px;margin:0;color:#171717;font-size:12px;line-height:16px;font-weight:400}
+.plan-diff-card>small{width:326px;color:#666;font-size:12px;line-height:16px;font-weight:400}
+.plan-diff-screen__spacer{width:1px;height:34px;flex:0 0 34px}
+.plan-diff-screen__spacer--today{height:240px;flex-basis:240px}
+.plan-diff-screen__keep,.plan-diff-screen__apply{width:358px;flex:0 0 52px}
+/* Live previews can contain any number of changes or longer user-written text.
+   Let those rows grow while retaining the canonical fixture dimensions. */
+.plan-diff-screen--dynamic .plan-diff-screen__content>h1{height:auto;min-height:32px}
+.plan-diff-screen--dynamic .plan-diff-screen__content>:not(.plan-diff-screen__spacer){width:100%}
+.plan-diff-screen--dynamic .plan-diff-card{height:auto;min-height:160px;flex-basis:auto}
+.plan-diff-screen--dynamic .plan-diff-card--split{min-height:192px}
+.plan-diff-screen--dynamic .plan-diff-card__top{width:100%;height:auto;min-height:28px}
+.plan-diff-screen--dynamic .plan-diff-card__top strong{overflow-wrap:anywhere}
+.plan-diff-screen--dynamic .plan-diff-card__columns,.plan-diff-screen--dynamic .plan-diff-card>small{width:100%}
+.plan-diff-screen--dynamic .plan-diff-card__before,.plan-diff-screen--dynamic .plan-diff-card__after{width:auto;min-width:0;height:auto;min-height:60px;flex:1}
+.plan-diff-screen--dynamic .plan-diff-card__before p,.plan-diff-screen--dynamic .plan-diff-card__after p{width:100%;overflow-wrap:anywhere}
+.plan-diff-screen--dynamic .plan-diff-screen__protected{height:auto;min-height:76px}
+.plan-diff-screen--dynamic .plan-diff-screen__spacer{height:0;flex:1 0 0}
