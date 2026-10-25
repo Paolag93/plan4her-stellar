@@ -22,7 +22,7 @@ The copied original is a React 19 + TypeScript + Vite 6 local-first PWA with a m
 - Existing backup/export files can contain plaintext sensitive information. Handle opt-in migration/exports thoughtfully.
 - Original product's `CONTINUATION.md` documents biological limitations and emphasizes test coverage and source integrity.
 
-Read `package.json`, `README.md`, `CONTINUATION.md`, the existing app router/state architecture, domain tests and Playwright suites before changing code. Preserve working original features, accessibility, responsive UI, original design language and user data migration compatibility.
+Read `package.json`, `README.md`, `CONTINUATION.md`, `docs/UX_UI_CONTINUITY.md`, `docs/TECHNICAL_VERIFICATION.md`, the existing app router/state architecture, domain tests and Playwright suites before changing code. EXTEND existing Figma-approved UX/UI, tokens, components and screenshots; do not replace screens, branding or navigation. Preserve working original features, accessibility, responsive UI, original design language and user data migration compatibility.
 
 Source provenance in `docs/HACKMERIDIAN_PROVENANCE.md`.
 
@@ -85,7 +85,7 @@ Recommended:
 Pinata/IPFS is a decentralized content-addressed storage layer, NOT automatic confidentiality and NOT guaranteed deletion. Do not make unsupported “complete ownership / erasure” claims.
 
 ## 6. Confidential finance — OPTIONAL, independent workstream
-The workshop from HackMeridian (*Stellar Confidential Tokens*, Boyan Barakov, Oct 25 2026) distinguishes confidential amounts/balances from anonymity and from encryption of personal data. The OpenZeppelin implementation is a separate token suite with special contracts, proof verification and an evolving SDK. It can conceal transfer amounts/balances while addresses remain public. Deposits into or withdrawals from public underlying tokens can reveal amounts; DeFindex vault interaction is not confidential by default.
+The workshop from HackMeridian (*Stellar Confidential Tokens*, Boyan Barakov, Oct 25 2026) distinguishes confidential amounts/balances from anonymity and from encryption of personal data. The OpenZeppelin implementation is a separate token suite with special contracts and proof verification; its own official Wallet Integration guide explicitly says the library **does not ship a client SDK** (it defines SDK responsibilities as a specification). It can conceal transfer amounts/balances while addresses remain public. Deposits into or withdrawals from public underlying tokens can reveal amounts; DeFindex vault interaction is not confidential by default.
 
 Do NOT make Confidential Tokens a prerequisite for shipping the community vault flow. If feasible after financial and privacy baselines:
 - deploy/use only genuine compatible Testnet contracts and verify a confidential transfer;
@@ -93,7 +93,7 @@ Do NOT make Confidential Tokens a prerequisite for shipping the community vault 
 - never claim direct confidential DeFindex vault support without demonstrated integration.
 
 OpenZeppelin code (verified `main` branch): https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/confidential
-Docs: https://docs.openzeppelin.com/stellar-contracts/tokens/confidential/build-with-the-sdk
+Official client requirements: https://docs.openzeppelin.com/stellar-contracts/tokens/confidential/wallet-integration (official library ships onchain contracts/circuits, **not** a complete client SDK; older 'Build with SDK' deep-link was not independently accessible; verify any separate client implementation before planning it)
 Workshop slides must be supplied to Claude separately if not present in this repo.
 
 ## 7. Official tools/resources
@@ -138,3 +138,6 @@ Create `docs/HACKMERIDIAN_EVIDENCE.md` with:
 
 ## Link quality gate
 Read `docs/RESOURCE_LINK_AUDIT.md`. Links labeled interactive/auth-dependent or not publicly verified are NOT proven reachable by an automated browser. Use primary verified docs and test all user-facing demo links in an unauthenticated browser before submission.
+
+## Mandatory UI/UX implementation handoff
+Read `docs/UX_UI_CONTINUITY.md`. Preserve existing approved Figma reference and working screen code. Figma design master: https://www.figma.com/design/zctnzXqin1jZJLvxBlVxZz/Plan4Her and journey blueprint: https://www.figma.com/board/PywhrB51wdojiYi4JfvhRK/Plan4Her-journey-blueprint . Do not edit either Figma master or the original GitHub repo. New React screens for community, 30/90-day goals, partners, opt-in wallet/vault flow and Privacy Center must use current tokens/components, mobile-first geometry, plain-language states and existing Today/Plan/Tasks/More navigation. Compare screenshots; preserve baseline E2E. Prioritize working user flows over a cosmetic DeFi/dashboard redesign.
