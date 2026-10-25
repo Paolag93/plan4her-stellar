@@ -21,7 +21,7 @@ Deliver an integrated **Plan4Her** HackMeridian 2026 Scale prototype, not a new 
 - Legacy reference repo (READ ONLY): https://github.com/OlaOlaPaola/Cyra
 - Prior demo (visual reference ONLY, don't overwrite): https://plan4her-private-preview.sacred-cow-7485.chatgpt.site/#add-task
 
-The current app uses React 19, TypeScript, Vite 6, localStorage, task/plan flows, optional cycle preferences, local JSON backup and CSV export; NO production wallet/DeFi, encrypted storage, multi-user auth, cloud sync or AI provider. Read `README.md`, `CONTINUATION.md`, `package.json`, existing tests, `docs/HACKMERIDIAN_MASTER_BRIEF.md`, `docs/UX_UI_CONTINUITY.md`, and `docs/TECHNICAL_VERIFICATION.md` before coding. Existing features must not be misrepresented as new HackMeridian work.
+The current app uses React 19, TypeScript, Vite 6, localStorage, task/plan flows, optional cycle preferences, local JSON backup and CSV export; NO production wallet/DeFi, encrypted storage, multi-user auth, cloud sync or AI provider. Read `README.md`, `CONTINUATION.md`, `package.json`, existing tests, `docs/HACKMERIDIAN_MASTER_BRIEF.md`, `docs/UX_UI_CONTINUITY.md`, `docs/NEW_FEATURE_UX_MAP.md`, and `docs/TECHNICAL_VERIFICATION.md` before coding. Existing features must not be misrepresented as new HackMeridian work.
 
 ## Technical documentation and Raven
 - Stellar Raven MCP endpoint: https://raven.stellar.org/mcp (streamable-HTTP/OAuth; this is an MCP endpoint, not a normal public webpage). Setup and usage docs: https://raven.stellar.org/docs . Verify enabled and authorized inside the actual Claude Code session; use official Stellar documentation if MCP tools are unavailable.
