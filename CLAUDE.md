@@ -21,15 +21,15 @@ Deliver an integrated **Plan4Her** HackMeridian 2026 Scale prototype, not a new 
 The current app uses React 19, TypeScript, Vite 6, localStorage, task/plan flows, optional cycle preferences, local JSON backup and CSV export; NO production wallet/DeFi, encrypted storage, multi-user auth, cloud sync or AI provider. Read `README.md`, `CONTINUATION.md`, `package.json`, existing tests and `docs/HACKMERIDIAN_MASTER_BRIEF.md` before coding. Existing features must not be misrepresented as new HackMeridian work.
 
 ## Technical documentation and Raven
-- Stellar Raven MCP: https://raven.stellar.org/mcp (verify enabled and authorized in the Claude Code session; use official documentation directly if not).
-- DeFindex console: https://console.defindex.io/register
+- Stellar Raven MCP endpoint: https://raven.stellar.org/mcp (streamable-HTTP/OAuth; this is an MCP endpoint, not a normal public webpage). Setup and usage docs: https://raven.stellar.org/docs . Verify enabled and authorized inside the actual Claude Code session; use official Stellar documentation if MCP tools are unavailable.
+- DeFindex signup console (may require interactive browser authentication; URL cannot be independently verified as a public page): https://console.defindex.io/register ; fallback official portal: https://www.defindex.io/
 - DeFindex TypeScript SDK: https://github.com/defindex-io/defindex-sdk
-- DeFindex developer docs: https://docs.defindex.io/
+- DeFindex developer docs: https://docs.defindex.io/ ; exact searchable docs index: https://docs.defindex.io/llms.txt
 - Pinata: https://docs.pinata.cloud/
 - Stellar: https://developers.stellar.org/
-- OpenZeppelin Confidential Tokens: https://github.com/OpenZeppelin/stellar-contracts/tree/master/packages/confidential
+- OpenZeppelin Confidential Tokens: https://github.com/OpenZeppelin/stellar-contracts/tree/main/packages/confidential
 - Workshop: `Confidential Token Workshop, Meridian 2026, Lisbon.pptx` (founder may need to attach it to Claude).
-- Event rules: https://www.hackmeridian.com/terms.html#submissions
+- Event build/submission, deadlines, Scale and judging (primary): https://www.hackmeridian.com/build ; legal submission/IP terms only: https://www.hackmeridian.com/terms.html#submissions
 
 Do NOT assume a DeFindex vault is private just because Confidential Tokens exist. The workshop explicitly differentiates **confidentiality of amounts/balances** from **anonymity of participants** and from **encryption of menstrual data**. Treat Confidential Tokens as a separate verified Testnet experiment until actual compatibility with vault flows is proven.
 
@@ -56,3 +56,6 @@ Do NOT assume a DeFindex vault is private just because Confidential Tokens exist
 8. Publish a **separate** HTTPS demo only with founder approval. Prepare README, `docs/HACKMERIDIAN_EVIDENCE.md`, screenshots, short video script, and clear Scale before/after changes.
 
 **Submission cutoff:** Monday Oct 26 2026 12:00 Lisbon local time (verify official portal). Reserve submission time; do not over-engineer before a verified, accessible demo is ready. Continue coding, testing and reporting instead of stopping after an abstract plan.
+
+## Link audit
+Review `docs/RESOURCE_LINK_AUDIT.md` for verified links, interactive/auth-dependent pages and precise primary sources. The DeFindex console signup and the existing private-preview site may not be testable from automated public checks; verify manually rather than treating those URLs as guaranteed working.
