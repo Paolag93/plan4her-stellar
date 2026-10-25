@@ -22,7 +22,7 @@ The current app uses React 19, TypeScript, Vite 6, localStorage, task/plan flows
 
 ## Technical documentation and Raven
 - Stellar Raven MCP endpoint: https://raven.stellar.org/mcp (streamable-HTTP/OAuth; this is an MCP endpoint, not a normal public webpage). Setup and usage docs: https://raven.stellar.org/docs . Verify enabled and authorized inside the actual Claude Code session; use official Stellar documentation if MCP tools are unavailable.
-- DeFindex signup console (may require interactive browser authentication; URL cannot be independently verified as a public page): https://console.defindex.io/register ; fallback official portal: https://www.defindex.io/
+- DeFindex signup console (exact link published by DeFindex; interactive login page not independently readable by public scraper): https://console.defindex.io/register ; fallback official portal: https://www.defindex.io/
 - DeFindex TypeScript SDK: https://github.com/defindex-io/defindex-sdk
 - DeFindex developer docs: https://docs.defindex.io/ ; exact searchable docs index: https://docs.defindex.io/llms.txt
 - Pinata: https://docs.pinata.cloud/
