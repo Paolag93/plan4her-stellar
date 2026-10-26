@@ -1,4 +1,4 @@
-> Historical implementation checkpoint. Current setup and remaining product work are in the root README.md and CONTINUATION.md; GitHub checks on the released commit establish current validation.
+> Historical implementation checkpoint. Current setup and release limitations are documented in the root README.md; GitHub checks on the released commit establish current validation.
 
 # Local-first implementation checkpoint — 2026-10-08
 

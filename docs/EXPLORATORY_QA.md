@@ -26,4 +26,4 @@ Concrete corrections:
   newer screen. Adjustment ranges use the shared radio keyboard behavior.
 
 Tests use synthetic inputs only. User-provided screenshots were not uploaded.
-A subsequent owner-authorized block adds editable cycle-work preferences and local backups. Its separate domain and browser regressions cover actual ranking, neutral fallbacks, duration conservation, import validation and stale-tab protection. See CONTINUATION.md for the implemented behavior and remaining product scope.
+A subsequent owner-authorized block adds editable cycle-work preferences and local backups. Its separate domain and browser regressions cover actual ranking, neutral fallbacks, duration conservation, import validation and stale-tab protection. See the root README and current architecture/evidence documents for the implemented behavior and release scope.
