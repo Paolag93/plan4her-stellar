@@ -245,14 +245,17 @@ test('long task errors wrap, leave selection reachable, and pass the live access
 })
 
 for (const width of [320, 390]) {
-  test(`${width}px: invalid task-date explanations do not overlap the following fields or save action`, async ({ page }) => {
+  test(`${width}px: task-date fields, their calendar errors and the save action do not overlap`, async ({ page }) => {
     await page.setViewportSize({ width, height: 568 })
     await seed(page)
     await navigate(page, 'Tasks')
     await page.locator('.p4h-task-card__content').first().click()
     await page.getByRole('button', { name: 'Fixed', exact: true }).click()
-    await page.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true }).fill('2026-02-31')
-    await expect(page.getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true })).toHaveAttribute('aria-invalid', 'true')
+    await page.getByRole('button', { name: 'Date', exact: true }).click()
+    const exact = page.getByRole('dialog').getByRole('textbox', { name: 'Date (YYYY-MM-DD)', exact: true })
+    await exact.fill('2026-02-31')
+    await expect(exact).toHaveAttribute('aria-invalid', 'true')
+    await page.keyboard.press('Escape')
     const card = page.locator('.task-details-screen__card')
     await containedCopy(card, '.p4h-text-field__label, .p4h-text-field__supporting')
     await noOverlap(card, ['.task-details-screen__date', '.task-details-screen__start', '.task-details-screen__fixed-duration', '.task-details-screen__importance'])

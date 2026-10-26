@@ -26,7 +26,7 @@ test('Rhythm Pool: review terms, set 3–5 weekly commitments, track truthfully,
   await nav(page, 'More')
   await page.getByRole('button', { name: 'Rhythm Pool', exact: true }).click()
   await expect(page.getByTestId('rhythm-home')).toContainText('You can start on your own')
-  await page.getByRole('button', { name: 'Review terms', exact: true }).click()
+  await page.getByRole('button', { name: 'Join Rhythm Pool', exact: true }).click()
   await expect(page.getByTestId('rhythm-terms')).toContainText('28 days, four complete weeks')
   const join = page.getByRole('button', { name: 'Join the Rhythm Pool', exact: true })
   await expect(join).toBeDisabled()

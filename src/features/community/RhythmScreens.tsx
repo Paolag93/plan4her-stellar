@@ -24,8 +24,9 @@ export function RhythmHomeScreen({ community, today, onBack, onNavigate, onTerms
       <h2>One community. Four weeks at your rhythm.</h2>
       <p>Each week, choose 3–5 commitments from your own plan and mark them done. Everything else stays flexible. Join any day: your four weeks start on Monday.</p>
     </section>
+    {!p ? <Button type="button" onClick={onTerms}>Join Rhythm Pool</Button> : null}
     {p && progress ? <button type="button" className="community-card community-card--accent" onClick={onProgress}>
-      <span className="community-card__top"><strong>My rhythm</strong><span className="community-badge community-badge--brand">{progress.ended ? 'Four weeks complete' : progress.started ? `Week ${progress.week} of ${POOL_WEEKS}` : `Starts ${day(p.startDate)}`}</span></span>
+      <span className="community-card__top"><strong>My progress</strong><span className="community-badge community-badge--brand">{progress.ended ? 'Four weeks complete' : progress.started ? `Week ${progress.week} of ${POOL_WEEKS}` : `Starts ${day(p.startDate)}`}</span></span>
       <p>{progress.denominator ? `${progress.done} of ${progress.denominator} commitments completed · ${percent(progress.ratio)}` : 'Choose your first week\'s commitments.'}</p>
       <ProgressBar value={progress.ratio} label="Four-week consistency" />
     </button> : null}
@@ -36,7 +37,6 @@ export function RhythmHomeScreen({ community, today, onBack, onNavigate, onTerms
       <li><strong>Save, if you want to.</strong> Deposit Testnet XLM into a vault position you control.</li>
       <li><strong>Track your consistency.</strong> Complete {percent(ELIGIBILITY_THRESHOLD)} of your commitments over four weeks to qualify for rewards, when rewards are available.</li>
     </ol>
-    {!p ? <Button type="button" onClick={onTerms}>Review terms</Button> : null}
     <p className="community-label">Community · sample data</p>
     <div className="community-stats">
       <Stat label="Sample members" value={aggregate.sampleMembers} />
@@ -124,7 +124,7 @@ export function RhythmProgressScreen({ participation, today, onBack, onNavigate,
   const progress = poolProgress(participation, today)
   const editable = editableWeek(participation, today)
   const current = participation.weeks.find(w => w.week === Math.max(1, progress.week))
-  return <CommunityScreen title="My rhythm" onBack={onBack} onNavigate={onNavigate} testId="rhythm-progress">
+  return <CommunityScreen title="My progress" onBack={onBack} onNavigate={onNavigate} testId="rhythm-progress">
     <section className="community-intro">
       <span>RHYTHM POOL · {day(participation.startDate).toUpperCase()} – {day(poolEndDate(participation)).toUpperCase()}</span>
       <h2>{progress.ended ? 'Your four-week result' : progress.started ? `Week ${progress.week} of ${POOL_WEEKS}` : `Starts in ${progress.daysUntilStart} day${progress.daysUntilStart === 1 ? '' : 's'}`}</h2>
@@ -155,7 +155,7 @@ export function RhythmProgressScreen({ participation, today, onBack, onNavigate,
     <p className="community-label">Weeks</p>
     <div className="community-rows">{progress.weeks.map(w => <Row key={w.week} label={`Week ${w.week} · ${day(w.weekStart)}`} value={w.confirmed ? `${w.done}/${w.denominator} done` : w.elapsed ? `Not set · 0/${w.denominator}` : 'Not set yet'} note={w.missed ? `${w.missed} missed` : undefined} />)}</div>
     <p className="community-label">Savings &amp; rewards</p>
-    <Button hierarchy="secondary" type="button" onClick={onSavings}>Connect wallet &amp; deposit · Testnet</Button>
+    <Button hierarchy="secondary" type="button" onClick={onSavings}>Connect wallet · optional · Testnet</Button>
     <Button hierarchy="secondary" type="button" onClick={onRewards}>How rewards work <SimulationBadge>Simulation</SimulationBadge></Button>
     {progress.ended ? <Button type="button" onClick={onRestart}>Start another four weeks</Button> : <Button hierarchy="tertiary" type="button" onClick={onLeave}>Leave Rhythm Pool</Button>}
   </CommunityScreen>

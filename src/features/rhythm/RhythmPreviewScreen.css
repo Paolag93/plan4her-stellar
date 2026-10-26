@@ -75,3 +75,8 @@
 .rhythm-entry strong { font-size: var(--font-size-md); line-height: var(--line-height-md); font-weight: 600; }
 .rhythm-entry small { font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
 .rhythm-entry svg { width: 20px; height: 20px; flex: 0 0 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Summary of proposed moves: what moved and where to. */
+.rhythm-moves { margin: 0; padding: var(--space-3) var(--space-4); list-style: none; border-radius: var(--radius-lg); background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); display: flex; flex-direction: column; gap: var(--space-2); }
+.rhythm-moves li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); font-size: var(--font-size-sm); line-height: var(--line-height-sm); }
+.rhythm-moves li span { min-width: 0; overflow-wrap: anywhere; }
+.rhythm-moves li small { flex: 0 0 auto; color: var(--color-text-secondary); font-size: var(--font-size-xs); font-weight: 500; white-space: nowrap; }

@@ -13,8 +13,11 @@ test('exploring a cycle day never saves; only Apply commits cycle + plan, and Un
   await click('Continue'); await click('Continue'); await click('Skip for now')
   await expect(page.locator('.review-plan-screen')).toBeVisible({ timeout: 20000 })
   await click('Accept week')
+  await nav(page, 'Today')
+  await expect(page.getByRole('button', { name: /Rhythm Pool/ })).toBeVisible() // quiet entry for someone not in a pool
   await nav(page, 'Tasks')
-  await expect(page.getByText('45 min · Energizing movement')).toBeVisible()
+  await expect(page.locator('.p4h-task-card__title', { hasText: 'Strength training session' })).toBeVisible()
+  await expect(page.getByText('Energizing movement')).toHaveCount(0) // types are inferred silently, not shown on task cards
   await nav(page, 'Plan')
   const original = await saved(page)
   const originalState = JSON.parse(original!)
@@ -30,6 +33,7 @@ test('exploring a cycle day never saves; only Apply commits cycle + plan, and Un
   for (const text of ['Best for', 'fits ', 'Watch your week', 'better-suited']) await expect(preview).not.toContainText(text)
   await expect(preview.locator('.rhythm-dial')).toContainText('Follicular')
   await expect(page.locator('.rhythm-moved')).toContainText(/\d+ tasks? moved/)
+  await expect(page.getByRole('list', { name: 'Moved tasks' })).toContainText(/Present project update to client\s*Mon 12 → Wed 14/)
   const wednesday = preview.locator('.rhythm-day').nth(2)
   await expect(wednesday).toContainText('Day 14 · Ovulatory')
   await expect(wednesday).toContainText('Present project update to client')

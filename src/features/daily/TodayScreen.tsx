@@ -21,6 +21,8 @@ export interface TodayGoal{title:string;challengeTitle:string;summary:string;che
 export interface TodayScreenProps{
  goal?:TodayGoal
  onRhythm?:()=>void
+ /** Opens Rhythm Pool; shown as a quiet entry only while she is not in a pool. */
+ onCommunity?:()=>void
  blocks?:PlanBlockData[]
  tasks?:DailyTaskData[]
  weekDays?:ReadonlyArray<{short:string;number:string;label?:string;date?:string;dateISO?:string}>
@@ -40,7 +42,7 @@ export interface TodayScreenProps{
  onEditBlock:(block:PlanBlockData)=>void
 }
 
-export function TodayScreen({goal,onRhythm,blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
+export function TodayScreen({goal,onRhythm,onCommunity,blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
  const[day,setDay]=useState<DailyDayKey>(initialDay)
  const[meetingDone,setMeetingDone]=useState(Boolean(initialDone.meeting))
  const[groceriesDone,setGroceriesDone]=useState(Boolean(initialDone.groceries))
@@ -71,6 +73,7 @@ export function TodayScreen({goal,onRhythm,blocks,tasks,weekDays,cycle,onToggleT
    <p className="today-screen__section-label">CYCLE CONTEXT</p>
    <PhaseContextCard phase={cycleContext?(cycleContext.phase??'Cycle context'):undefined} tone={cycleContext?(cycleContext.phase??'neutral'):undefined} estimated={cycleContext?cycleStatus==='estimated':undefined} day={cycleContext?cycleDayLabel:data.phase.day} pattern={cycleContext?(cycleStatus==='estimated'?'Planned with your rhythm':'Your preferences'):data.phase.pattern} planNote={cycleContext?cycleNote:data.phase.note} footnote={cycleContext&&cycleStatus!=='estimated'?'You can update your cycle preferences anytime.':undefined} onOpen={onPhase}/>
    {controlled&&onRhythm?<RhythmEntry onOpen={onRhythm} />:null}
+   {controlled&&onCommunity&&!goal?<RhythmEntry onOpen={onCommunity} title="Rhythm Pool" subtitle="Optional four-week challenge with your own weekly goals." />:null}
    <p className="today-screen__quick-rule">Quick capture saves new tasks as Unscheduled.</p>
   </div>
   <BottomNav active="today" onNavigate={onNavigate}/>

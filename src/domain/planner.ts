@@ -1,5 +1,6 @@
 import { DAYS, type PlannerInput, type WeeklyPlan, type PlanBlockData, type PlanWeekDay, type TaskItem } from './types'
-import { createDefaultCyclePreferences, planningCycleContext, WORK_TYPES, WORK_TYPE_LABELS } from './cyclePreferences'
+import { createDefaultCyclePreferences, planningCycleContext, WORK_TYPE_LABELS } from './cyclePreferences'
+import { effectiveWorkType } from './activityClassifier'
 export const clone = <T,>(value:T):T => JSON.parse(JSON.stringify(value)) as T
 export function localISO(date=new Date()):string { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}` }
 export function isISODate(value:unknown):value is string { return typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&value>='0001-01-01'&&localISO(new Date(`${value}T12:00:00`))===value }
@@ -62,7 +63,7 @@ export function generateWeeklyPlan(input:PlannerInput):WeeklyPlan {
    if(!slots.length){result.unscheduled.push({taskId:task.id,title:task.title,reason:deadline?'No available space before the deadline.':'Not enough available time this week.'});continue}
    const earliest=slots[0]
    if(usePreferences){
-    const workType=WORK_TYPES.find(type=>type===task.workType)??'general'
+    const workType=effectiveWorkType(task)
     const matches=(block:PlanBlockData)=>{const estimate=context(block.dateISO);return workType!=='general'&&estimate.status==='estimated'&&preferences.phaseWork[estimate.phase].includes(workType)}
     const dailyMinutes=(block:PlanBlockData)=>result.blocks.filter(other=>other.dateISO===block.dateISO).reduce((sum,other)=>sum+durationMinutes(other.duration),0)
     const idleGap=(block:PlanBlockData)=>{

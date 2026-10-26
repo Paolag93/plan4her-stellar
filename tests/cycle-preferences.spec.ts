@@ -92,33 +92,37 @@ test('edited phase choices persist and reset changes only the draft mapping', as
   await expect.poll(async () => (await saved(page)).cyclePreferences?.phaseWork).toEqual(createDefaultCyclePreferences().phaseWork)
 })
 
-test('optional task work type survives create, edit, type toggles and reload', async ({ page }) => {
+test('activity type is inferred automatically; an optional correction in task details survives edit and reload', async ({ page }) => {
   const initial = await seed(page)
+  const field = () => page.getByRole('combobox', { name: 'Activity type · optional', exact: true })
   await nav(page, 'Tasks')
   await page.getByRole('button', { name: 'Add task', exact: true }).click()
   await page.getByRole('button', { name: /Add with details/ }).click()
-  await expect(page.getByRole('combobox', { name: 'Work type · optional', exact: true })).toHaveValue('general')
-  await page.getByRole('textbox', { name: 'Task', exact: true }).fill('Create launch story')
-  await page.getByRole('combobox', { name: 'Work type · optional', exact: true }).selectOption('creation-start')
+  await expect(field()).toHaveCount(0) // no category to choose when creating a task
+  await page.getByRole('textbox', { name: 'Task', exact: true }).fill('Draft launch story')
   await page.getByRole('button', { name: 'Save as Unscheduled', exact: true }).click()
-  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Create launch story')?.workType).toBe('creation-start')
+  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Draft launch story')?.title).toBe('Draft launch story')
+  expect((await saved(page)).tasks.find(task => task.title === 'Draft launch story')?.workType).toBeUndefined()
   await page.reload()
   await nav(page, 'Tasks')
-  await page.locator('.p4h-task-card').filter({ hasText: 'Create launch story' }).locator('.p4h-task-card__content').click()
-  await expect(page.getByRole('combobox', { name: 'Work type · optional', exact: true })).toHaveValue('creation-start')
+  await page.locator('.p4h-task-card').filter({ hasText: 'Draft launch story' }).locator('.p4h-task-card__content').click()
+  await page.getByText('Activity type', { exact: true }).click()
+  await expect(field()).toHaveValue('auto')
+  await expect(field().locator('option[value=auto]')).toHaveText('Automatic (Creation / start)')
+  await field().selectOption('communication')
   await page.getByRole('button', { name: 'Fixed', exact: true }).click()
-  await expect(page.getByRole('combobox', { name: 'Work type · optional', exact: true })).toHaveValue('creation-start')
+  await expect(field()).toHaveValue('communication')
   await expect(page.getByText('Fixed time stays in place.', { exact: false })).toBeVisible()
   await page.getByRole('button', { name: 'Flexible', exact: true }).click()
-  await page.getByRole('textbox', { name: 'Task', exact: true }).fill('Revise launch story')
   await page.getByRole('button', { name: 'Save task', exact: true }).click()
-  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Revise launch story')?.workType).toBe('creation-start')
+  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Draft launch story')?.workType).toBe('communication')
   await page.reload()
   await nav(page, 'Tasks')
-  await page.locator('.p4h-task-card').filter({ hasText: 'Revise launch story' }).locator('.p4h-task-card__content').click()
-  await page.getByRole('combobox', { name: 'Work type · optional', exact: true }).selectOption('general')
+  await page.locator('.p4h-task-card').filter({ hasText: 'Draft launch story' }).locator('.p4h-task-card__content').click()
+  await expect(field()).toHaveValue('communication') // a stored correction opens expanded
+  await field().selectOption('auto')
   await page.getByRole('button', { name: 'Save task', exact: true }).click()
-  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Revise launch story')?.workType).toBe('general')
+  await expect.poll(async () => (await saved(page)).tasks.find(task => task.title === 'Draft launch story')?.workType ?? 'auto').toBe('auto')
   expect((await saved(page)).acceptedPlan).toEqual(initial.acceptedPlan)
 })
 
@@ -152,6 +156,6 @@ for (const width of [320, 390]) {
 test('canonical task fixtures keep work-type controls hidden', async ({ page }) => {
   for (const route of ['add-task', 'task-details-dentist']) {
     await page.goto(`/?qa=${route}`)
-    await expect(page.getByRole('combobox', { name: 'Work type · optional', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('combobox', { name: 'Activity type · optional', exact: true })).toHaveCount(0)
   }
 })

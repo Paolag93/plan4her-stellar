@@ -66,3 +66,25 @@ Date: 2026-10-25/26. Branch `ccr-068e87ad-nj66jj`.
   - The vault contract, share count and APY sit under a collapsed **Technical details** section.
   - Still visible: wallet balance, redeemable value, net contribution, change (can be negative), realized yield, Testnet status, fees, slippage, risk text, the public-transaction notice and the simulation label. An unverified vault asset shows a visible warning and deposits stay disabled.
 - **Baselines:** none regenerated. The full suite passes: 357 Playwright tests, plus the domain and server tests.
+
+## Final pre-submission hotfix (2026-10-26)
+- **Why nothing seemed to move:** the founder's week came from the *Balanced* starter pack. Its tasks ("Prepare proposal", "Call dentist", "Buy groceries", "Admin follow-up") carried no activity type, so the cycle day had nothing to re-place.
+- **Real planner result for the sample week** (accepted Monday 26 Oct; same tasks, availability and dates):
+  - Day 1 → 2 tasks moved.
+  - Day 12 → 6 tasks moved. Client presentation, workshop reel and coffee go Mon → Wed (ovulatory); slides, expenses and yoga go Mon → Sat (luteal).
+  - Movement shrinks later in the week, because only the remaining days are planned: Wednesday shows 3 moves, Saturday shows none. The preview now says this honestly.
+- **Automatic activity type:** a local, deterministic keyword classifier (`src/domain/activityClassifier.ts`). It is not AI. The real planner uses it whenever a task has no stored type. Ambiguous titles stay neutral, and stored or corrected types always win.
+  - The 11 sample tasks no longer carry hand-set types; inference reproduces them exactly.
+  - Add task no longer asks for a type. Edit task keeps an optional, collapsed **Activity type** correction.
+- **Explore your week** lists each moved task with old → new day.
+- **Today cards:** the Flexible/Fixed badge is content-sized (a broader full-width rule outranked it), and "⋯" sits beside the title instead of on an empty row.
+- **More:** the fixed 358/390 px widths overflowed by 15 px whenever a classic vertical scrollbar appeared, causing horizontal scroll. They are now fluid, with the same 16 px padding. A sweep of Today, Plan, Tasks, More, Rhythm Pool, Savings, Backup, Explore and Add task at 320 / 390 / 1280 px with real scrollbars found no other overflow (the 7-day strips scroll by design).
+- **Task scheduling:**
+  - Edit task used typed `YYYY-MM-DD` fields for the deadline and fixed date. Both now open the same calendar as Add task: month/year navigation, exact-date fallback with validation, and Clear deadline.
+  - Add task started live with a real value ("Prepare grant application", a fixture string); it now starts empty.
+  - New `tests/task-scheduling.spec.ts` covers: create/edit/reload; plan; deadline held on cycle days 1, 5, 12, 14, 20 and 27; fixed appointment never moves; every field and Save reachable at 320 and 390 px.
+- **Rhythm Pool:**
+  - The primary **Join Rhythm Pool** button sits under the intro and leads to the terms. Members land on **My progress**. Connect wallet is secondary and labelled optional.
+  - Done/Missed only exist for a joined member's commitments; this was already enforced.
+  - New `tests/rhythm-pool-access.spec.ts` covers a non-member and a joined member without a wallet.
+- **Known limitation, not changed:** the planner only covers the current calendar week, and there is no "plan next week" option. Adding one would change planning semantics app-wide, so it was left out before the deadline.
