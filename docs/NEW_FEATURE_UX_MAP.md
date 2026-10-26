@@ -1,4 +1,6 @@
 # Plan4Her — Proposed New Feature UX Map (starter, refine during implementation)
+
+> **Superseded 2026-10-26:** the final product uses one shared **Rhythm Pool** (see `docs/HACKMERIDIAN_ARCHITECTURE.md`). Thematic challenges and accountability partners were removed from the primary journey.
 **Status:** Proposed extension based on the existing code and verified Figma page structure; new screens themselves are NOT currently approved Figma screens. Claude must reconcile this with actual Figma screenshots, existing design patterns, implementation and founder's product intent.
 
 ## Navigation constraint

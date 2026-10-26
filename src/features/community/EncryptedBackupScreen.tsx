@@ -99,7 +99,7 @@ export function EncryptedBackupScreen({ app, community, onBack, onUploaded, onRe
   })
 
   return <CommunityScreen title="Encrypted backup" onBack={onBack} testId="encrypted-backup">
-    <section className="community-intro"><span>OPTIONAL · YOU CONTROL THE KEY</span><h2>Back up privately</h2><p>Your tasks, cycle context, plans and goals are encrypted on this device with your passphrase before anything leaves it. Plan4Her never receives your passphrase or unencrypted data.</p></section>
+    <section className="community-intro"><span>OPTIONAL · YOU CONTROL THE KEY</span><h2>Back up privately</h2><p>Your tasks, cycle context, plans and Rhythm Pool commitments are encrypted on this device with your passphrase before anything leaves it. Plan4Her never receives your passphrase or unencrypted data.</p></section>
     <aside className="community-notice">
       <strong>What to know</strong>
       <ul>
@@ -138,7 +138,7 @@ export function EncryptedBackupScreen({ app, community, onBack, onUploaded, onRe
         <Row label="Tasks" value={pending.app.tasks.length} />
         <Row label="Accepted plan" value={pending.app.acceptedPlan ? `Week of ${pending.app.acceptedPlan.weekStart}` : 'None'} />
         <Row label="Cycle context" value={pending.app.cycleBasics ? 'Included' : 'None'} />
-        <Row label="Challenges" value={pending.community.memberships.length} />
+        <Row label="Rhythm Pool" value={pending.community.participation ? 'Included' : 'None'} />
       </div>
       <Button hierarchy="destructive" type="button" onClick={() => { const r = onRestore(pending); if (r.error) setError(r.error) }}>Replace with this backup</Button>
       <Button hierarchy="tertiary" type="button" onClick={() => { setPending(null); setRestoreEnvelope(null) }}>Cancel</Button>

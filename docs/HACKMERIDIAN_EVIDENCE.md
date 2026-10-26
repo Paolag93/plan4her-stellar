@@ -4,22 +4,24 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 
 ## Before vs after
 - Before (original, read-only): `Paolag93/plan4HER-` @ `9ec0c99ea8ff839c44dfb2a8bb4f9e1cdf55fbf5` (see `HACKMERIDIAN_PROVENANCE.md`).
-- After: `Paolag93/plan4her-stellar`, branch `ccr-068e87ad-nj66jj`. Feature commit `7a201a9` plus follow-up docs/QA commits on the same branch.
+- After: `Paolag93/plan4her-stellar` `main`. PR #1 (merge `464e058`) added the first HackMeridian build; the follow-up PR consolidates it into the Rhythm Pool model.
 - The original repository, the original ChatGPT Sites preview and the Figma files were **not** modified.
 
 | Capability | Status | Evidence |
 | --- | --- | --- |
-| Existing planner, tasks, Today, recovery, cycle preferences, JSON backup | Pre-existing; **no regressions** in the full existing E2E suite | QA section below |
-| 30/90-day challenges, personal goals, check-ins, opt-in group average | Implemented & tested (on-device) | `src/domain/community.test.cjs`, `tests/community.spec.ts` |
-| Goal sessions planned by the existing cycle-aware planner | Implemented & tested | community domain test asserts `generateWeeklyPlan` schedules all 4 sessions; E2E adds them to Tasks |
-| Accountability partners: allow-list, revoke | Implemented & tested; **partner accounts simulated** (no backend) | domain + E2E tests assert no cycle/task/wallet strings leak |
-| Other challenge members | Simulation (labelled "Simulated members") | UI |
-| DeFindex Testnet vault deposit / balance / withdraw | **Code complete, live verification pending** | `src/stellar/vault.ts`; see "On-chain evidence" |
-| Community reward distribution | Simulation (labelled); no on-chain distribution | `simulateRewardPool` tests |
-| AES-256-GCM encrypted backup + restore | Implemented & tested (browser + Node) | `encryption.test.cjs`, E2E download → wrong passphrase → restore |
-| Pinata/IPFS upload & retrieval | **Code complete, tested with fake Pinata; live upload pending** Pinata JWT + deployment | `server/api.test.ts` |
-| OpenZeppelin Confidential Tokens | Not implemented | `HACKMERIDIAN_ARCHITECTURE.md` §7 |
-| Separate public HTTPS demo | Not deployed (needs founder approval + hosting account) | `DEPLOYMENT.md` |
+| Existing planner, tasks, Today, recovery, cycle preferences, JSON backup | Pre-existing; **no regressions** in the full existing E2E suite | QA section |
+| Rhythm Pool: one community, join any day, 28-day challenge from next Monday | Implemented & tested (on-device) | `src/domain/community.test.cjs`, `tests/community.spec.ts` |
+| Weekly 3–5 commitments from existing tasks, fixed denominator, one replacement/week with audit, done/missed/undo, task sync, Today card | Implemented & tested | domain + E2E (live flow with pinned Monday clock) |
+| Four-week aggregate ratio, 70% threshold, skipped weeks count as 3 not done | Implemented & tested | domain tests; `community-result` E2E |
+| Completion verification | Self-reported only | UI terms |
+| Community members / average | Simulation (labelled); own % only with consent | UI, domain test |
+| DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Code complete, live verification pending** | `src/stellar/vault.ts`; see below |
+| Rewards (pledged realized yield or confirmed sponsor funds) | Simulation (labelled); no distribution contract; no sponsor confirmed | `simulateRewardPool` tests |
+| AES-256-GCM encrypted backup + restore | Implemented & tested (browser + Node) | `encryption.test.cjs`, E2E |
+| Pinata/IPFS upload & retrieval | **Code complete, tested with fake Pinata; live upload pending** `PINATA_JWT` | `server/api.test.ts` |
+| Accountability partners, thematic 30/90-day challenges | Removed from primary journey (product decision 2026-10-26) | — |
+| Billing (Premium USD 6.99/month), yield-sharing contract, sponsor system, Confidential Tokens | Not implemented (planned) | — |
+| Separate public HTTPS demo | Render blueprint in repo; URL to be recorded by founder | `DEPLOYMENT.md` |
 
 ## On-chain evidence (Stellar Testnet)
 - Network: Stellar **Testnet** (`Test SDF Network ; September 2015`), RPC `https://soroban-testnet.stellar.org`.
@@ -47,9 +49,9 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 - `npm run test:domain`: pass (existing 3 suites + community + encryption).
 - `npm run test:server`: pass.
 - `npm run build`: pass (Stellar SDK code-split into a lazily loaded chunk).
-- `npm run test:e2e` (Playwright, Chromium; `PW_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium` because the sandbox's preinstalled browser differs from the pinned Playwright build): **353 passed, 0 failed** (5.1 min) on the final code, including all pre-existing tests.
+- `npm run test:e2e` (Playwright, Chromium; `PW_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium` because the sandbox's preinstalled browser differs from the pinned Playwright build): **354 passed, 0 failed** (5.0 min) on the final code, including all pre-existing tests.
   - Baseline before any app change: 335/336 passed. The 1 failure (`security-local` "task markup stays literal…") was time-of-day dependent (run near midnight on a Sunday, so no time remained in the week). Fixed by pinning that test's clock to a Monday, like other tests already do.
-- New tests: `tests/community.spec.ts` (10 tests), 8 new axe WCAG scans.
+- New tests: `tests/community.spec.ts` (Rhythm Pool live flow, savings gating, rewards labelling, encrypted backup roundtrip, four-week result, navigation, 44 px targets at 320/390/768 px), 9 new axe WCAG scans.
 - CI: `.github/workflows/ci.yml` now also runs typecheck and server tests.
 
 ## Submission deliverables

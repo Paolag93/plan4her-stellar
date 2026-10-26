@@ -2,10 +2,8 @@ import { useState } from 'react'
 import { Button } from '../../components/Button'
 import { ConsentCard } from '../../components/ConsentCard'
 import type { RootTab } from '../../components/BottomNav'
-import {
-  activeMembership, formatAmount, goalProgress, parseAmount, positionSummary, rewardEligible, simulateRewardPool,
-  type CommunityState, type VaultLedgerEntry,
-} from '../../domain/community'
+import { activeParticipation, poolProgress, ELIGIBILITY_THRESHOLD, type CommunityState } from '../../domain/community'
+import { formatAmount, parseAmount, positionSummary, simulateRewardPool, type VaultLedgerEntry } from '../../domain/savings'
 import { CommunityScreen, Row, SimulationBadge, percent } from './shared'
 import type { PreparedVaultTx, VaultSnapshot } from '../../stellar/vault'
 
@@ -18,7 +16,7 @@ const loadVault = () => import('../../stellar/vault')
 const RISKS = [
   { title: 'Testnet only: no real money', body: 'This demo uses Stellar Testnet XLM, which has no monetary value. No real funds are accepted.' },
   { title: 'My deposit is not guaranteed', body: 'Vault strategies can lose value through smart-contract, protocol, liquidity, asset or depeg risk. Withdrawals depend on vault conditions.' },
-  { title: 'No penalties for missed goals', body: 'Missing a habit never confiscates or locks my deposit. Any community reward could only come from positive realized yield, and is simulated here.' },
+  { title: 'No penalties for missed commitments', body: 'Missing commitments never confiscates or locks my deposit. Rewards are not guaranteed and their distribution is simulated in this demo.' },
 ]
 
 type TxState = { phase: 'idle' } | { phase: 'review'; tx: PreparedVaultTx } | { phase: 'signing' | 'submitting' } | { phase: 'pending'; hash: string; tx: PreparedVaultTx } | { phase: 'confirmed'; entry: VaultLedgerEntry } | { phase: 'failed'; message: string; hash?: string; tx?: PreparedVaultTx }
@@ -39,7 +37,7 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
   if (!community.savings.optedIn) {
     const all = risks.every(Boolean)
     return <CommunityScreen title="Optional savings" onBack={onBack} onNavigate={onNavigate} testId="savings-optin">
-      <section className="community-intro"><span>OPTIONAL · STELLAR TESTNET</span><h2>Save alongside your goal, if you want to</h2><p>You can keep your own small Testnet deposit in a DeFindex vault while you work on your goal. Challenges, partners and planning work fully without this.</p></section>
+      <section className="community-intro"><span>OPTIONAL · STELLAR TESTNET</span><h2>Save alongside your rhythm, if you want to</h2><p>You can keep your own small Testnet deposit in the Rhythm Pool's DeFindex vault during your four weeks. Your position belongs to your wallet only. The Rhythm Pool and planning work fully without this.</p></section>
       <p className="community-h2">Before you continue</p>
       {RISKS.map((risk, i) => <ConsentCard key={risk.title} title={risk.title} body={risk.body} requirement="Required" selected={risks[i]} onChange={on => setRisks(current => current.map((v, j) => j === i ? on : v))} />)}
       <Button type="button" disabled={!all} onClick={() => onChange({ ...community, savings: { ...community.savings, optedIn: true, risksAcknowledgedAt: new Date().toISOString() } })}>I understand, continue</Button>
@@ -107,7 +105,7 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
       <a className="community-link" href="https://www.freighter.app/" target="_blank" rel="noreferrer">Get Freighter</a>
     </> : <>
       <div className="community-rows">
-        <Row label="Wallet" value={<span className="community-mono">{short(address)}</span>} note="Stays on this device. Never shared with partners or the community." />
+        <Row label="Wallet" value={<span className="community-mono">{short(address)}</span>} note="Public on Stellar, but never linked to your goals, tasks or cycle data in Plan4Her." />
         <Row label="Vault" value={<a className="community-link" href={explorer(`contract/${VAULT_ID}`)} target="_blank" rel="noreferrer">{short(VAULT_ID)}</a>} note={snapshot ? (snapshot.assetVerified ? 'Asset verified on chain: native XLM' : 'Asset NOT verified: deposits disabled') : undefined} />
       </div>
       <Button hierarchy="secondary" type="button" loading={Boolean(busy)} onClick={() => refresh()}>Refresh from chain</Button>
@@ -133,7 +131,7 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
       {snapshot.shares > 0n ? <>
         <p className="community-label">Withdraw</p>
         <div className="community-chips">{[0.25, 0.5, 1].map(f => <button key={f} type="button" className="community-chip" onClick={() => review('withdraw', f)}>{f === 1 ? 'All' : percent(f)}</button>)}</div>
-        <p className="community-help">Withdrawals return the vault's current value of your shares, which may be more or less than you deposited. There is never a penalty for missed goals.</p>
+        <p className="community-help">Withdrawals return the vault's current value of your shares, which may be more or less than you deposited. There is never a penalty for missed commitments.</p>
       </> : null}
     </> : null}
 
@@ -166,40 +164,44 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
 
     <p className="community-label">Community rewards</p>
     <Button hierarchy="secondary" type="button" onClick={onRewards}>How rewards would work <SimulationBadge>Simulation</SimulationBadge></Button>
-    <aside className="community-notice"><strong>Your deposit stays yours</strong><p>Each member holds her own vault shares in her own wallet. Plan4Her does not pool, lock or control deposits. {activeMembership(community) ? `Your challenge progress (${percent(goalProgress(activeMembership(community)!, today).completionRate)}) never changes your deposit.` : ''}</p></aside>
+    <aside className="community-notice"><strong>Your deposit stays yours</strong><p>Every member holds her own vault shares in her own wallet. The shared vault does not redistribute yield by habit completion, and Plan4Her never pools, locks or controls deposits. Stellar transactions are public; your Plan4Her goals, tasks and cycle data never go on chain.</p></aside>
   </CommunityScreen>
 }
 
 const SAMPLE = [
-  { id: 'Member A (sample)', yieldStroops: 1_200_000n, eligible: true },
-  { id: 'Member B (sample)', yieldStroops: 0n, eligible: true },
-  { id: 'Member C (sample)', yieldStroops: -300_000n, eligible: false },
-  { id: 'Member D (sample)', yieldStroops: 800_000n, eligible: false },
+  { id: 'Member A (sample)', yieldStroops: 1_200_000n, eligible: true, pledges: true },
+  { id: 'Member B (sample)', yieldStroops: 0n, eligible: true, pledges: true },
+  { id: 'Member C (sample)', yieldStroops: -300_000n, eligible: false, pledges: true },
+  { id: 'Member D (sample)', yieldStroops: 800_000n, eligible: false, pledges: false },
 ]
+/** No sponsor funds are confirmed for this demo, so the sponsor source is zero. */
+const CONFIRMED_SPONSOR_FUNDS = 0n
 
 export function RewardsSimulationScreen({ community, today, onBack }: { community: CommunityState; today: string; onBack: () => void }) {
-  const membership = activeMembership(community)
+  const p = activeParticipation(community)
+  const progress = p ? poolProgress(p, today) : null
   const mine = positionSummary(community.savings.ledger)
-  const eligible = membership ? rewardEligible(membership, today) : false
-  const participants = [{ id: 'You', realizedYield: mine.realized, principal: mine.contributed, eligible }, ...SAMPLE.map(s => ({ id: s.id, realizedYield: s.yieldStroops, principal: 100_000_000n, eligible: s.eligible }))]
-  const result = simulateRewardPool(participants, 20)
+  const eligible = Boolean(progress && progress.ratio >= ELIGIBILITY_THRESHOLD)
+  const participants = [{ id: 'You', realizedYield: mine.realized, principal: mine.contributed, eligible, pledgesYield: Boolean(p?.pledgeYield) }, ...SAMPLE.map(s => ({ id: s.id, realizedYield: s.yieldStroops, principal: 100_000_000n, eligible: s.eligible, pledgesYield: s.pledges }))]
+  const result = simulateRewardPool(participants, 20, CONFIRMED_SPONSOR_FUNDS)
   return <CommunityScreen title="Rewards simulation" onBack={onBack} testId="rewards-simulation">
-    <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This is a model of an agreed community rule, calculated on this device. It is not an on-chain distribution and nothing is transferred.</p></aside>
-    <p className="community-h2">The proposed rule</p>
+    <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This models a proposed Rhythm Pool rule on this device. There is no on-chain distribution and nothing is transferred.</p></aside>
+    <p className="community-h2">Possible reward sources</p>
     <ul className="community-help">
-      <li>Members may pledge 20% of their own <strong>positive realized yield</strong> to a shared reward pot.</li>
-      <li>Deposits (principal) are never part of the pot. Losses contribute nothing.</li>
-      <li>Members who reach their own personal target share the pot equally.</li>
-      <li>Missing a goal only means not receiving a share of others' pledged yield. Nobody's deposit is touched.</li>
-      <li>If nobody is eligible, pledged yield stays with the people who earned it.</li>
+      <li><strong>Pledged yield:</strong> members may voluntarily pledge 20% of their own <strong>positive realized</strong> yield. A verified distribution mechanism does not exist yet.</li>
+      <li><strong>Sponsor funds:</strong> counted only once actually confirmed. None are confirmed for this demo.</li>
+      <li>Neither source is guaranteed. Deposits (principal) are never part of the pot; losses contribute nothing.</li>
+      <li>Members with at least {percent(ELIGIBILITY_THRESHOLD)} of their four-week commitments completed share the pot equally. Missing that never touches anyone's deposit.</li>
     </ul>
     <div className="community-rows" data-testid="reward-table">
       <Row label="Your realized yield" value={formatAmount(mine.realized > 0n ? mine.realized : 0n)} note={mine.realized > 0n ? 'From your confirmed withdrawals' : 'No verified yield yet'} />
-      <Row label="Your personal target" value={membership ? `${percent(membership.goal.rewardThreshold)} · ${eligible ? 'reached' : 'not reached yet'}` : 'Join a challenge first'} />
+      <Row label="Your yield pledge" value={p?.pledgeYield ? '20% authorized' : 'Not authorized'} />
+      <Row label="Your consistency" value={progress ? `${percent(progress.ratio)} · ${eligible ? 'at or above 70%' : 'below 70%'}` : 'Join the Rhythm Pool first'} />
+      <Row label="Sponsor funds (confirmed)" value={formatAmount(result.sponsorPot)} note="None confirmed" />
       <Row label="Simulated pot" value={formatAmount(result.pot)} />
-      {participants.map(p => <Row key={p.id} label={p.id} value={formatAmount(result.allocations[p.id] ?? 0n)} note={p.eligible ? 'Eligible' : 'Not eligible'} />)}
+      {participants.map(x => <Row key={x.id} label={x.id} value={formatAmount(result.allocations[x.id] ?? 0n)} note={x.eligible ? 'Eligible' : 'Not eligible'} />)}
       <Row label="Unallocated" value={formatAmount(result.unallocated)} note="Stays with contributors" />
     </div>
-    <p className="community-help">Sample members and their yields are invented for illustration. Eligibility compares each member only with her own goal.</p>
+    <p className="community-help">Sample members and their yields are invented for illustration.</p>
   </CommunityScreen>
 }

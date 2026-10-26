@@ -3,7 +3,7 @@ import{BottomNav,type RootTab}from'../../components/BottomNav'
 import{Button}from'../../components/Button'
 import'./MoreScreen.css'
 
-export interface MoreCommunityLinks{onCommunity:()=>void;onPartners:()=>void;onSavings:()=>void;onBackup:()=>void}
+export interface MoreCommunityLinks{onCommunity:()=>void;onSavings:()=>void;onBackup:()=>void}
 
 export function MoreScreen({onCycleContext,onPlanningPreferences,onPrivacy,onHelp,onNavigate,community}:{onCycleContext:()=>void;onPlanningPreferences?:()=>void;onPrivacy?:()=>void;onHelp?:()=>void;onNavigate:(tab:RootTab)=>void;community?:MoreCommunityLinks}){
  return <main className="more-screen" data-figma-node="4198:298">
@@ -15,8 +15,7 @@ export function MoreScreen({onCycleContext,onPlanningPreferences,onPrivacy,onHel
    <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onCycleContext}>Cycle context</Button>
    {onPlanningPreferences?<Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onPlanningPreferences}>Planning preferences</Button>:null}
    {community?<><p className="more-screen__label">COMMUNITY</p>
-   <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={community.onCommunity}>Community challenges</Button>
-   <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={community.onPartners}>Accountability partners</Button>
+   <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={community.onCommunity}>Rhythm Pool</Button>
    <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={community.onSavings}>Savings &amp; rewards · Testnet</Button></>:null}
    <p className="more-screen__label">PRIVACY &amp; HELP</p>
    <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onPrivacy}>Privacy &amp; data</Button>

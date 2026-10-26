@@ -1,12 +1,28 @@
-# Demo video script (≈3 minutes)
+# Demo video script (≈3 minutes) · Guion del vídeo
 
-Label on screen throughout: **Stellar Testnet · synthetic data · no real money**.
+On screen throughout / En pantalla todo el tiempo: **Stellar Testnet · synthetic data · no real money**.
 
-1. **Existing Plan4Her (20 s).** Today and Plan tabs: a cycle-aware week built from tasks, availability and editable preferences. "This existed before HackMeridian."
-2. **Join a challenge for free (35 s).** More → Community challenges → 30-day learning rhythm. Set "Study English, 4× a week, 30 min, Review/planning". Join for free: point at "No wallet, deposit or cycle details required" and the opt-in group-average card.
-3. **Plan it in your rhythm (30 s).** "Add this week's sessions to Tasks" → select them → Add to plan → preview shows where your own planning preferences place them → Apply. Today shows the MY GOAL card → Check in.
-4. **Accountability partner (30 s).** Invite "Ana", allow only Goal completion %. Simulate acceptance (labelled). Show "What Ana sees" — no cycle, task or wallet data. Stop sharing → revoked state.
-5. **Optional savings on Testnet (45 s).** Savings & rewards → three risk acknowledgements → Connect Freighter (Testnet) → position read from chain → deposit 10 XLM → review (min accepted, est. shares, fee) → sign in Freighter → Confirmed + Stellar Expert link. Then withdraw 50%. Point out: realized yield shown only from confirmed withdrawals; APY not shown because it is not verified.
-6. **Rewards = simulation (15 s).** "How rewards would work": SIMULATION banner; principal never in the pot; missed goals never touch deposits.
-7. **Encrypted backup (25 s).** More → Encrypted backup → passphrase → upload to IPFS (CID shown) → restore by CID with wrong passphrase (rejected) then right passphrase.
-8. **Close (10 s).** "Your goals. Your rhythm. Our community." What is real vs simulated: see README.
+Before recording / Antes de grabar: open the Render URL once (free tier wakes in ~50 s). Use desktop Chrome with Freighter on **Testnet**, funded by Friendbot. Use a fresh browser profile or More → Privacy & data → Clear data.
+
+| # | Time | Do this / Haz esto | Say / Di (EN) | Real or simulated |
+|---|---|---|---|---|
+| 1 | 0:00 | Start → Build my first week → finish setup → Accept week. Show Today and Plan. | "Plan4Her already plans a week around your tasks, availability and optional cycle preferences — that existed before HackMeridian." | Pre-existing, real |
+| 2 | 0:25 | More → **Rhythm Pool**. | "Premium preview: one shared community. Join any day; your four weeks start next Monday. You can be the first member." | Real (sample members labelled simulated) |
+| 3 | 0:40 | **Review terms**. Scroll the three boxes. Tick "I accept". Leave sharing/pledge off. **Join the Rhythm Pool**. | "Free to join, no wallet. Commitments are self-reported. Missing them never touches your deposit. Rewards aren't guaranteed. Private data never goes on Stellar." | Real |
+| 4 | 1:05 | Pick **3–5 tasks** → **Confirm commitments**. | "Each week I choose 3–5 important tasks from my own plan. The rest stays flexible; new tasks don't change my count." | Real |
+| 5 | 1:20 | Mark one **Done**, one **Missed**, then **Replace** an unfinished one. Show Today → Rhythm Pool card. | "Truthful tracking. I can replace one unfinished commitment a week; the count and history stay." | Real (self-reported) |
+| 6 | 1:45 | **Connect wallet & deposit · Testnet** → three risk ticks → Connect Freighter → deposit 10 XLM → review → sign → **Confirmed** → open Stellar Expert link. | "My deposit stays my own position in a DeFindex vault on Stellar Testnet, signed by me. The vault doesn't redistribute yield by habits." | **Real Testnet transaction** — only if it confirms; show the hash |
+| 7 | 2:15 | **How rewards would work**. | "Rewards could come from voluntarily pledged realized yield or confirmed sponsors. Here it's a labelled simulation; principal is never in the pot." | Simulation |
+| 8 | 2:30 | More → **Encrypted backup** → passphrase → Download (or Upload to IPFS if enabled) → restore with wrong, then right passphrase. | "Everything is encrypted on my device before backup. Without my passphrase nobody can read it." | Real (IPFS only if Pinata configured) |
+| 9 | 2:50 | Close on Today. | "Your goals. Your rhythm. Our community." | — |
+
+## Guion en español (lo que dices)
+1. "Plan4Her ya organiza tu semana según tus tareas, tu disponibilidad y tus preferencias de ciclo opcionales; esto existía antes de HackMeridian."
+2. "Vista Premium: una sola comunidad, el Rhythm Pool. Te unes cualquier día y tus cuatro semanas empiezan el lunes siguiente. Puedes ser la primera participante."
+3. "Unirse es gratis y no requiere billetera. Tú marcas tus compromisos. Fallar nunca afecta tu depósito. Las recompensas no están garantizadas. Tus datos privados nunca van a Stellar."
+4. "Cada semana elijo de 3 a 5 tareas importantes de mi propio plan. El resto sigue flexible; las tareas nuevas no cambian mi número."
+5. "Registro honesto: hecho o no hecho. Puedo reemplazar un compromiso pendiente por semana; el número y el historial se mantienen."
+6. "Mi depósito es mi propia posición en una bóveda DeFindex en Stellar Testnet, firmada por mí. La bóveda no reparte rendimiento según hábitos." (Muestra el hash solo si la transacción se confirma.)
+7. "Las recompensas podrían venir de rendimiento realizado que se aporta voluntariamente o de patrocinadores confirmados. Aquí es una simulación etiquetada; el capital nunca entra en el fondo."
+8. "Todo se cifra en mi dispositivo antes de la copia de seguridad. Sin mi frase de contraseña nadie puede leerlo."
+9. "Tus metas. Tu ritmo. Nuestra comunidad."

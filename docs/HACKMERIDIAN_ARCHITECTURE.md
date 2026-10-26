@@ -2,30 +2,31 @@
 
 This document records what was built during HackMeridian on top of the existing Plan4Her MVP, and why. It describes the code on branch `ccr-068e87ad-nj66jj`. Status labels follow `docs/HACKMERIDIAN_EVIDENCE.md`.
 
-## 1. Where the new features live (no new navigation)
+## 1. Product model (final, 2026-10-26)
+
+- Freemium planner; the hackathon shows the Premium experience (USD 6.99/month planned, **no billing implemented**).
+- **One shared Rhythm Pool** replaces earlier thematic 30/90-day challenges. Members join any day; each member's own challenge is **four complete weeks (28 days) starting the next Monday** (the same day if she joins on a Monday). A member can be the first and only participant.
+- Each week she confirms **3–5 commitments chosen from her existing Plan4Her tasks**. That confirmed count is the week's fixed denominator. Ordinary tasks can be added/removed freely and never change it. Commitments can be rescheduled in Plan without penalty (they reference the task, not a time slot). **One unfinished commitment per week can be replaced**; the original is kept as `replaced` with an audit entry, and the count is unchanged.
+- Status is **self-reported** (done / missed / undo). Completing the linked task in Tasks or Today marks the current week's commitment done; un-ticking reopens it only if the task caused it.
+- Result = completed / confirmed over four weeks. A week that ends without commitments counts as 3 not completed, so skipping cannot raise the ratio. **Eligibility threshold: 70%** (proposal).
+- Accountability partners were removed from the primary journey.
+
+## 2. Where it lives (no new navigation)
 
 | Entry point (existing) | New | Code |
 | --- | --- | --- |
-| More → **Community challenges** | Directory, challenge detail, create-your-own, goal editor, join confirmation, progress/check-in, leave | `src/features/community/CommunityScreens.tsx` |
-| More → **Accountability partners** | List, invite with field-level consent, partner preview, revoke | `src/features/community/PartnerScreens.tsx` |
-| More → **Savings & rewards · Testnet** | Risk consent, Freighter connect, on-chain position, deposit/withdraw, confirmations, reward **simulation** | `src/features/community/SavingsScreens.tsx`, `src/stellar/vault.ts` |
-| More → **Encrypted backup**; Privacy & data → Encrypted backup | Passphrase encryption, encrypted download, optional IPFS upload/restore | `src/features/community/EncryptedBackupScreen.tsx`, `src/domain/encryption.ts`, `server/` |
-| Today | "MY GOAL" card with check-in (only with a live accepted plan and active challenge) | `src/features/daily/TodayScreen.tsx` |
-| Tasks → Plan | "Add this week's sessions to Tasks" creates ordinary flexible tasks; the existing selection → preview → apply flow places them with the existing cycle-aware planner | `goalSessionTasks()` in `src/domain/community.ts` |
+| More → **Rhythm Pool** | Home, terms, weekly commitments, replace, progress/track, four-week result, leave | `src/features/community/RhythmScreens.tsx`, `CommunityFlow.tsx`, `src/domain/community.ts` |
+| More → **Savings & rewards · Testnet** | Risk consent, Freighter, on-chain position, deposit/withdraw, reward **simulation** | `SavingsScreens.tsx`, `src/stellar/vault.ts`, `src/domain/savings.ts` |
+| More → **Encrypted backup**; Privacy & data | Passphrase encryption, download, optional IPFS upload/restore | `EncryptedBackupScreen.tsx`, `src/domain/encryption.ts`, `server/` |
+| Today | "RHYTHM POOL" card: this week's commitments done / count (live plans only) | `TodayScreen.tsx` |
 
-The four root tabs (Today · Plan · Tasks · More), `AppHeader`, `BottomNav`, `Button`, `ConsentCard`, `TextField`, tokens and the 390 × 844 artboard are reused. No new font, palette or layout system.
-
-## 2. Data model and storage
-
-- Existing planner state is unchanged (`plan4her:local-state:v1`, same strict validator, same JSON backup format). This keeps existing backups and migrations compatible.
-- Community data uses a **separate** key, `plan4her:community:v1`, with its own strict validator (`validateCommunityState`). Unreadable data is kept, not overwritten. "Clear data on this device" clears both keys.
-- Community belonging never reads cycle data. The only bridge to planning is the goal's chosen *work type*, which the user's own editable phase preferences may match.
+Planner state (`plan4her:local-state:v1`) and its backup format are unchanged. Rhythm Pool data uses `plan4her:rhythm:v1` with a strict validator; the earlier hackathon key `plan4her:community:v1` is ignored and removed by "Clear data".
 
 ## 3. Privacy boundaries
 
-- `partnerView()` is the only function that produces partner-visible data, and it is allow-list based (`SHARE_FIELDS`: completion %, check-ins this week, streak, last check-in date). Nothing is shared by default. Cycle data, task titles, goal names, wallet addresses, balances and rewards are never in that list. Tests assert those strings do not appear in partner output.
-- Revocation clears permissions and blocks future views; UI states clearly it cannot recall what was already seen.
-- **Limitation:** there is no multi-user backend yet. Partners and other challenge members are simulated on the device and labelled as such.
+- Commitment titles, task records, schedules, goals, notes, cycle and health context stay **on the device** (localStorage) and are never sent to Stellar, Pinata (except inside client-side ciphertext) or other members.
+- The community view shows only simulated sample members plus, **with consent**, one percentage for the member.
+- Wallet transactions are signed by the user and are **public on Stellar**; deposits are not confidential. No Plan4Her data is put in memos or contract calls.
 
 ## 4. Encryption and IPFS (Cyra weaknesses fixed)
 
@@ -44,8 +45,8 @@ Wrong passphrase and tampering both fail authenticated decryption with one gener
 
 The master brief offered A (individual non-custodial positions), B (pooled controller contract), C (real vault transactions + off-chain reward simulation). We chose **A + C**:
 
-- **A — real, individual, non-custodial.** Each member deposits from her own Freighter wallet into the public DeFindex **XLM vault on Stellar Testnet** and receives vault shares *in her own wallet*. Plan4Her never holds keys or funds. Withdrawals are always available to her, subject only to vault conditions. No habit outcome touches her position.
-- **C — simulated rewards.** The community reward rule (pledge 20% of *positive realized* yield; eligible members — those who reached their own personal target — split the pot equally; principal never included; losses contribute nothing; if nobody is eligible the pot stays with contributors) is computed on-device by `simulateRewardPool()` and **labelled SIMULATION** wherever it appears. Nothing is transferred.
+- **A — real, individual, non-custodial.** Each Rhythm Pool member deposits from her own Freighter wallet into the public DeFindex **XLM vault on Stellar Testnet** and receives vault shares *in her own wallet*. Plan4Her never holds keys or funds. Withdrawals are always available to her, subject only to vault conditions. No commitment outcome touches her position.
+- **C — simulated rewards.** Two possible sources, neither guaranteed: (1) a member's *voluntary* pledge of 20% of her own **positive realized** yield, (2) sponsor funds, counted only once actually confirmed (none are). Members at or above 70% split the pot equally; principal is never included; losses contribute nothing; if nobody is eligible everything stays with its contributors. Computed on-device by `simulateRewardPool()` and **labelled SIMULATION**. Nothing is transferred. The shared DeFindex vault holds individually owned positions and does **not** redistribute yield by habit completion.
 - **Why not B:** a pooled controller contract would take custody, needs an audit, and DeFindex itself has no notion of habits or eligibility. It could not be built and safely verified before the deadline. We do not claim on-chain reward redistribution.
 
 ### Vault integration details
@@ -63,7 +64,7 @@ The master brief offered A (individual non-custodial positions), B (pooled contr
 
 ## 6. Cycle-aware planning link
 
-Goal sessions are created as normal `TaskItem`s with deterministic ids (`goal-<challenge>-<weekStart>-<n>`, no duplicates), the goal's duration, work type and an end-of-week deadline. They pass the existing strict state schema, and the domain test proves the existing deterministic planner schedules them. The user still previews and applies every plan change. Marking a session task done records that day's check-in; un-marking removes it.
+Commitments are existing tasks, so they are placed, moved and explained by the existing deterministic cycle-aware planner and its editable preferences. Plan4Her makes no universal biological performance claims.
 
 ## 7. Confidential Tokens
 

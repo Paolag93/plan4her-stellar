@@ -1,9 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
 import { STORAGE_KEY } from '../src/domain/persistence'
-import { COMMUNITY_STORAGE_KEY } from '../src/domain/community'
+import { RHYTHM_STORAGE_KEY } from '../src/domain/community'
 
 const MONDAY = new Date('2026-10-12T08:00:00Z')
-const community = (page: Page) => page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? 'null'), COMMUNITY_STORAGE_KEY)
+const community = (page: Page) => page.evaluate(key => JSON.parse(localStorage.getItem(key) ?? 'null'), RHYTHM_STORAGE_KEY)
 const nav = (page: Page, name: string) => page.getByRole('navigation', { name: 'Primary' }).getByRole('button', { name, exact: true }).click()
 
 async function onboardWithCycle(page: Page) {
@@ -19,74 +19,70 @@ async function onboardWithCycle(page: Page) {
   await page.getByRole('button', { name: 'Accept week', exact: true }).click()
 }
 
-test('community: join free with a personal goal, check in, reload, see it on Today, plan sessions with the existing planner', async ({ page }) => {
-  const requests: string[] = []
-  page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1')) requests.push(r.url()) })
+test('Rhythm Pool: review terms, set 3–5 weekly commitments, track truthfully, replace one, persist, sync with Tasks and Today', async ({ page }) => {
+  const external: string[] = []
+  page.on('request', r => { if (!r.url().startsWith('http://127.0.0.1')) external.push(r.url()) })
   await onboardWithCycle(page)
   await nav(page, 'More')
-  await page.getByRole('button', { name: 'Community challenges', exact: true }).click()
-  await expect(page.getByTestId('community-directory')).toContainText('Joining is free')
-  await page.getByRole('button', { name: /30-day learning rhythm/ }).click()
-  await page.getByRole('button', { name: 'Set my personal goal', exact: true }).click()
-  await page.getByRole('button', { name: 'Review & join', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('Name your personal goal')
-  await page.getByRole('textbox', { name: 'My goal', exact: true }).fill('Study English')
-  await page.getByRole('button', { name: 'More sessions', exact: true }).click()
-  await page.getByRole('radio', { name: 'Review / planning' }).check()
-  await page.getByRole('button', { name: 'Review & join', exact: true }).click()
-  await expect(page.getByTestId('join-confirm')).toContainText('No wallet, deposit or cycle details required')
-  await page.getByRole('button', { name: 'Join for free', exact: true }).click()
-  await expect(page.getByTestId('goal-progress')).toContainText('Day 1 of 30')
-  await page.getByRole('button', { name: 'Check in for today', exact: true }).click()
-  await expect(page.getByText('Checked in for today.')).toBeVisible()
+  await page.getByRole('button', { name: 'Rhythm Pool', exact: true }).click()
+  await expect(page.getByTestId('rhythm-home')).toContainText('The pool works with one member')
+  await page.getByRole('button', { name: 'Review terms', exact: true }).click()
+  await expect(page.getByTestId('rhythm-terms')).toContainText('28 days, four complete weeks')
+  const join = page.getByRole('button', { name: 'Join the Rhythm Pool', exact: true })
+  await expect(join).toBeDisabled()
+  await page.getByRole('checkbox', { name: 'I accept the Rhythm Pool terms' }).click()
+  await join.click()
+  // Joined on a Monday: week 1 starts today. Commitments come from the existing schedule.
+  const pick = page.getByTestId('rhythm-commitments')
+  await expect(pick).toContainText('Week of Mon 12 Oct')
+  const options = pick.getByRole('checkbox')
+  expect(await options.count()).toBeGreaterThanOrEqual(4)
+  const confirm = page.getByRole('button', { name: 'Confirm commitments', exact: true })
+  await options.nth(0).check(); await options.nth(1).check()
+  await expect(confirm).toBeDisabled()
+  await options.nth(2).check()
+  await confirm.click()
+  const progress = page.getByTestId('rhythm-progress')
+  await expect(progress).toContainText('Week 1 of 4')
+  const cards = page.getByTestId('commitment')
+  await expect(cards).toHaveCount(3)
+  await cards.nth(0).getByRole('button', { name: 'Done', exact: true }).click()
+  await cards.nth(1).getByRole('button', { name: 'Missed', exact: true }).click()
+  await expect(progress).toContainText('1 of 3 commitments completed')
+  // Replace one unfinished commitment: the denominator stays 3 and history is kept.
+  await cards.nth(2).getByRole('button', { name: 'Replace', exact: true }).click()
+  await page.getByTestId('rhythm-commitments').getByRole('checkbox').first().check()
+  await page.getByRole('button', { name: 'Replace commitment', exact: true }).click()
+  await expect(cards).toHaveCount(4)
+  await expect(cards.nth(2)).toContainText('Replaced')
+  await expect(page.getByRole('button', { name: 'Replace', exact: true })).toHaveCount(0)
+  await expect(progress).toContainText('1 of 3 commitments completed')
   const saved = await community(page)
-  expect(saved.memberships[0].goal).toMatchObject({ title: 'Study English', sessionsPerWeek: 4, workType: 'review-planning' })
-  expect(saved.memberships[0].checkIns).toEqual([{ date: '2026-10-12', source: 'manual' }])
+  expect(saved.participation).toMatchObject({ startDate: '2026-10-12', shareProgress: false, pledgeYield: false })
+  expect(saved.participation.weeks[0].count).toBe(3)
+  expect(saved.participation.audit.map((a: { kind: string }) => a.kind)).toEqual(expect.arrayContaining(['confirmed', 'done', 'missed', 'replaced']))
   expect(saved.savings.ledger).toEqual([])
-  // No wallet, deposit or network call was needed to join.
-  expect(requests).toEqual([])
-  // Goal sessions become ordinary tasks; the existing selection + preview flow plans them.
-  await page.getByRole('button', { name: "Add this week's sessions to Tasks", exact: true }).click()
-  await expect(page.getByRole('main').getByText('Study English · session 1/4', { exact: true })).toBeVisible()
-  const state = await page.evaluate(key => JSON.parse(localStorage.getItem(key)!), STORAGE_KEY)
-  expect(state.tasks.filter((t: { id: string }) => t.id.startsWith('goal-learn-30-')).length).toBe(4)
+  // Completing the replacement task in Tasks marks the commitment done; Today reflects it after reload.
+  const replacementTitle: string = saved.participation.weeks[0].items.find((i: { replaces?: string }) => i.replaces).title
   await page.reload()
+  await nav(page, 'Tasks')
+  await page.getByRole('button', { name: `Mark ${replacementTitle} done`, exact: true }).first().click()
   await nav(page, 'Today')
-  const card = page.getByRole('region', { name: 'My goal' })
-  await expect(card).toContainText('Study English')
-  await expect(card).toContainText('1 of 4 sessions this week')
-  await expect(card.getByText('Checked in for today.')).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Rhythm Pool' })).toContainText('2 of 3 commitments done this week')
+  // Private commitment names, schedules and cycle data never left the browser.
+  expect(external).toEqual([])
 })
 
-test('partners see only the fields you allow, and revocation blocks future access', async ({ page }) => {
-  await page.goto('/?qa=partners')
-  await page.getByRole('button', { name: 'Invite a partner', exact: true }).click()
-  await page.getByRole('textbox', { name: 'Partner name or nickname' }).fill('Lucia')
-  await expect(page.getByTestId('invite-partner')).toContainText('Lucia will never see')
-  await expect(page.getByTestId('invite-partner')).toContainText('Cycle context, phases or period dates')
-  await page.getByRole('checkbox', { name: 'Goal completion %' }).click()
-  await page.getByRole('button', { name: /Create invite/ }).click()
-  await expect(page.getByTestId('partner-preview')).toContainText('Nothing until they accept')
-  await page.getByRole('button', { name: 'Simulate Lucia accepting', exact: true }).click()
-  const preview = page.getByTestId('partner-preview')
-  await expect(preview).toContainText('Goal completion %')
-  await expect(preview).not.toContainText('Check-ins this week')
-  for (const banned of ['Study English', 'Menstrual', 'phase', 'XLM', 'wallet']) await expect(preview).not.toContainText(banned)
-  await page.getByRole('button', { name: 'Stop sharing with Lucia', exact: true }).click()
-  await expect(page.getByRole('alertdialog')).toContainText('cannot be recalled')
-  await page.getByRole('button', { name: 'Stop sharing', exact: true }).click()
-  await expect(page.getByTestId('partner-preview')).toContainText('Access was revoked')
-})
 
 test('savings is optional, gated by explicit risk consent, and fails safely without a wallet', async ({ page }) => {
   await page.goto('/?qa=savings')
   const go = page.getByRole('button', { name: 'I understand, continue', exact: true })
   await expect(go).toBeDisabled()
-  await expect(page.getByTestId('savings-optin')).toContainText('Challenges, partners and planning work fully without this')
+  await expect(page.getByTestId('savings-optin')).toContainText('The Rhythm Pool and planning work fully without this')
   await page.getByRole('checkbox', { name: 'Testnet only: no real money' }).click()
   await page.getByRole('checkbox', { name: 'My deposit is not guaranteed' }).click()
   await expect(go).toBeDisabled()
-  await page.getByRole('checkbox', { name: 'No penalties for missed goals' }).click()
+  await page.getByRole('checkbox', { name: 'No penalties for missed commitments' }).click()
   await go.click()
   await expect(page.getByTestId('savings')).toContainText('Stellar Testnet')
   await expect(page.getByTestId('position')).toContainText('Not verified for this Testnet vault')
@@ -99,6 +95,7 @@ test('rewards are labelled as a simulation and never include principal', async (
   await page.goto('/?qa=rewards')
   await expect(page.getByTestId('rewards-simulation')).toContainText('SIMULATION: no rewards are paid')
   await expect(page.getByTestId('rewards-simulation')).toContainText('Deposits (principal) are never part of the pot')
+  await expect(page.getByTestId('reward-table')).toContainText('None confirmed')
   await expect(page.getByTestId('reward-table')).toContainText('No verified yield yet')
 })
 
@@ -126,19 +123,28 @@ test('encrypted backup: ciphertext download, wrong passphrase rejected, restore 
   await expect(page.getByLabel('Confirm restore')).toContainText('Replace data on this device?', { timeout: 15000 })
 })
 
-test('More keeps the four-tab navigation and adds community entries', async ({ page }) => {
+test('More keeps the four-tab navigation and adds Rhythm Pool entries without partners', async ({ page }) => {
   await page.goto('/?qa=more')
   await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('button')).toHaveText(['Today', 'Plan', 'Tasks', 'More'])
-  for (const name of ['Community challenges', 'Accountability partners', 'Savings & rewards · Testnet', 'Encrypted backup']) await expect(page.getByRole('button', { name, exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Accountability partners' })).toHaveCount(0)
+  for (const name of ['Rhythm Pool', 'Savings & rewards · Testnet', 'Encrypted backup']) await expect(page.getByRole('button', { name, exact: true })).toBeVisible()
 })
 
 for (const width of [320, 390, 768]) test(`new screens keep 44px touch targets and no horizontal scroll at ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 844 })
-  for (const qa of ['community', 'community-progress', 'partners', 'savings', 'backup']) {
+  for (const qa of ['community', 'rhythm-terms', 'community-commitments', 'community-progress', 'community-result', 'savings', 'backup']) {
     await page.goto(`/?qa=${qa}`)
     await page.locator('main').waitFor()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
     const small = await page.locator('main button:visible').evaluateAll(els => els.filter(el => { const r = el.getBoundingClientRect(); return r.height < 44 || r.width < 44 }).map(el => el.textContent))
     expect(small, qa).toEqual([])
   }
+})
+
+test('four-week result shows the aggregate ratio against the 70% threshold', async ({ page }) => {
+  await page.goto('/?qa=community-result')
+  const progress = page.getByTestId('rhythm-progress')
+  await expect(progress).toContainText('Your four-week result')
+  await expect(progress).toContainText('You completed 75% of your commitments and reached the 70% threshold')
+  await expect(page.getByRole('button', { name: 'Start another four weeks', exact: true })).toBeVisible()
 })

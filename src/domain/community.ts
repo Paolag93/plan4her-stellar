@@ -1,99 +1,69 @@
-import type { TaskItem } from './types'
-import { WORK_TYPES, type WorkType } from './cyclePreferences'
 import { dateFromISO, isISODate, localISO } from './planner'
+import type { VaultLedgerEntry } from './savings'
 
 /*
- * Community challenges, personal goals, accountability partners and the
- * optional Testnet savings ledger. Everything here is local to this browser.
- * Community belonging never requires cycle data, a wallet or a deposit.
+ * Rhythm Pool: one shared, ongoing community. Each member runs her own
+ * four-week (28-day) challenge starting on a Monday, built from 3–5 weekly
+ * commitments she picks from her existing Plan4Her schedule. Everything here
+ * stays on this device: commitment titles, statuses and history are private
+ * and never sent to Stellar, Pinata in plaintext, or any other member.
+ * Completion is self-reported.
  */
 
-export const COMMUNITY_STORAGE_KEY = 'plan4her:community:v1'
-export const CHALLENGE_LENGTHS = [30, 90] as const
-export type ChallengeLength = typeof CHALLENGE_LENGTHS[number]
+export const RHYTHM_STORAGE_KEY = 'plan4her:rhythm:v1'
+/** Earlier hackathon build; cleared with "Clear data", never read. */
+export const LEGACY_COMMUNITY_KEY = 'plan4her:community:v1'
+export const POOL_WEEKS = 4
+export const POOL_DAYS = 28
+export const MIN_COMMITMENTS = 3
+export const MAX_COMMITMENTS = 5
+export const REPLACEMENTS_PER_WEEK = 1
+export const ELIGIBILITY_THRESHOLD = 0.7
 
-export interface ChallengeTemplate {
+export type CommitmentStatus = 'open' | 'done' | 'missed' | 'replaced'
+export interface Commitment {
   id: string
+  taskId: string
   title: string
-  purpose: string
-  lengthDays: ChallengeLength
-  /** Sample members are simulated so the demo has a community to show. */
-  sampleMemberRates: number[]
-  custom?: boolean
+  status: CommitmentStatus
+  source?: 'manual' | 'task'
+  replaces?: string
+  replacedBy?: string
 }
-
-export const CHALLENGE_CATALOG: readonly ChallengeTemplate[] = [
-  { id: 'learn-30', title: '30-day learning rhythm', purpose: 'Members each pick something to learn and check in on their own schedule.', lengthDays: 30, sampleMemberRates: [0.82, 0.64, 0.9, 0.45, 0.71] },
-  { id: 'move-90', title: '90-day gentle movement', purpose: 'Walks, yoga, stretching or sport: any movement goal you choose, at your own pace.', lengthDays: 90, sampleMemberRates: [0.58, 0.77, 0.69, 0.93] },
-  { id: 'focus-30', title: '30-day focused work', purpose: 'Protect focus sessions for a project that matters to you.', lengthDays: 30, sampleMemberRates: [0.74, 0.51, 0.86] },
-]
-
-export interface PersonalGoal {
-  title: string
-  sessionsPerWeek: number
-  minutesPerSession: number
-  workType: WorkType
-  /** Personal threshold used only for optional reward eligibility (0.5–1). */
-  rewardThreshold: number
+export interface WeekCommitments {
+  week: number
+  weekStart: string
+  confirmedAt: string
+  /** Original number of confirmed commitments: the week's fixed denominator. */
+  count: number
+  replacementsUsed: number
+  items: Commitment[]
 }
+export interface AuditEvent { at: string; week: number; kind: 'confirmed' | 'done' | 'missed' | 'reopened' | 'replaced'; commitmentId: string; replacementId?: string }
 
-export interface CheckIn { date: string; source: 'manual' | 'task'; taskId?: string }
-
-export interface Membership {
-  challengeId: string
-  title: string
-  lengthDays: ChallengeLength
+export interface Participation {
+  joinedOn: string
   startDate: string
-  goal: PersonalGoal
-  checkIns: CheckIn[]
+  termsAcceptedAt: string
+  shareProgress: boolean
+  pledgeYield: boolean
   status: 'active' | 'left'
-  leftDate?: string
+  leftOn?: string
+  weeks: WeekCommitments[]
+  audit: AuditEvent[]
 }
-
-export const SHARE_FIELDS = ['completionRate', 'checkInsThisWeek', 'streakDays', 'lastCheckInDate'] as const
-export type ShareField = typeof SHARE_FIELDS[number]
-export const SHARE_FIELD_LABELS: Record<ShareField, string> = {
-  completionRate: 'Goal completion %',
-  checkInsThisWeek: 'Check-ins this week',
-  streakDays: 'Current streak (days)',
-  lastCheckInDate: 'Date of last check-in',
-}
-/** Data that is never part of any partner or community view. */
-export const NEVER_SHARED = ['Cycle context, phases or period dates', 'Symptoms, notes or journal', 'Task titles and plan details', 'Wallet address, balances or rewards'] as const
-
-export interface Partner {
-  id: string
-  displayName: string
-  status: 'pending' | 'active' | 'revoked'
-  permissions: ShareField[]
-  invitedAt: string
-  acceptedAt?: string
-  revokedAt?: string
-}
-
-export interface VaultLedgerEntry {
-  kind: 'deposit' | 'withdraw'
-  txHash: string
-  /** Underlying asset in stroops (7 decimals), decimal string. */
-  amount: string
-  /** Vault shares minted (deposit) or burned (withdraw), decimal string. */
-  shares: string
-  ledger: number
-  at: string
-  vaultId: string
-}
+export interface PastResult { startDate: string; done: number; denominator: number; ratio: number; eligible: boolean }
 
 export interface CommunityState {
-  version: 1
-  memberships: Membership[]
-  partners: Partner[]
-  shareWithCommunity: boolean
+  version: 2
+  participation: Participation | null
+  history: PastResult[]
   savings: { optedIn: boolean; risksAcknowledgedAt?: string; ledger: VaultLedgerEntry[] }
   encryptedBackups: { cid: string; uploadedAt: string }[]
 }
 
 export function createCommunityState(): CommunityState {
-  return { version: 1, memberships: [], partners: [], shareWithCommunity: false, savings: { optedIn: false, ledger: [] }, encryptedBackups: [] }
+  return { version: 2, participation: null, history: [], savings: { optedIn: false, ledger: [] }, encryptedBackups: [] }
 }
 
 export function addDays(iso: string, days: number): string {
@@ -102,274 +72,166 @@ export function addDays(iso: string, days: number): string {
 function daysBetween(from: string, to: string): number {
   return Math.round((dateFromISO(to).getTime() - dateFromISO(from).getTime()) / 86_400_000)
 }
-function weekStartOf(iso: string): string {
-  const date = dateFromISO(iso); date.setDate(date.getDate() - ((date.getDay() + 6) % 7)); return localISO(date)
+
+/** The challenge starts on the coming Monday; on a Monday it starts that day. */
+export function nextMonday(today = localISO()): string {
+  const offset = (8 - dateFromISO(today).getDay()) % 7
+  return addDays(today, offset)
+}
+export function poolEndDate(p: Participation): string { return addDays(p.startDate, POOL_DAYS - 1) }
+export function weekStartOf(p: Participation, week: number): string { return addDays(p.startDate, (week - 1) * 7) }
+
+/** 0 = not started yet, 1–4 = running week, 5 = finished. */
+export function currentWeek(p: Participation, today = localISO()): number {
+  const days = daysBetween(p.startDate, today)
+  if (days < 0) return 0
+  return Math.min(POOL_WEEKS + 1, Math.floor(days / 7) + 1)
 }
 
-export function validateGoal(goal: PersonalGoal): string[] {
-  const errors: string[] = []
-  if (!goal.title.trim()) errors.push('Name your personal goal.')
-  if (goal.title.length > 80) errors.push('Keep the goal name under 80 characters.')
-  if (!Number.isInteger(goal.sessionsPerWeek) || goal.sessionsPerWeek < 1 || goal.sessionsPerWeek > 7) errors.push('Choose 1 to 7 sessions a week.')
-  if (!Number.isInteger(goal.minutesPerSession) || goal.minutesPerSession < 5 || goal.minutesPerSession > 240) errors.push('Choose 5 to 240 minutes per session.')
-  if (!WORK_TYPES.includes(goal.workType)) errors.push('Choose a work type.')
-  if (!(goal.rewardThreshold >= 0.5 && goal.rewardThreshold <= 1)) errors.push('Choose a personal threshold between 50% and 100%.')
-  return errors
+export function activeParticipation(state: CommunityState): Participation | null {
+  return state.participation?.status === 'active' ? state.participation : null
 }
 
-export function challengeTemplate(id: string, state?: CommunityState): ChallengeTemplate | undefined {
-  const known = CHALLENGE_CATALOG.find(item => item.id === id)
-  if (known) return known
-  const own = state?.memberships.find(item => item.challengeId === id)
-  return own ? { id, title: own.title, purpose: 'Your own challenge. Invite partners to cheer you on.', lengthDays: own.lengthDays, sampleMemberRates: [], custom: true } : undefined
+export function joinPool(state: CommunityState, options: { shareProgress: boolean; pledgeYield: boolean }, today = localISO(), now = new Date()): CommunityState {
+  if (activeParticipation(state)) throw new Error('You are already in the Rhythm Pool.')
+  const archived = state.participation ? [...state.history, resultFor(state.participation, today)] : state.history
+  return { ...state, history: archived, participation: { joinedOn: today, startDate: nextMonday(today), termsAcceptedAt: now.toISOString(), shareProgress: options.shareProgress, pledgeYield: options.pledgeYield, status: 'active', weeks: [], audit: [] } }
 }
 
-export function activeMembership(state: CommunityState): Membership | undefined {
-  return state.memberships.find(item => item.status === 'active')
+export function setSharing(state: CommunityState, patch: Partial<Pick<Participation, 'shareProgress' | 'pledgeYield'>>): CommunityState {
+  if (!state.participation) return state
+  return { ...state, participation: { ...state.participation, ...patch } }
 }
 
-/** Joining is free: no wallet, deposit or cycle information is requested. */
-export function joinChallenge(state: CommunityState, template: Pick<ChallengeTemplate, 'id' | 'title' | 'lengthDays'>, goal: PersonalGoal, today = localISO()): CommunityState {
-  const errors = validateGoal(goal)
-  if (errors.length) throw new Error(errors.join(' '))
-  if (!CHALLENGE_LENGTHS.includes(template.lengthDays)) throw new Error('Challenges last 30 or 90 days.')
-  if (activeMembership(state)) throw new Error('Leave your current challenge before joining another one.')
-  const membership: Membership = { challengeId: template.id, title: template.title.trim().slice(0, 80), lengthDays: template.lengthDays, startDate: today, goal: { ...goal, title: goal.title.trim() }, checkIns: [], status: 'active' }
-  return { ...state, memberships: [...state.memberships.filter(item => item.challengeId !== template.id), membership] }
+/** Leaving keeps private history and never moves or penalizes savings. */
+export function leavePool(state: CommunityState, today = localISO()): CommunityState {
+  if (!activeParticipation(state)) return state
+  return { ...state, participation: { ...state.participation!, status: 'left', leftOn: today } }
 }
 
-export function updateGoal(state: CommunityState, challengeId: string, goal: PersonalGoal): CommunityState {
-  const errors = validateGoal(goal)
-  if (errors.length) throw new Error(errors.join(' '))
-  return { ...state, memberships: state.memberships.map(item => item.challengeId === challengeId ? { ...item, goal: { ...goal, title: goal.title.trim() } } : item) }
+/** The week whose commitments can be chosen now: the current week, or week 1 before the start. */
+export function editableWeek(p: Participation, today = localISO()): number | null {
+  const week = Math.max(1, currentWeek(p, today))
+  if (week > POOL_WEEKS) return null
+  return p.weeks.some(w => w.week === week) ? null : week
 }
 
-/** Leaving keeps your private history and never affects any savings position. */
-export function leaveChallenge(state: CommunityState, challengeId: string, today = localISO()): CommunityState {
-  return { ...state, memberships: state.memberships.map(item => item.challengeId === challengeId && item.status === 'active' ? { ...item, status: 'left', leftDate: today } : item) }
+export interface CommitmentChoice { taskId: string; title: string }
+
+export function confirmCommitments(state: CommunityState, week: number, choices: CommitmentChoice[], today = localISO(), now = new Date()): CommunityState {
+  const p = activeParticipation(state)
+  if (!p) throw new Error('Join the Rhythm Pool first.')
+  if (editableWeek(p, today) !== week) throw new Error('Commitments can only be set for the current week.')
+  const unique = [...new Map(choices.map(c => [c.taskId, c])).values()]
+  if (unique.length < MIN_COMMITMENTS || unique.length > MAX_COMMITMENTS) throw new Error(`Choose ${MIN_COMMITMENTS} to ${MAX_COMMITMENTS} commitments.`)
+  const items: Commitment[] = unique.map((c, i) => ({ id: `w${week}-c${i + 1}`, taskId: c.taskId, title: c.title.slice(0, 200), status: 'open' }))
+  const at = now.toISOString()
+  const entry: WeekCommitments = { week, weekStart: weekStartOf(p, week), confirmedAt: at, count: items.length, replacementsUsed: 0, items }
+  return { ...state, participation: { ...p, weeks: [...p.weeks, entry].sort((a, b) => a.week - b.week), audit: [...p.audit, ...items.map(item => ({ at, week, kind: 'confirmed' as const, commitmentId: item.id }))] } }
 }
 
-export function challengeEndDate(membership: Membership): string { return addDays(membership.startDate, membership.lengthDays - 1) }
-
-/** One check-in per day keeps progress honest and idempotent. */
-export function recordCheckIn(state: CommunityState, challengeId: string, date = localISO(), source: CheckIn['source'] = 'manual', taskId?: string): CommunityState {
-  return { ...state, memberships: state.memberships.map(item => {
-    if (item.challengeId !== challengeId || item.status !== 'active') return item
-    if (date < item.startDate || date > challengeEndDate(item) || item.checkIns.some(check => check.date === date)) return item
-    const checkIn: CheckIn = taskId ? { date, source, taskId } : { date, source }
-    return { ...item, checkIns: [...item.checkIns, checkIn].sort((a, b) => a.date.localeCompare(b.date)) }
-  }) }
+function updateWeek(state: CommunityState, week: number, fn: (w: WeekCommitments, p: Participation) => { week: WeekCommitments; events: AuditEvent[] }): CommunityState {
+  const p = activeParticipation(state)
+  if (!p) throw new Error('Join the Rhythm Pool first.')
+  const target = p.weeks.find(w => w.week === week)
+  if (!target) throw new Error('That week has no confirmed commitments.')
+  const { week: next, events } = fn(target, p)
+  return { ...state, participation: { ...p, weeks: p.weeks.map(w => w.week === week ? next : w), audit: [...p.audit, ...events] } }
 }
 
-export function removeCheckIn(state: CommunityState, challengeId: string, date: string): CommunityState {
-  return { ...state, memberships: state.memberships.map(item => item.challengeId === challengeId ? { ...item, checkIns: item.checkIns.filter(check => check.date !== date) } : item) }
+/** Self-reported status. Future weeks and replaced items cannot be marked. */
+export function setCommitmentStatus(state: CommunityState, week: number, id: string, status: 'done' | 'missed' | 'open', today = localISO(), now = new Date(), source: 'manual' | 'task' = 'manual'): CommunityState {
+  return updateWeek(state, week, (w, p) => {
+    if (currentWeek(p, today) < week) throw new Error('This week has not started yet.')
+    const item = w.items.find(i => i.id === id)
+    if (!item || item.status === 'replaced') throw new Error('This commitment can no longer change.')
+    if (item.status === status) return { week: w, events: [] }
+    const kind = status === 'open' ? 'reopened' : status
+    return { week: { ...w, items: w.items.map(i => i.id === id ? { ...i, status, source } : i) }, events: [{ at: now.toISOString(), week, kind, commitmentId: id }] }
+  })
 }
 
-export interface GoalProgress {
-  dayNumber: number
-  daysRemaining: number
+/** Replaces one unfinished commitment per week; the denominator stays the same. */
+export function replaceCommitment(state: CommunityState, week: number, id: string, choice: CommitmentChoice, now = new Date()): CommunityState {
+  return updateWeek(state, week, w => {
+    if (w.replacementsUsed >= REPLACEMENTS_PER_WEEK) throw new Error('You already replaced one commitment this week.')
+    const item = w.items.find(i => i.id === id)
+    if (!item || item.status === 'done' || item.status === 'replaced') throw new Error('Only an unfinished commitment can be replaced.')
+    if (w.items.some(i => i.status !== 'replaced' && i.taskId === choice.taskId)) throw new Error('That task is already a commitment this week.')
+    const replacement: Commitment = { id: `${id}-r`, taskId: choice.taskId, title: choice.title.slice(0, 200), status: 'open', replaces: id }
+    const items = w.items.flatMap(i => i.id === id ? [{ ...i, status: 'replaced' as const, replacedBy: replacement.id }, replacement] : [i])
+    return { week: { ...w, replacementsUsed: w.replacementsUsed + 1, items }, events: [{ at: now.toISOString(), week, kind: 'replaced', commitmentId: id, replacementId: replacement.id }] }
+  })
+}
+
+/** Completing the linked task in Tasks/Today marks the current week's commitment done. */
+export function syncTaskCompletion(state: CommunityState, taskId: string, done: boolean, today = localISO(), now = new Date()): CommunityState {
+  const p = activeParticipation(state)
+  if (!p) return state
+  const week = currentWeek(p, today)
+  const w = p.weeks.find(x => x.week === week)
+  const item = w?.items.find(i => i.taskId === taskId && i.status !== 'replaced')
+  if (!w || !item) return state
+  if (done && item.status === 'open') return setCommitmentStatus(state, week, item.id, 'done', today, now, 'task')
+  if (!done && item.status === 'done' && item.source === 'task') return setCommitmentStatus(state, week, item.id, 'open', today, now, 'task')
+  return state
+}
+
+export interface WeekProgress { week: number; weekStart: string; confirmed: boolean; denominator: number; done: number; missed: number; open: number; elapsed: boolean }
+export interface PoolProgress {
+  week: number
+  started: boolean
   ended: boolean
-  completed: number
-  expected: number
-  completionRate: number
-  checkInsThisWeek: number
-  streakDays: number
-  lastCheckInDate: string | null
-  checkedInToday: boolean
+  daysUntilStart: number
+  daysRemaining: number
+  weeks: WeekProgress[]
+  done: number
+  denominator: number
+  ratio: number
+  eligible: boolean
 }
 
-export function goalProgress(membership: Membership, today = localISO()): GoalProgress {
-  const end = challengeEndDate(membership)
-  const effectiveToday = today > end ? end : today
-  const elapsed = Math.max(0, Math.min(membership.lengthDays, daysBetween(membership.startDate, effectiveToday) + 1))
-  const inWindow = membership.checkIns.filter(check => check.date >= membership.startDate && check.date <= end)
-  const completed = inWindow.length
-  const expected = Math.max(1, Math.round(membership.goal.sessionsPerWeek * elapsed / 7))
-  const week = weekStartOf(today)
-  const dates = new Set(inWindow.map(check => check.date))
-  let streak = 0
-  let cursor = dates.has(today) ? today : addDays(today, -1)
-  while (dates.has(cursor)) { streak++; cursor = addDays(cursor, -1) }
+/**
+ * Aggregate four-week ratio = completed commitments / original confirmed count.
+ * A week that ended without confirmed commitments counts as the minimum (3)
+ * commitments not completed, so skipping weeks cannot raise the ratio. New
+ * ordinary tasks never change the denominator.
+ */
+export function poolProgress(p: Participation, today = localISO()): PoolProgress {
+  const week = currentWeek(p, today)
+  const weeks: WeekProgress[] = []
+  for (let n = 1; n <= POOL_WEEKS; n++) {
+    const w = p.weeks.find(x => x.week === n)
+    const elapsed = week > n
+    const live = w ? w.items.filter(i => i.status !== 'replaced') : []
+    const denominator = w ? w.count : elapsed ? MIN_COMMITMENTS : 0
+    weeks.push({ week: n, weekStart: weekStartOf(p, n), confirmed: Boolean(w), denominator, done: live.filter(i => i.status === 'done').length, missed: live.filter(i => i.status === 'missed').length, open: live.filter(i => i.status === 'open').length, elapsed })
+  }
+  const done = weeks.reduce((s, w) => s + w.done, 0)
+  const denominator = weeks.reduce((s, w) => s + w.denominator, 0)
+  const ratio = denominator ? Math.min(1, done / denominator) : 0
   return {
-    dayNumber: elapsed,
-    daysRemaining: Math.max(0, daysBetween(effectiveToday, end)),
-    ended: today > end,
-    completed,
-    expected,
-    completionRate: Math.min(1, completed / expected),
-    checkInsThisWeek: inWindow.filter(check => check.date >= week && check.date <= today).length,
-    streakDays: streak,
-    lastCheckInDate: inWindow.at(-1)?.date ?? null,
-    checkedInToday: dates.has(today),
+    week, started: week >= 1, ended: week > POOL_WEEKS,
+    daysUntilStart: Math.max(0, daysBetween(today, p.startDate)),
+    daysRemaining: Math.max(0, daysBetween(today, poolEndDate(p))),
+    weeks, done, denominator, ratio,
+    eligible: week > POOL_WEEKS && ratio >= ELIGIBILITY_THRESHOLD,
   }
 }
 
-/** Eligibility compares a member only with her own goal and threshold. */
-export function rewardEligible(membership: Membership, today = localISO()): boolean {
-  return goalProgress(membership, today).completionRate >= membership.goal.rewardThreshold
+export function resultFor(p: Participation, today = localISO()): PastResult {
+  const progress = poolProgress(p, today)
+  return { startDate: p.startDate, done: progress.done, denominator: progress.denominator, ratio: progress.ratio, eligible: progress.ratio >= ELIGIBILITY_THRESHOLD }
 }
 
-/**
- * Builds this week's habit sessions as ordinary flexible tasks so the existing
- * cycle-aware planner can place them. Deterministic ids prevent duplicates.
- */
-export function goalSessionTasks(membership: Membership, weekStart: string, existing: TaskItem[]): TaskItem[] {
-  if (!isISODate(weekStart)) throw new Error('Choose a valid week.')
-  const ids = new Set(existing.map(task => task.id))
-  const deadline = addDays(weekStart, 6) > challengeEndDate(membership) ? challengeEndDate(membership) : addDays(weekStart, 6)
-  const tasks: TaskItem[] = []
-  for (let n = 1; n <= membership.goal.sessionsPerWeek; n++) {
-    const id = goalTaskId(membership.challengeId, weekStart, n)
-    if (ids.has(id)) continue
-    tasks.push({ id, title: `${membership.goal.title} · session ${n}/${membership.goal.sessionsPerWeek}`, meta: `${membership.goal.minutesPerSession} min`, kind: 'Flexible', duration: `${membership.goal.minutesPerSession} min`, deadline, importance: 'Important', workType: membership.goal.workType })
-  }
-  return tasks
-}
-export function goalTaskId(challengeId: string, weekStart: string, n: number): string { return `goal-${challengeId}-${weekStart}-${n}` }
-export function challengeForGoalTask(taskId: string, state: CommunityState): string | null {
-  const match = state.memberships.find(item => taskId.startsWith(`goal-${item.challengeId}-`))
-  return match?.challengeId ?? null
-}
-
-// --- Accountability partners -------------------------------------------------
-
-export function invitePartner(state: CommunityState, displayName: string, permissions: ShareField[], now = new Date()): CommunityState {
-  const name = displayName.trim()
-  if (!name) throw new Error('Add a name or nickname for your partner.')
-  if (name.length > 40) throw new Error('Keep the partner name under 40 characters.')
-  if (state.partners.filter(item => item.status !== 'revoked').length >= 5) throw new Error('You can have up to 5 partners.')
-  const safe = permissions.filter((field): field is ShareField => SHARE_FIELDS.includes(field))
-  const partner: Partner = { id: `partner-${now.getTime().toString(36)}-${state.partners.length}`, displayName: name, status: 'pending', permissions: [...new Set(safe)], invitedAt: now.toISOString() }
-  return { ...state, partners: [...state.partners, partner] }
-}
-
-/** Local demo only: there is no second account, so acceptance is simulated. */
-export function simulatePartnerAccept(state: CommunityState, partnerId: string, now = new Date()): CommunityState {
-  return { ...state, partners: state.partners.map(item => item.id === partnerId && item.status === 'pending' ? { ...item, status: 'active', acceptedAt: now.toISOString() } : item) }
-}
-
-export function setPartnerPermissions(state: CommunityState, partnerId: string, permissions: ShareField[]): CommunityState {
-  const safe = [...new Set(permissions.filter((field): field is ShareField => SHARE_FIELDS.includes(field)))]
-  return { ...state, partners: state.partners.map(item => item.id === partnerId && item.status !== 'revoked' ? { ...item, permissions: safe } : item) }
-}
-
-/** Revocation stops future access. It cannot recall what a partner already saw. */
-export function revokePartner(state: CommunityState, partnerId: string, now = new Date()): CommunityState {
-  return { ...state, partners: state.partners.map(item => item.id === partnerId ? { ...item, status: 'revoked', permissions: [], revokedAt: now.toISOString() } : item) }
-}
-
-export type PartnerView =
-  | { status: 'revoked' | 'pending' | 'no-goal' }
-  | { status: 'active'; challengeTitle: string; fields: Partial<Record<ShareField, string | number | null>> }
-
-/** The only function that produces partner-visible data. It is allow-list based. */
-export function partnerView(state: CommunityState, partnerId: string, today = localISO()): PartnerView {
-  const partner = state.partners.find(item => item.id === partnerId)
-  if (!partner || partner.status === 'revoked') return { status: 'revoked' }
-  if (partner.status === 'pending') return { status: 'pending' }
-  const membership = activeMembership(state)
-  if (!membership) return { status: 'no-goal' }
-  const progress = goalProgress(membership, today)
-  const all: Record<ShareField, string | number | null> = {
-    completionRate: Math.round(progress.completionRate * 100),
-    checkInsThisWeek: progress.checkInsThisWeek,
-    streakDays: progress.streakDays,
-    lastCheckInDate: progress.lastCheckInDate,
-  }
-  const fields: Partial<Record<ShareField, string | number | null>> = {}
-  for (const field of partner.permissions) if (SHARE_FIELDS.includes(field)) fields[field] = all[field]
-  return { status: 'active', challengeTitle: membership.title, fields }
-}
-
-/** Voluntary group aggregate. Sample members are simulated and labelled as such. */
-export function communityAggregate(state: CommunityState, template: ChallengeTemplate, today = localISO()): { members: number; averageRate: number | null; includesYou: boolean } {
-  const rates = [...template.sampleMemberRates]
-  const own = state.memberships.find(item => item.challengeId === template.id && item.status === 'active')
-  const includesYou = Boolean(own && state.shareWithCommunity)
-  if (own && includesYou) rates.push(goalProgress(own, today).completionRate)
-  return { members: template.sampleMemberRates.length + (own ? 1 : 0), averageRate: rates.length ? rates.reduce((sum, rate) => sum + rate, 0) / rates.length : null, includesYou }
-}
-
-// --- Savings accounting (stroops as bigint) -----------------------------------
-
-export const STROOPS_PER_UNIT = 10_000_000n
-
-/** Parses a user-entered XLM amount to stroops without floating-point rounding. */
-export function parseAmount(input: string): bigint {
-  const text = input.trim().replace(',', '.')
-  if (!/^\d+(\.\d{1,7})?$/.test(text)) throw new Error('Enter an amount with up to 7 decimal places.')
-  const [whole, fraction = ''] = text.split('.')
-  const value = BigInt(whole) * STROOPS_PER_UNIT + BigInt(fraction.padEnd(7, '0'))
-  if (value <= 0n) throw new Error('Enter an amount greater than zero.')
-  return value
-}
-
-export function formatAmount(stroops: bigint, symbol = 'XLM'): string {
-  const negative = stroops < 0n
-  const abs = negative ? -stroops : stroops
-  const whole = abs / STROOPS_PER_UNIT
-  const fraction = (abs % STROOPS_PER_UNIT).toString().padStart(7, '0').replace(/0+$/, '')
-  return `${negative ? '−' : ''}${whole.toString()}${fraction ? `.${fraction}` : ''} ${symbol}`.trim()
-}
-
-/** Minimum accepted output after slippage, rounded down. */
-export function minWithSlippage(amount: bigint, slippageBps: number): bigint {
-  if (!Number.isInteger(slippageBps) || slippageBps < 0 || slippageBps > 10_000) throw new Error('Invalid slippage.')
-  return amount * BigInt(10_000 - slippageBps) / 10_000n
-}
-
-export interface PositionSummary {
-  /** Remaining cost basis of shares still held (average-cost method). */
-  contributed: bigint
-  shares: bigint
-  totalDeposited: bigint
-  totalWithdrawn: bigint
-  /** Net realized result of withdrawals; negative means a realized loss. */
-  realized: bigint
-  /** Current redeemable value minus remaining cost basis; may be negative. */
-  unrealized: bigint | null
-  redeemable: bigint | null
-}
-
-/**
- * Confirmed ledger entries only. Average-cost basis: each withdrawal realizes
- * amountOut − (basis × sharesBurned / sharesHeld). Rounding favours a lower
- * realized gain so yield is never overstated.
- */
-export function positionSummary(ledger: VaultLedgerEntry[], redeemable: bigint | null = null): PositionSummary {
-  let basis = 0n, shares = 0n, realized = 0n, deposited = 0n, withdrawn = 0n
-  for (const entry of ledger) {
-    const amount = BigInt(entry.amount), delta = BigInt(entry.shares)
-    if (amount < 0n || delta < 0n) throw new Error('Ledger amounts must be positive.')
-    if (entry.kind === 'deposit') { basis += amount; shares += delta; deposited += amount }
-    else {
-      if (delta > shares || shares === 0n) throw new Error('Withdrawal exceeds recorded shares.')
-      const basisOut = delta === shares ? basis : (basis * delta + shares - 1n) / shares
-      realized += amount - basisOut
-      basis -= basisOut; shares -= delta; withdrawn += amount
-    }
-  }
-  return { contributed: basis, shares, totalDeposited: deposited, totalWithdrawn: withdrawn, realized, redeemable, unrealized: redeemable === null ? null : redeemable - basis }
-}
-
-export interface RewardParticipant { id: string; realizedYield: bigint; principal: bigint; eligible: boolean }
-export interface RewardAllocation { pot: bigint; pledgePercent: number; allocations: Record<string, bigint>; unallocated: bigint; principalTouched: false }
-
-/**
- * SIMULATION of an agreed community rule: each participant pledges a share of
- * her own positive net realized yield. Principal is never part of the pot and
- * negative results contribute nothing. Eligible members split the pot equally;
- * if nobody is eligible the pot stays with its contributors (unallocated).
- */
-export function simulateRewardPool(participants: RewardParticipant[], pledgePercent = 20): RewardAllocation {
-  if (!Number.isInteger(pledgePercent) || pledgePercent < 0 || pledgePercent > 100) throw new Error('Pledge must be 0–100%.')
-  const pot = participants.reduce((sum, p) => sum + (p.realizedYield > 0n ? p.realizedYield * BigInt(pledgePercent) / 100n : 0n), 0n)
-  const eligible = participants.filter(p => p.eligible)
-  const allocations: Record<string, bigint> = Object.fromEntries(participants.map(p => [p.id, 0n]))
-  if (!eligible.length || pot === 0n) return { pot, pledgePercent, allocations, unallocated: pot, principalTouched: false }
-  const each = pot / BigInt(eligible.length)
-  for (const p of eligible) allocations[p.id] = each
-  return { pot, pledgePercent, allocations, unallocated: pot - each * BigInt(eligible.length), principalTouched: false }
+/** Sample members are simulated for the demo; the pool works with one member. */
+export const SAMPLE_MEMBER_RATES = [0.82, 0.64, 0.9, 0.45, 0.71, 0.77] as const
+export function communityAggregate(state: CommunityState, today = localISO()): { sampleMembers: number; averageRate: number; includesYou: boolean } {
+  const rates: number[] = [...SAMPLE_MEMBER_RATES]
+  const p = activeParticipation(state)
+  const includesYou = Boolean(p?.shareProgress && poolProgress(p, today).denominator > 0)
+  if (p && includesYou) rates.push(poolProgress(p, today).ratio)
+  return { sampleMembers: SAMPLE_MEMBER_RATES.length, averageRate: rates.reduce((s, r) => s + r, 0) / rates.length, includesYou }
 }
 
 // --- Persistence ----------------------------------------------------------------
@@ -379,17 +241,21 @@ const isStr = (v: unknown, max = 256): v is string => typeof v === 'string' && v
 const intIn = (v: unknown, min: number, max: number) => Number.isInteger(v) && (v as number) >= min && (v as number) <= max
 const digits = (v: unknown) => isStr(v, 40) && /^\d+$/.test(v)
 
+function validParticipation(p: unknown): boolean {
+  if (!isRecord(p) || !isISODate(p.joinedOn) || !isISODate(p.startDate) || dateFromISO(p.startDate as string).getDay() !== 1 || !isStr(p.termsAcceptedAt, 40)) return false
+  if (typeof p.shareProgress !== 'boolean' || typeof p.pledgeYield !== 'boolean' || !['active', 'left'].includes(p.status as string) || (p.leftOn !== undefined && !isISODate(p.leftOn))) return false
+  if (!Array.isArray(p.weeks) || p.weeks.length > POOL_WEEKS || !p.weeks.every(w => isRecord(w) && intIn(w.week, 1, POOL_WEEKS) && isISODate(w.weekStart) && isStr(w.confirmedAt, 40)
+    && intIn(w.count, MIN_COMMITMENTS, MAX_COMMITMENTS) && intIn(w.replacementsUsed, 0, REPLACEMENTS_PER_WEEK)
+    && Array.isArray(w.items) && w.items.length <= MAX_COMMITMENTS + REPLACEMENTS_PER_WEEK && w.items.filter(i => isRecord(i) && i.status !== 'replaced').length === w.count
+    && w.items.every(i => isRecord(i) && isStr(i.id, 32) && isStr(i.taskId) && isStr(i.title, 200) && ['open', 'done', 'missed', 'replaced'].includes(i.status as string)
+      && [i.replaces, i.replacedBy].every(x => x === undefined || isStr(x, 32)) && (i.source === undefined || ['manual', 'task'].includes(i.source as string))))) return false
+  if (new Set(p.weeks.map(w => (w as WeekCommitments).week)).size !== p.weeks.length) return false
+  return Array.isArray(p.audit) && p.audit.length <= 400 && p.audit.every(a => isRecord(a) && isStr(a.at, 40) && intIn(a.week, 1, POOL_WEEKS) && ['confirmed', 'done', 'missed', 'reopened', 'replaced'].includes(a.kind as string) && isStr(a.commitmentId, 32) && (a.replacementId === undefined || isStr(a.replacementId, 32)))
+}
+
 export function validateCommunityState(v: unknown): v is CommunityState {
-  if (!isRecord(v) || v.version !== 1 || typeof v.shareWithCommunity !== 'boolean') return false
-  if (!Array.isArray(v.memberships) || v.memberships.length > 50 || !v.memberships.every(m => isRecord(m)
-    && isStr(m.challengeId, 64) && isStr(m.title, 80) && CHALLENGE_LENGTHS.includes(m.lengthDays as ChallengeLength) && isISODate(m.startDate)
-    && ['active', 'left'].includes(m.status as string) && (m.leftDate === undefined || isISODate(m.leftDate))
-    && isRecord(m.goal) && validateGoal(m.goal as unknown as PersonalGoal).length === 0
-    && Array.isArray(m.checkIns) && m.checkIns.length <= 400 && m.checkIns.every(c => isRecord(c) && isISODate(c.date) && ['manual', 'task'].includes(c.source as string) && (c.taskId === undefined || isStr(c.taskId))))) return false
-  if (v.memberships.filter(m => (m as Membership).status === 'active').length > 1) return false
-  if (!Array.isArray(v.partners) || v.partners.length > 50 || !v.partners.every(p => isRecord(p) && isStr(p.id, 64) && isStr(p.displayName, 40)
-    && ['pending', 'active', 'revoked'].includes(p.status as string) && Array.isArray(p.permissions) && p.permissions.every(f => SHARE_FIELDS.includes(f as ShareField))
-    && isStr(p.invitedAt, 40) && [p.acceptedAt, p.revokedAt].every(x => x === undefined || isStr(x, 40)))) return false
+  if (!isRecord(v) || v.version !== 2 || !(v.participation === null || validParticipation(v.participation))) return false
+  if (!Array.isArray(v.history) || v.history.length > 100 || !v.history.every(h => isRecord(h) && isISODate(h.startDate) && intIn(h.done, 0, 100) && intIn(h.denominator, 0, 100) && typeof h.ratio === 'number' && h.ratio >= 0 && h.ratio <= 1 && typeof h.eligible === 'boolean')) return false
   const s = v.savings
   if (!isRecord(s) || typeof s.optedIn !== 'boolean' || (s.risksAcknowledgedAt !== undefined && !isStr(s.risksAcknowledgedAt, 40)) || !Array.isArray(s.ledger) || s.ledger.length > 500
     || !s.ledger.every(e => isRecord(e) && ['deposit', 'withdraw'].includes(e.kind as string) && isStr(e.txHash, 64) && /^[0-9a-f]{64}$/.test(e.txHash) && digits(e.amount) && digits(e.shares) && intIn(e.ledger, 0, 2 ** 32) && isStr(e.at, 40) && isStr(e.vaultId, 56))) return false
@@ -400,19 +266,19 @@ export interface CommunityStorage { getItem(key: string): string | null; setItem
 
 export function loadCommunity(storage?: CommunityStorage): { state: CommunityState; error?: string } {
   try {
-    const raw = (storage ?? window.localStorage).getItem(COMMUNITY_STORAGE_KEY)
+    const raw = (storage ?? window.localStorage).getItem(RHYTHM_STORAGE_KEY)
     if (raw === null) return { state: createCommunityState() }
     const parsed: unknown = JSON.parse(raw)
     if (!validateCommunityState(parsed)) throw new Error('invalid')
     return { state: parsed }
-  } catch { return { state: createCommunityState(), error: 'Community data could not be read. It has been kept on this device.' } }
+  } catch { return { state: createCommunityState(), error: 'Rhythm Pool data could not be read. It has been kept on this device.' } }
 }
 export function saveCommunity(state: CommunityState, storage?: CommunityStorage): { error?: string } {
   try {
     if (!validateCommunityState(state)) throw new Error('invalid')
-    ;(storage ?? window.localStorage).setItem(COMMUNITY_STORAGE_KEY, JSON.stringify(state)); return {}
-  } catch { return { error: 'Community changes could not be saved on this device.' } }
+    ;(storage ?? window.localStorage).setItem(RHYTHM_STORAGE_KEY, JSON.stringify(state)); return {}
+  } catch { return { error: 'Rhythm Pool changes could not be saved on this device.' } }
 }
 export function clearCommunity(storage?: CommunityStorage): void {
-  try { (storage ?? window.localStorage).removeItem(COMMUNITY_STORAGE_KEY) } catch { /* storage unavailable */ }
+  try { const target = storage ?? window.localStorage; target.removeItem(RHYTHM_STORAGE_KEY); target.removeItem(LEGACY_COMMUNITY_KEY) } catch { /* storage unavailable */ }
 }
