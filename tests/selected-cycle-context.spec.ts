@@ -103,7 +103,7 @@ async function expectPhase(page: Page, day: number, phase: keyof typeof phases) 
   await expect(card.locator('.daily-phase-context__estimated')).toHaveText('Estimated')
   await expect(card).toHaveAttribute('data-phase', phase.toLowerCase())
   await expect(card).toHaveCSS('background-color', phases[phase].rgb)
-  await expect(card).toContainText('Cycle timing for this day is an estimate.')
+  await expect(card).toContainText('Your cycle day is estimated from your last period.')
   expect(await card.evaluate((_, token) => getComputedStyle(document.documentElement).getPropertyValue(token).trim(), `--p4h-phase-${phase.toLowerCase()}`)).toBe(phases[phase].hex)
 }
 

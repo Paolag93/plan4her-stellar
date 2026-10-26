@@ -14,7 +14,7 @@ interface OnboardingIntroScreenProps {
 }
 
 const principles = [
-  ['Private by default', 'Your planning data stays on this device.'],
+  ['Private by default', 'Your plans and cycle details stay on this device.'],
   ['Preview first', 'See what would move before applying it.'],
   ['Undo anytime', 'Restore the previous plan after a change.'],
 ] as const
@@ -30,12 +30,12 @@ export function OnboardingIntroScreen({ step, onBack, onContinue, onSetUp }: Onb
         </button>
         <img className="onboarding-intro__progress" src={rhythm ? rhythmProgress : controlProgress} alt={`How Plan4Her works: ${rhythm ? '1' : '2'} of 2`} />
       </header>
-      <h1 className="onboarding-intro__title">{rhythm ? 'Your rhythm adds context' : 'You approve every change'}</h1>
+      <h1 className="onboarding-intro__title">{rhythm ? 'Your rhythm is your advantage' : 'You approve every change'}</h1>
       <p className="onboarding-intro__description">
-        {rhythm ? 'Cycle context can influence suggestions. It never decides for you.' : 'Plan4Her proposes a week. You review it before anything moves.'}
+        {rhythm ? 'Plan4Her uses your estimated cycle phase to place each kind of work where it can fit best. You always have the final say.' : 'Plan4Her proposes your week. Nothing moves until you review it.'}
       </p>
       {rhythm ? (
-        <PhaseContextCard day="Day 8" pattern="Energy may be rising" planNote="Example: Plan4Her can leave more room for focused work earlier in the day." />
+        <PhaseContextCard day="Day 8" pattern="Energy may be rising" planNote="Example: Plan4Her places focused work where your energy tends to build." />
       ) : (
         <section className="privacy-principles onboarding-intro__principles" aria-label="Privacy principles">
           {principles.map(([title, body]) => <article className="privacy-principle" key={title}><h2>{title}</h2><p>{body}</p></article>)}

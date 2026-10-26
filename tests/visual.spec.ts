@@ -23,7 +23,7 @@ test.describe('MVP entry + Quick Start', () => {
     await expect(screen).toBeVisible()
     await expect(screen).toHaveCSS('width', '390px')
     await expect(screen).toHaveCSS('height', '844px')
-    await expect(page.getByRole('heading', { name: 'A weekly plan that adapts to you' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Your life isn’t linear. Your plan shouldn’t be.' })).toBeVisible()
     await expect(page).toHaveScreenshot('p6-start-user-entry.png', { fullPage: true, animations: 'disabled' })
   })
 

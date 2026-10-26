@@ -45,7 +45,7 @@ for (const width of widths) for (const height of heights) {
     await page.setViewportSize({ width, height })
     await page.goto('/')
     await noHorizontalOverflow(page)
-    const heading = page.getByRole('heading', { name: 'A weekly plan that adapts to you' })
+    const heading = page.getByRole('heading', { name: 'Your life isn’t linear. Your plan shouldn’t be.' })
     await expect(heading).toHaveCSS('font-size', '24px')
     // An unscaled font-size is not sufficient: its ancestor must not transform it.
     await expect(page.getByRole('main')).toHaveCSS('transform', 'none')

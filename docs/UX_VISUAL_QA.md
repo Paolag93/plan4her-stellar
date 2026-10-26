@@ -15,7 +15,12 @@ Date: 2026-10-25/26. Branch `ccr-068e87ad-nj66jj`.
 - `tests/axe-accessibility.spec.ts` now also scans `community`, `rhythm-terms`, `community-commitments`, `community-progress`, `community-result`, `savings`, `savings-optedin`, `rewards`, `backup` (WCAG 2.1 A/AA): 0 violations. One violation found during development (scrollable region not keyboard-focusable) was fixed by making the content region focusable and labelled.
 
 ## Existing baselines
-- **No existing screenshot baseline was regenerated.** All existing visual tests pass unchanged.
+- **Copy audit (2026-10-26):** six baselines were regenerated because their copy changed intentionally. No layout, component or color changes were made:
+  - `p6-start-user-entry` (new landing headline and description)
+  - `onboarding-rhythm` and `onboarding-control` (rhythm and onboarding copy)
+  - `p6-help-cycle-context` (cycle help copy)
+  - `p6-privacy-data` and `p6-analytics-enabled` (privacy headline and body)
+- All other baselines are unchanged and still pass.
 - Note: More now has a COMMUNITY section (Rhythm Pool, Savings & rewards) and an "Encrypted backup" entry, and its intro reads "Planning context, community, privacy and help in one place." Its Figma-parity test (`p6-da07-more`, tolerance `maxDiffPixelRatio: 0.05`) still passes because the added outline buttons change few pixels; the More screen therefore **intentionally differs** from the Figma frame `4198:298` and should be updated in Figma by the design owner if approved.
 - Today's Rhythm Pool card and Privacy & data's encrypted-backup entry/copy appear only in live (non-fixture) mode, so those Figma fixtures are unchanged.
 

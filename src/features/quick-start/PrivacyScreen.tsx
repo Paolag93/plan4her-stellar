@@ -12,15 +12,15 @@ export interface PrivacyScreenProps {
 const principles = [
   {
     title: 'Local by default',
-    body: 'Tasks, availability and cycle context are stored on this device.',
+    body: 'Tasks, availability and cycle details live on this device.',
   },
   {
     title: 'Planning, not diagnosis',
-    body: 'Cycle information helps shape scheduling suggestions. It is not used to make medical claims.',
+    body: 'Cycle insights shape your schedule. They are planning estimates, never medical advice.',
   },
   {
-    title: 'Cloud sync stays off',
-    body: 'Account and cloud sync appear later only if you choose to enable them.',
+    title: 'Nothing leaves without you',
+    body: 'Encrypted backups and Testnet savings happen only when you choose them.',
   },
 ] as const
 

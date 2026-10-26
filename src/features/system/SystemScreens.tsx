@@ -26,11 +26,11 @@ export function PrivacyDataScreen({ onBack, onClear, analyticsEnabled, onAnalyti
     <AppHeader title="Privacy & data" onBack={onBack} />
     <section className="system-content privacy-content">
       {encryptedUploads > 0 ? <>
-        <h2>Local, plus encrypted backups you chose</h2>
-        <p className="system-body">Your task, cycle and plan content stays local. You uploaded {encryptedUploads} encrypted backup{encryptedUploads === 1 ? '' : 's'} to IPFS that only your passphrase can open. Automatic cloud sync is off.</p>
+        <h2>Your data, your control</h2>
+        <p className="system-body">Your task, cycle and plan content stays local. You uploaded {encryptedUploads} encrypted backup{encryptedUploads === 1 ? '' : 's'} to IPFS that only your passphrase can open. Automatic sync stays off.</p>
       </> : <>
-        <h2>Your data stays on this device</h2>
-        <p className="system-body">Your task, cycle and plan content stays local. Cloud sync is off.</p>
+        <h2>Your data, your control</h2>
+        <p className="system-body">Plans, tasks and cycle details live on this device. Nothing syncs unless you create an encrypted backup.</p>
       </>}
       <div className="privacy-summary"><span className="privacy-summary__icon"><img src={localDevice} alt="" /></span><div><strong>Local by default</strong><p>Tasks · cycle context · accepted plans</p></div></div>
       <div className="privacy-analytics"><p>Anonymous product analytics<br />{enabled ? 'Enabled · no task or cycle content is included.' : 'No task or cycle content is included.'}</p><button type="button" role="switch" aria-label="Anonymous product analytics" aria-checked={enabled} className={`privacy-switch${enabled ? ' privacy-switch--on' : ''}`} onClick={toggle}><img src={enabled ? analyticsOn : analyticsOff} alt="" /></button></div>

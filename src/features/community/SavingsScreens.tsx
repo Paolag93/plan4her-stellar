@@ -37,7 +37,7 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
   if (!community.savings.optedIn) {
     const all = risks.every(Boolean)
     return <CommunityScreen title="Optional savings" onBack={onBack} onNavigate={onNavigate} testId="savings-optin">
-      <section className="community-intro"><span>OPTIONAL · STELLAR TESTNET</span><h2>Save alongside your rhythm, if you want to</h2><p>You can keep your own small Testnet deposit in the Rhythm Pool's DeFindex vault during your four weeks. Your position belongs to your wallet only. The Rhythm Pool and planning work fully without this.</p></section>
+      <section className="community-intro"><span>OPTIONAL · STELLAR TESTNET</span><h2>Save alongside your rhythm, if you want to</h2><p>Put a small Testnet deposit into the Rhythm Pool’s DeFindex vault during your four weeks. The position is held by your wallet, and you can withdraw anytime, subject to vault conditions. The Rhythm Pool and planning work fully without this.</p></section>
       <p className="community-h2">Before you continue</p>
       {RISKS.map((risk, i) => <ConsentCard key={risk.title} title={risk.title} body={risk.body} requirement="Required" selected={risks[i]} onChange={on => setRisks(current => current.map((v, j) => j === i ? on : v))} />)}
       <Button type="button" disabled={!all} onClick={() => onChange({ ...community, savings: { ...community.savings, optedIn: true, risksAcknowledgedAt: new Date().toISOString() } })}>I understand, continue</Button>
@@ -100,12 +100,12 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
   return <CommunityScreen title="Savings · Testnet" onBack={onBack} onNavigate={onNavigate} testId="savings">
     <div className="community-card__top"><span className="community-badge community-badge--brand">Stellar Testnet</span><span className="community-badge">DeFindex vault</span><span className="community-badge">Non-custodial</span></div>
     {!address ? <>
-      <p className="community-help">Connect the Freighter browser wallet set to Testnet. Plan4Her never sees your secret key: every transaction is reviewed and signed by you in Freighter.</p>
+      <p className="community-help">Connect the Freighter browser wallet on Testnet. Plan4Her never sees your secret key: you review and approve every transaction in Freighter.</p>
       <Button type="button" loading={Boolean(busy)} onClick={connect}>Connect Freighter (Testnet)</Button>
       <a className="community-link" href="https://www.freighter.app/" target="_blank" rel="noreferrer">Get Freighter</a>
     </> : <>
       <div className="community-rows">
-        <Row label="Wallet" value={<span className="community-mono">{short(address)}</span>} note="Public on Stellar, but never linked to your goals, tasks or cycle data in Plan4Her." />
+        <Row label="Wallet" value={<span className="community-mono">{short(address)}</span>} note="Your address is public on Stellar. Plan4Her never puts your goals, tasks or cycle data on-chain." />
         <Row label="Vault" value={<a className="community-link" href={explorer(`contract/${VAULT_ID}`)} target="_blank" rel="noreferrer">{short(VAULT_ID)}</a>} note={snapshot ? (snapshot.assetVerified ? 'Asset verified on chain: native XLM' : 'Asset NOT verified: deposits disabled') : undefined} />
       </div>
       <Button hierarchy="secondary" type="button" loading={Boolean(busy)} onClick={() => refresh()}>Refresh from chain</Button>
@@ -118,10 +118,10 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
       <Row label="Wallet balance" value={snapshot ? unit(snapshot.walletBalance) : '—'} note={snapshot ? `Read ${new Date(snapshot.readAt).toLocaleTimeString()}` : 'Connect to read from chain'} />
       <Row label="My vault shares" value={snapshot ? snapshot.shares.toString() : '—'} note="Owned by my wallet" />
       <Row label="Redeemable now" value={snapshot ? unit(snapshot.redeemable) : '—'} note="Vault's current value of my shares" />
-      <Row label="My contribution" value={unit(summary.contributed)} note="From my confirmed transactions" />
-      <Row label="Change vs contribution" value={summary.unrealized === null ? '—' : unit(summary.unrealized)} note="Unrealized. Can be negative." />
+      <Row label="Net contribution" value={unit(summary.contributed)} note="Deposits minus the cost of shares withdrawn" />
+      <Row label="Change vs net contribution" value={summary.unrealized === null ? '—' : unit(summary.unrealized)} note="Not yet withdrawn. Can be negative." />
       <Row label="Realized yield" value={unit(summary.realized)} note={summary.realized > 0n ? 'From completed withdrawals' : 'None realized yet'} />
-      <Row label="Estimated APY" value="Not shown" note="Not verified for this Testnet vault" />
+      <Row label="APY" value="Not available" note="Not verified for this Testnet vault" />
     </div>
 
     {address && snapshot ? <>
@@ -143,10 +143,10 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
         <Row label="Network fee (max)" value={formatAmount(tx.tx.feeStroops)} />
         <Row label="Network" value="Stellar Testnet" />
       </div>
-      <Button type="button" onClick={() => sign(tx.tx)}>Sign in Freighter</Button>
+      <Button type="button" onClick={() => sign(tx.tx)}>Review &amp; sign in Freighter</Button>
       <Button hierarchy="tertiary" type="button" onClick={() => setTx({ phase: 'idle' })}>Cancel</Button>
     </aside> : null}
-    {tx.phase === 'signing' ? <p className="community-help" role="status">Check Freighter to review and sign. Nothing is sent until you approve.</p> : null}
+    {tx.phase === 'signing' ? <p className="community-help" role="status">Review and approve in Freighter. Nothing is sent until you do.</p> : null}
     {tx.phase === 'submitting' ? <p className="community-help" role="status">Submitting to Stellar Testnet…</p> : null}
     {tx.phase === 'pending' ? <p className="community-help" role="status">Waiting for confirmation… <span className="community-mono">{tx.hash}</span></p> : null}
     {tx.phase === 'confirmed' ? <aside className="community-notice" role="status" data-testid="tx-confirmed"><strong>Confirmed on Stellar Testnet</strong>
@@ -163,8 +163,8 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
     </> : null}
 
     <p className="community-label">Community rewards</p>
-    <Button hierarchy="secondary" type="button" onClick={onRewards}>How rewards would work <SimulationBadge>Simulation</SimulationBadge></Button>
-    <aside className="community-notice"><strong>Your deposit stays yours</strong><p>Every member holds her own vault shares in her own wallet. The shared vault does not redistribute yield by habit completion, and Plan4Her never pools, locks or controls deposits. Stellar transactions are public; your Plan4Her goals, tasks and cycle data never go on chain.</p></aside>
+    <Button hierarchy="secondary" type="button" onClick={onRewards}>How rewards work <SimulationBadge>Simulation</SimulationBadge></Button>
+    <aside className="community-notice"><strong>You control your vault position</strong><p>Your vault shares are held by your own wallet. Plan4Her never holds your keys or moves your funds, and the vault doesn’t shift yield based on habits. Vault value can go down. Stellar transactions are public; your goals, tasks and cycle data never go on-chain.</p></aside>
   </CommunityScreen>
 }
 
@@ -185,13 +185,13 @@ export function RewardsSimulationScreen({ community, today, onBack }: { communit
   const participants = [{ id: 'You', realizedYield: mine.realized, principal: mine.contributed, eligible, pledgesYield: Boolean(p?.pledgeYield) }, ...SAMPLE.map(s => ({ id: s.id, realizedYield: s.yieldStroops, principal: 100_000_000n, eligible: s.eligible, pledgesYield: s.pledges }))]
   const result = simulateRewardPool(participants, 20, CONFIRMED_SPONSOR_FUNDS)
   return <CommunityScreen title="Rewards simulation" onBack={onBack} testId="rewards-simulation">
-    <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This models a proposed Rhythm Pool rule on this device. There is no on-chain distribution and nothing is transferred.</p></aside>
+    <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This models a proposed Rhythm Pool rule on your device. Nothing is distributed on-chain and no funds move.</p></aside>
     <p className="community-h2">Possible reward sources</p>
     <ul className="community-help">
-      <li><strong>Pledged yield:</strong> members may voluntarily pledge 20% of their own <strong>positive realized</strong> yield. A verified distribution mechanism does not exist yet.</li>
-      <li><strong>Sponsor funds:</strong> counted only once actually confirmed. None are confirmed for this demo.</li>
+      <li><strong>Pledged yield:</strong> members can choose to pledge 20% of their own <strong>positive realized</strong> yield. A verified way to distribute it doesn’t exist yet.</li>
+      <li><strong>Sponsor funds:</strong> counted only once confirmed. None are confirmed for this demo.</li>
       <li>Neither source is guaranteed. Deposits (principal) are never part of the pot; losses contribute nothing.</li>
-      <li>Members with at least {percent(ELIGIBILITY_THRESHOLD)} of their four-week commitments completed share the pot equally. Missing that never touches anyone's deposit.</li>
+      <li>Members who complete at least {percent(ELIGIBILITY_THRESHOLD)} of their four-week commitments share the pot equally. Falling short never touches anyone’s deposit.</li>
     </ul>
     <div className="community-rows" data-testid="reward-table">
       <Row label="Your realized yield" value={formatAmount(mine.realized > 0n ? mine.realized : 0n)} note={mine.realized > 0n ? 'From your confirmed withdrawals' : 'No verified yield yet'} />
