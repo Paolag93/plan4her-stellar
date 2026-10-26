@@ -18,7 +18,7 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 | DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Confirmed on Stellar Testnet** (synthetic key via the app's vault code); Freighter browser signing same path, to be shown in video | tx hashes below |
 | Rewards (pledged realized yield or confirmed sponsor funds) | Simulation (labelled); no distribution contract; no sponsor confirmed | `simulateRewardPool` tests |
 | AES-256-GCM encrypted backup + restore | Implemented & tested (browser + Node) | `encryption.test.cjs`, E2E |
-| Pinata/IPFS upload & retrieval | **Code complete, tested with fake Pinata; live upload pending** `PINATA_JWT` | `server/api.test.ts` |
+| Pinata/IPFS upload & retrieval | **Live upload, retrieval and decryption confirmed** on the deployed app (CID `bafkreidxzbfnpgu…`); live restore replacement not exercised | below; `server/api.test.ts` |
 | Accountability partners, thematic 30/90-day challenges | Removed from primary journey (product decision 2026-10-26) | — |
 | Billing (Premium USD 6.99/month), yield-sharing contract, sponsor system, Confidential Tokens | Not implemented (planned) | — |
 | Separate public HTTPS demo | **Live and verified**: https://plan4her-stellar.onrender.com — onboarding, 4 tabs, Rhythm Pool join/commitments/persistence, savings consent and no-wallet state, encrypted backup wrong/right passphrase, at 390 px and 1280 px, 0 console errors; `/api/status` reports IPFS upload enabled | `DEPLOYMENT.md` |
@@ -43,7 +43,12 @@ Executed by Claude from the build environment with `npm run testnet:smoke`, whic
 - Wrong key / tamper (ciphertext, wrapped key, IV): rejected — passed.
 - No plaintext in envelope: asserted for cycle date, `lastPeriodStart`, task text and passphrase.
 - Upload authorization: server-only `PINATA_JWT`; access-code session (HMAC token, 30 min); rate limits; ciphertext-only validation; neutral file name. Plaintext upload rejected (HTTP 422) before Pinata is called — tested.
-- Synthetic IPFS CID: **PENDING** (needs Pinata key and deployment).
+- **Live IPFS evidence (2026-10-26, deployed app https://plan4her-stellar.onrender.com, performed by the founder):** CID `bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe`.
+  - Encrypted backup **uploaded** to IPFS through the server (Pinata JWT server-side only, demo access code): succeeded.
+  - Backup **retrieved** by its CID through the app: succeeded.
+  - **Decryption with the correct passphrase** succeeded; the restore preview showed 4 tasks and cycle context.
+  - The founder **cancelled** the final restore, so data replacement from IPFS was **not** exercised in this live session. Wrong-passphrase rejection was **not** tested live in this session (it is covered by automated tests and by a separate live check of the downloaded encrypted file).
+  - Independent check by Claude: `https://gateway.pinata.cloud/ipfs/bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe` returns HTTP 200, 4,414 bytes, containing only the envelope keys `format, v, kdf, wrap, data` (PBKDF2 600 000, AES-GCM). None of the strings `task`, `cycle`, `lastPeriod`, `Menstrual`, `title` or the bundle format name appear in the public content.
 
 ## QA evidence (run in Claude Code cloud, Node 22.22.0, 2026-10-25/26)
 - `npm ci`: success.

@@ -17,13 +17,13 @@
 | DeFindex XLM vault deposit / withdraw / on-chain position via Freighter (individually owned positions) | **Confirmed on Stellar Testnet**: deposit [`f82db619…`](https://stellar.expert/explorer/testnet/tx/f82db6197d0dcf63dde25a9ec4ed178288bbd2e7af1f64a22d8c02485d8aff09), withdraw [`43cb8311…`](https://stellar.expert/explorer/testnet/tx/43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5) (synthetic key, app's vault code); no positive yield verified |
 | Rewards from voluntarily pledged positive realized yield or confirmed sponsor funds | **Simulation only** (no distribution contract; no sponsor confirmed) |
 | AES-256-GCM encrypted backup, passphrase-wrapped key, download/restore | **Implemented & tested** |
-| Encrypted upload/retrieve via Pinata/IPFS (server-held JWT, access code, rate limits, ciphertext only) | **Implemented & tested with a fake Pinata; live upload needs `PINATA_JWT` on the server** |
+| Encrypted upload/retrieve via Pinata/IPFS (server-held JWT, access code, rate limits, ciphertext only) | **Live upload, retrieval by CID and decryption confirmed** on the deployed app: [`bafkreidxzbfnpgu…`](https://gateway.pinata.cloud/ipfs/bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe) (public content is ciphertext only) |
 | Accountability partners, thematic challenges | **Removed from the primary journey** (product decision) |
 | Billing, yield-sharing contract, sponsor system, Confidential Tokens | **Planned / not implemented** |
 
 **Live demo (Stellar Testnet, synthetic data):** https://plan4her-stellar.onrender.com
 
-Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
+Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · submission pack: [`docs/SUBMISSION.md`](docs/SUBMISSION.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
 
 **Money safety:** Testnet only, no real funds. Deposits are held as the user's own vault shares in her own wallet; missing commitments never confiscates, locks or penalizes them. The shared vault does not redistribute yield by habit completion. Stellar transactions and vault deposits are public, not confidential. Deposits are **not guaranteed** (smart-contract, strategy, liquidity, asset and depeg risk). Estimated APY is not shown because it could not be verified. Rewards are a simulation.
 

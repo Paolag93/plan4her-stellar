@@ -13,7 +13,7 @@ Before recording / Antes de grabar: open the Render URL once (free tier wakes in
 | 5 | 1:20 | Mark one **Done**, one **Missed**, then **Replace** an unfinished one. Show Today → Rhythm Pool card. | "Truthful tracking. I can replace one unfinished commitment a week; the count and history stay." | Real (self-reported) |
 | 6 | 1:45 | **Connect wallet & deposit · Testnet** → three risk ticks → Connect Freighter → deposit 10 XLM → review → sign → **Confirmed** → open Stellar Expert link. | "My deposit stays my own position in a DeFindex vault on Stellar Testnet, signed by me. The vault doesn't redistribute yield by habits." | **Real Testnet transaction** — only if it confirms; show the hash |
 | 7 | 2:15 | **How rewards would work**. | "Rewards could come from voluntarily pledged realized yield or confirmed sponsors. Here it's a labelled simulation; principal is never in the pot." | Simulation |
-| 8 | 2:30 | More → **Encrypted backup** → passphrase → Download (or Upload to IPFS if enabled) → restore with wrong, then right passphrase. | "Everything is encrypted on my device before backup. Without my passphrase nobody can read it." | Real (IPFS only if Pinata configured) |
+| 8 | 2:30 | More → **Encrypted backup** → passphrase → access code → **Upload encrypted backup to IPFS** → show the CID → paste the CID → Retrieve → Decrypt → show the preview → Cancel. | "Everything is encrypted on my device before backup. IPFS only ever sees ciphertext; without my passphrase nobody can read it." | Real (live CID verified) |
 | 9 | 2:50 | Close on Today. | "Your goals. Your rhythm. Our community." | — |
 
 ## Guion en español (lo que dices)
