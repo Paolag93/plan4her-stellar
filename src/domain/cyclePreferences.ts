@@ -1,6 +1,6 @@
 import type { CycleBasics } from './types'
 
-export const WORK_TYPES = ['general', 'review-planning', 'creation-start', 'communication', 'finishing-admin'] as const
+export const WORK_TYPES = ['general', 'review-planning', 'creation-start', 'communication', 'finishing-admin', 'energizing-movement', 'restorative'] as const
 export type WorkType = typeof WORK_TYPES[number]
 export const WORK_TYPE_LABELS: Record<WorkType, string> = {
   general: 'General',
@@ -8,6 +8,8 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
   'creation-start': 'Creation / start',
   communication: 'Communication',
   'finishing-admin': 'Finishing / admin',
+  'energizing-movement': 'Energizing movement',
+  restorative: 'Rest & gentle movement',
 }
 export const CYCLE_PHASES = ['Menstrual', 'Follicular', 'Ovulatory', 'Luteal'] as const
 export type CyclePhase = typeof CYCLE_PHASES[number]
@@ -15,6 +17,13 @@ export const PLANNING_TEMPLATES = ['balanced', 'high-output', 'recovery'] as con
 export type PlanningTemplate = typeof PLANNING_TEMPLATES[number]
 export const TEMPLATE_LABELS: Record<PlanningTemplate, string> = {
   balanced: 'Balanced', 'high-output': 'High-output', recovery: 'Recovery',
+}
+/** Short, confident guidance shown with an estimated phase. */
+export const PHASE_GUIDANCE: Record<CyclePhase, string> = {
+  Menstrual: 'Best for rest and gentle planning',
+  Follicular: 'Best for starting and strong movement',
+  Ovulatory: 'Best for presenting and connecting',
+  Luteal: 'Best for finishing and organizing',
 }
 export interface CyclePreferences {
   template: PlanningTemplate
@@ -28,8 +37,8 @@ export function createDefaultCyclePreferences(): CyclePreferences {
   return {
     template: 'balanced',
     phaseWork: {
-      Menstrual: ['review-planning'], Follicular: ['creation-start'],
-      Ovulatory: ['communication'], Luteal: ['finishing-admin'],
+      Menstrual: ['review-planning', 'restorative'], Follicular: ['creation-start', 'energizing-movement'],
+      Ovulatory: ['communication', 'energizing-movement'], Luteal: ['finishing-admin', 'restorative'],
     },
   }
 }

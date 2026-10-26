@@ -396,3 +396,21 @@ button { border: 0; }
 /* Exact-date entry remains a full row when text is enlarged. */
 #root .commitment-date-overlay__entry label { flex: 1 1 100%; overflow-wrap: anywhere; }
 #root .commitment-date-overlay:has(.commitment-date-overlay__entry) > h2 { line-height: 1.5; }
+
+/* Interaction language: section labels keep the Figma accent token but read
+   as labels (semibold, letter-spaced, never underlined). Links are underlined;
+   actions are buttons. */
+#root :is(.today-screen__section-label, .more-screen__label, .active-plan-screen__section-label,
+  .review-plan-screen__section-label, .plan-accepted-screen__section-label,
+  .system-state-label, .conditional-system-label, .community-label) {
+  font-weight: 600; letter-spacing: .05em;
+}
+
+/* Watercolor wash: a soft, layered tint inspired by the brand illustrations. */
+#root :is(.community-intro, .rhythm-preview__intro, .today-goal-card) {
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--p4h-brand-blue-300) 34%, transparent) 0%, transparent 60%),
+    radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--p4h-brand-blue-300) 18%, transparent) 0%, transparent 65%),
+    var(--color-bg-brand-soft);
+}
+#root .rhythm-preview__intro { padding: var(--space-5); border-radius: var(--radius-xl); }

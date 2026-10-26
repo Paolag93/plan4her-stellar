@@ -28,3 +28,22 @@ Date: 2026-10-25/26. Branch `ccr-068e87ad-nj66jj`.
 - Pixel comparison against Figma for the new screens: not possible without Figma access.
 - Physical device, screen reader and Freighter mobile testing: not performed.
 - Desktop: app stays centred at 390 px like the existing screens.
+
+## UX pass (2026-10-26, branch `ccr-068e87ad-nj66jj`)
+- **Rhythm preview** (Plan, Today, More): a cycle-day slider re-runs the real planner (`previewRhythm` → `proposeAdjustment`). Each day shows its phase. Tasks are tagged with their work type, "fits {phase}" and "moved here". "Use cycle day N" goes through the existing review → Apply → Undo flow.
+- **Work types** added: Energizing movement and Rest & gentle movement. Default phase mapping:
+  - Menstrual: review/planning, rest
+  - Follicular: creation, energizing movement
+  - Ovulatory: communication, energizing movement
+  - Luteal: finishing/admin, rest
+- **Sample week starter pack** with 11 typed tasks across work, movement, social life, self-care, admin and home.
+- **Live plan day headers** show a passive phase tag. Today's cycle card states what the phase is best for, and task cards show the work type.
+- **Interaction language:**
+  - Section labels keep the Figma accent token (guarded by tests) but are semibold and letter-spaced.
+  - Links are underlined; actions are buttons.
+  - Status pills are flat and borderless; selectable chips have a dark border.
+- **Progressive disclosure:**
+  - Rhythm Pool terms use collapsible sections (commitments open; money/rewards and privacy collapsed).
+  - The backup's "What to know" and the rewards rule are collapsed.
+- **Watercolor wash:** a subtle CSS wash on intro panels, inspired by the brand's watercolor figure illustrations. The illustrations themselves were provided only as chat images, not files, so they are not embedded.
+- **Baselines:** `p6-starter-tasks` was refreshed (new fourth starter card). All other baselines pass unchanged.

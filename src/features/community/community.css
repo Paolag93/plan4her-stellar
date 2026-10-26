@@ -88,3 +88,11 @@ fieldset.community-field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .community-steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--font-size-sm); line-height: 22px; }
 .community-steps strong { font-weight: 600; }
 .community-card--muted { opacity: .7; background: var(--color-bg-subtle); }
+
+/* Progressive disclosure for secondary explanations. */
+.community-details { border-radius: var(--radius-lg); background: var(--color-bg-subtle); padding: 0 var(--space-4); }
+.community-details summary { min-height: var(--size-touch-min); display: flex; align-items: center; font-size: var(--font-size-sm); font-weight: 600; cursor: pointer; }
+.community-details ul { margin: 0; padding: 0 0 var(--space-4) 20px; display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--font-size-sm); line-height: 22px; }
+/* Actionable chips look like small secondary buttons; status badges stay flat. */
+.community-chip { border-color: var(--color-text-primary); font-weight: 500; }
+.community-badge { min-height: 24px; padding: 4px var(--space-2); }

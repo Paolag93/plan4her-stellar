@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 // Automated WCAG checks complement, rather than replace, keyboard/device review.
-const screens=['start','tasks','add-task','task-details','plan-review','plan-rationale-prepare','plan-edit-prepare','plan-active','adjust-scope','plan-diff-week','recent-changes','today','complete','recovery-missed','recovery-options','more','cycle-context','privacy-data','clear-data','help','weekly-help','offline','system-error','community','rhythm-terms','community-commitments','community-progress','community-result','savings','savings-optedin','rewards','backup']
+const screens=['start','tasks','add-task','task-details','plan-review','plan-rationale-prepare','plan-edit-prepare','plan-active','adjust-scope','plan-diff-week','recent-changes','today','complete','recovery-missed','recovery-options','more','cycle-context','privacy-data','clear-data','help','weekly-help','offline','system-error','community','rhythm-terms','community-commitments','community-progress','community-result','savings','savings-optedin','rewards','backup','rhythm-preview']
 for(const screen of screens){test(`WCAG automated scan: ${screen}`,async({page})=>{
  await page.goto(`/?qa=${screen}`)
  await page.locator('main').waitFor()

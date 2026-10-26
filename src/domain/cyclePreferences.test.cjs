@@ -51,7 +51,7 @@ for (const cycleBasics of [null, { lastPeriodStart: null, cycleLength: 28 }, { l
 const custom = c.createDefaultCyclePreferences();
 custom.phaseWork.Menstrual = ['creation-start']; custom.phaseWork.Follicular = [];
 assert.equal(blockFor(d.generateWeeklyPlan({ ...input, cyclePreferences: custom }), 'create').dateISO, '2026-10-05');
-assert.deepEqual(c.createDefaultCyclePreferences().phaseWork.Follicular, ['creation-start']);
+assert.deepEqual(c.createDefaultCyclePreferences().phaseWork.Follicular, ['creation-start', 'energizing-movement']);
 const noMapping = { ...custom, phaseWork: Object.fromEntries(c.CYCLE_PHASES.map(phase => [phase, []])) };
 assert.equal(blockFor(d.generateWeeklyPlan({ ...input, cyclePreferences: noMapping }), 'create').dateISO, '2026-10-05');
 

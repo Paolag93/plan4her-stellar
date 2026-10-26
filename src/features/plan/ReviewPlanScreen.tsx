@@ -14,7 +14,7 @@ export interface ReviewPlanScreenProps extends PlanViewDataProps{
  onEditBlock:(block:PlanBlockData,source:'direct'|'overlay')=>void
 }
 
-export function ReviewPlanScreen({onHowItWorks,onAccept,onAdjustPlan,onOpenRationale,onEditBlock,blocks,week,scheduledLoad,todayISO}:ReviewPlanScreenProps){
+export function ReviewPlanScreen({onHowItWorks,onAccept,onAdjustPlan,onOpenRationale,onEditBlock,blocks,week,scheduledLoad,phases,todayISO}:ReviewPlanScreenProps){
  const[menuBlock,setMenuBlock]=useState<PlanBlockData|null>(null)
  const scrollRef=useRef<HTMLDivElement>(null)
  const jump=(id:PlanBlockId|'sat'|'sun')=>document.getElementById(id==='sat'?'plan-day-sat':id==='sun'?'plan-day-sun':`plan-day-${id}`)?.scrollIntoView({behavior:'smooth',block:'start'})
@@ -27,7 +27,7 @@ export function ReviewPlanScreen({onHowItWorks,onAccept,onAdjustPlan,onOpenRatio
    <WeekJumpStrip onJump={jump} blocks={blocks} week={week}/>
    <p className="review-plan-screen__section-label">THIS WEEK</p>
    <p className="review-plan-screen__hint">Use ••• for rationale, timing changes or moving a block.</p>
-   {blocks!==undefined?<PlanAgenda blocks={blocks} week={week} todayISO={todayISO} idPrefix="plan-day" onOpen={block=>onOpenRationale(block,'direct')} onMore={setMenuBlock}/>:<>
+   {blocks!==undefined?<PlanAgenda blocks={blocks} week={week} todayISO={todayISO} phases={phases} idPrefix="plan-day" onOpen={block=>onOpenRationale(block,'direct')} onMore={setMenuBlock}/>:<>
    {PLAN_BLOCKS.map(block=><DaySection key={block.id} block={block} onOpen={()=>onOpenRationale(block,'direct')} onMore={()=>setMenuBlock(block)}/>)}
    <EmptyDay day="Saturday" date="28 Oct" id="plan-day-sat"/>
    <EmptyDay day="Sunday" date="29 Oct" id="plan-day-sun"/>

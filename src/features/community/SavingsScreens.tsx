@@ -186,13 +186,15 @@ export function RewardsSimulationScreen({ community, today, onBack }: { communit
   const result = simulateRewardPool(participants, 20, CONFIRMED_SPONSOR_FUNDS)
   return <CommunityScreen title="Rewards simulation" onBack={onBack} testId="rewards-simulation">
     <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This models a proposed Rhythm Pool rule on your device. Nothing is distributed on-chain and no funds move.</p></aside>
-    <p className="community-h2">Possible reward sources</p>
-    <ul className="community-help">
+    <details className="community-details">
+    <summary>How the proposed rule works</summary>
+    <ul>
       <li><strong>Pledged yield:</strong> members can choose to pledge 20% of their own <strong>positive realized</strong> yield. A verified way to distribute it doesn’t exist yet.</li>
       <li><strong>Sponsor funds:</strong> counted only once confirmed. None are confirmed for this demo.</li>
       <li>Neither source is guaranteed. Deposits (principal) are never part of the pot; losses contribute nothing.</li>
       <li>Members who complete at least {percent(ELIGIBILITY_THRESHOLD)} of their four-week commitments share the pot equally. Falling short never touches anyone’s deposit.</li>
     </ul>
+    </details>
     <div className="community-rows" data-testid="reward-table">
       <Row label="Your realized yield" value={formatAmount(mine.realized > 0n ? mine.realized : 0n)} note={mine.realized > 0n ? 'From your confirmed withdrawals' : 'No verified yield yet'} />
       <Row label="Your yield pledge" value={p?.pledgeYield ? '20% authorized' : 'Not authorized'} />

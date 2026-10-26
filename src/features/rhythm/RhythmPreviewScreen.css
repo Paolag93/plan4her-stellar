@@ -1,0 +1,79 @@
+/* Rhythm preview: tokens and phase colors only. Passive pills have no border;
+   only buttons and the slider are interactive. */
+.rhythm-preview { position: relative; width: min(390px, 100vw); height: min(844px, 100dvh); min-height: 0; overflow: hidden; background: var(--color-bg-canvas); color: var(--color-text-primary); }
+.rhythm-preview__content { padding: var(--space-5) var(--space-4) 32px; display: flex; flex-direction: column; gap: var(--space-4); min-height: 0; overflow-x: hidden; overflow-y: auto; }
+.rhythm-preview__content > * { flex-shrink: 0; min-width: 0; }
+.rhythm-preview :is(h2, p, ul, ol) { margin: 0; }
+.rhythm-preview .p4h-button { width: 100%; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.rhythm-eyebrow { color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.rhythm-preview__intro { display: flex; flex-direction: column; gap: var(--space-2); }
+.rhythm-preview__intro h2 { font-size: var(--font-size-2xl); line-height: var(--line-height-2xl); font-weight: 700; }
+.rhythm-preview__intro p { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-sm); }
+
+.rhythm-dial { --phase: var(--color-bg-subtle); padding: var(--space-5); border-radius: var(--radius-2xl); background: linear-gradient(160deg, color-mix(in srgb, var(--phase) 38%, white) 0%, var(--color-bg-surface) 75%); border: 1px solid color-mix(in srgb, var(--phase) 55%, white); display: flex; flex-direction: column; gap: var(--space-3); transition: background .35s ease, border-color .35s ease; }
+.rhythm-dial[data-phase='menstrual'] { --phase: var(--p4h-phase-menstrual); }
+.rhythm-dial[data-phase='follicular'] { --phase: var(--p4h-phase-follicular); }
+.rhythm-dial[data-phase='ovulatory'] { --phase: var(--p4h-phase-ovulatory); }
+.rhythm-dial[data-phase='luteal'] { --phase: var(--p4h-phase-luteal); }
+.rhythm-dial__head { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--space-3); }
+.rhythm-dial__head > div { display: flex; flex-direction: column; }
+.rhythm-dial__label { color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: 500; }
+.rhythm-dial__day { font-size: 48px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.rhythm-dial__note { font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-primary); }
+.rhythm-dial__slider { width: 100%; height: var(--size-touch-min); margin: 0; accent-color: var(--p4h-brand-teal-600); cursor: pointer; }
+.rhythm-dial__track { display: flex; gap: 3px; height: 6px; margin-top: -14px; border-radius: var(--radius-full); overflow: hidden; }
+.rhythm-dial__track span { display: block; height: 100%; }
+.rhythm-dial__steps { display: flex; gap: var(--space-2); }
+.rhythm-step { flex: 1; min-height: var(--size-touch-min); border: 1px solid var(--color-text-primary); border-radius: var(--radius-full); background: var(--color-bg-surface); color: var(--color-text-primary); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; }
+.rhythm-step:disabled { opacity: .38; cursor: not-allowed; }
+
+[data-phase='menstrual'] { --phase-color: var(--p4h-phase-menstrual); }
+[data-phase='follicular'] { --phase-color: var(--p4h-phase-follicular); }
+[data-phase='ovulatory'] { --phase-color: var(--p4h-phase-ovulatory); }
+[data-phase='luteal'] { --phase-color: var(--p4h-phase-luteal); }
+.rhythm-dial__track span, .rhythm-day__phase i { background: var(--phase-color, var(--color-bg-subtle)); }
+
+/* Passive status pill: filled, no border, never looks pressable. */
+.rhythm-phase-pill { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: var(--radius-full); background: color-mix(in srgb, var(--phase-color, var(--color-bg-subtle)) 45%, white); color: var(--color-text-primary); font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: 600; white-space: nowrap; }
+
+.rhythm-moved { font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-secondary); }
+.rhythm-moved strong { color: var(--color-text-primary); font-weight: 600; }
+
+.rhythm-week { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.rhythm-day { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--color-bg-surface); border: 1px solid var(--color-border-subtle); border-left: 4px solid var(--phase-color, var(--color-border-subtle)); display: flex; flex-direction: column; gap: var(--space-2); }
+.rhythm-day[data-today] { box-shadow: 0 0 0 2px color-mix(in srgb, var(--p4h-brand-teal-600) 30%, transparent); }
+.rhythm-day__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.rhythm-day__date { font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-secondary); }
+.rhythm-day__date strong { color: var(--color-text-primary); font-weight: 600; }
+.rhythm-day__phase { display: inline-flex; align-items: center; gap: 6px; font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
+.rhythm-day__phase i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.rhythm-day__open { font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+.rhythm-day__tasks { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rhythm-task { padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--color-bg-canvas); display: flex; flex-direction: column; gap: 2px; transition: background .3s ease; }
+.rhythm-task--moved { background: color-mix(in srgb, var(--phase-color, var(--p4h-brand-blue-300)) 28%, white); animation: rhythm-land .45s ease; }
+.rhythm-task__title { font-size: var(--font-size-sm); line-height: var(--line-height-sm); font-weight: 500; overflow-wrap: anywhere; }
+.rhythm-task__meta { font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
+.rhythm-task__fit { color: var(--p4h-brand-teal-800); font-weight: 500; }
+.rhythm-task__moved { color: var(--color-text-primary); font-weight: 600; }
+@keyframes rhythm-land { from { transform: translateY(-4px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .rhythm-task--moved { animation: none; } .rhythm-dial, .rhythm-task { transition: none; } }
+
+.rhythm-empty { padding: var(--space-5); border-radius: var(--radius-xl); background: var(--color-bg-brand-soft); display: flex; flex-direction: column; gap: var(--space-2); }
+.rhythm-empty p, .rhythm-hint { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-sm); }
+.rhythm-hint { font-size: var(--font-size-xs); line-height: var(--line-height-xs); }
+
+.rhythm-details { border-radius: var(--radius-lg); background: var(--color-bg-subtle); padding: 0 var(--space-4); }
+.rhythm-details summary { min-height: var(--size-touch-min); display: flex; align-items: center; font-size: var(--font-size-sm); font-weight: 600; cursor: pointer; }
+.rhythm-details ul { list-style: none; padding: 0 0 var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
+.rhythm-details p { padding-bottom: var(--space-4); font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
+.rhythm-actions { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-2); }
+.rhythm-actions .rhythm-hint { text-align: center; }
+
+/* Entry cards used on Today, Plan and More. */
+.rhythm-entry { width: 100%; min-height: var(--size-touch-min); padding: var(--space-4); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-xl); background: linear-gradient(120deg, color-mix(in srgb, var(--p4h-phase-follicular) 30%, white), color-mix(in srgb, var(--p4h-phase-ovulatory) 30%, white) 55%, color-mix(in srgb, var(--p4h-phase-luteal) 40%, white)); color: var(--color-text-primary); text-align: left; display: flex; align-items: center; gap: var(--space-3); cursor: pointer; }
+.rhythm-entry span { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.rhythm-entry strong { font-size: var(--font-size-md); line-height: var(--line-height-md); font-weight: 600; }
+.rhythm-entry small { font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
+.rhythm-entry svg { width: 20px; height: 20px; flex: 0 0 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

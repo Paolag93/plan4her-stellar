@@ -55,8 +55,8 @@ export function TermsScreen({ today, onBack, onJoin, error }: { today: string; o
   const end = new Date(`${start}T12:00:00`); end.setDate(end.getDate() + 27)
   return <CommunityScreen title="Rhythm Pool terms" onBack={onBack} testId="rhythm-terms">
     <section className="community-intro"><span>NO WALLET · NO DEPOSIT NEEDED</span><h2>Your four weeks: {day(start)} – {end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</h2><p>28 days, four complete weeks, starting on Monday.</p></section>
-    <aside className="community-notice">
-      <strong>Commitments</strong>
+    <details className="community-details" open>
+      <summary>Commitments</summary>
       <ul>
         <li>Each week, confirm {MIN_COMMITMENTS}–{MAX_COMMITMENTS} important tasks from your plan. That number is set for the week.</li>
         <li>Add or remove other tasks freely. They never change your count.</li>
@@ -64,23 +64,23 @@ export function TermsScreen({ today, onBack, onJoin, error }: { today: string; o
         <li>You mark commitments done or missed yourself. Plan4Her doesn’t verify real-world activity.</li>
         <li>A week without commitments counts as {MIN_COMMITMENTS} commitments not completed.</li>
       </ul>
-    </aside>
-    <aside className="community-notice">
-      <strong>Money and rewards</strong>
+    </details>
+    <details className="community-details">
+      <summary>Money and rewards</summary>
       <ul>
         <li>Saving is optional. Deposits go into your own position in a DeFindex vault on Stellar Testnet (no real money).</li>
         <li>Missed commitments never lock, confiscate or penalize your deposit. Vault value can still go down.</li>
         <li>Rewards may come from yield members choose to pledge, or from confirmed sponsors. Neither is guaranteed. In this demo, rewards are simulated.</li>
         <li>To qualify, complete at least {percent(ELIGIBILITY_THRESHOLD)} of your commitments over four weeks.</li>
       </ul>
-    </aside>
-    <aside className="community-notice">
-      <strong>Privacy</strong>
+    </details>
+    <details className="community-details">
+      <summary>Privacy</summary>
       <ul>
         <li>Your cycle and health details, schedule, goals, notes and task names stay on your device. Plan4Her never puts them on Stellar.</li>
         <li>Stellar transactions, including vault deposits, are public on the blockchain.</li>
       </ul>
-    </aside>
+    </details>
     <ConsentCard title="I accept the Rhythm Pool terms" body="Four weeks from Monday. Self-reported commitments. No penalty on deposits. No guaranteed rewards." requirement="Required" selected={accepted} onChange={setAccepted} />
     <ConsentCard title="Share my consistency % with the community" body="Only one percentage joins the community average. Never your name, tasks, dates or cycle details." selected={share} onChange={setShare} />
     <ConsentCard title="Pledge 20% of my positive realized yield" body="Applies only if you save and your position realizes positive yield. Rewards are simulated in this demo." selected={pledge} onChange={setPledge} />

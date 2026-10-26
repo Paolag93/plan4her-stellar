@@ -6,7 +6,8 @@ Before recording / Antes de grabar: open the Render URL once (free tier wakes in
 
 | # | Time | Do this / Haz esto | Say / Di (EN) | Real or simulated |
 |---|---|---|---|---|
-| 1 | 0:00 | Start → Build my first week → finish setup → Accept week. Show Today and Plan. | "Plan4Her already plans a week around your tasks, availability and optional cycle preferences — that existed before HackMeridian." | Pre-existing, real |
+| 1 | 0:00 | Start → Build my first week → Continue without cycle context → choose **A full week, ready to plan** → Continue → Skip for now → **Accept week**. | "Your life isn't linear. Your plan shouldn't be. Here's a real week: work, movement, social time, self-care." | Real |
+| 1b | 0:20 | Plan → **See your rhythm at work** → drag the slider to **day 1**, then **day 12**. Point at tasks marked *moved here* and *fits ovulatory*. → **Use cycle day 12** → **Apply changes**. | "This is the hypothesis. Change the cycle day and the real planner moves strength training and deep work into the follicular days, and the client presentation into the ovulatory day. Deadlines and fixed commitments still come first." | **Real planner behavior** |
 | 2 | 0:25 | More → **Rhythm Pool**. | "Premium preview: one shared community. Join any day; your four weeks start next Monday. You can be the first member." | Real (sample members labelled simulated) |
 | 3 | 0:40 | **Review terms**. Scroll the three boxes. Tick "I accept". Leave sharing/pledge off. **Join the Rhythm Pool**. | "Free to join, no wallet. Commitments are self-reported. Missing them never touches your deposit. Rewards aren't guaranteed. Private data never goes on Stellar." | Real |
 | 4 | 1:05 | Pick **3–5 tasks** → **Confirm commitments**. | "Each week I choose 3–5 important tasks from my own plan. The rest stays flexible; new tasks don't change my count." | Real |
