@@ -22,8 +22,14 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Test planning domain
+      - name: Typecheck (app, tooling, server)
+        run: npm run typecheck
+
+      - name: Test planning, community and encryption domain
         run: npm run test:domain
+
+      - name: Test encrypted-backup server (fake Pinata, no network)
+        run: npm run test:server
 
       - name: Build
         run: npm run build

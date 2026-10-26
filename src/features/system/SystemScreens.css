@@ -38,3 +38,6 @@ button.system-help-card{cursor:pointer}
 .system-add-task{position:absolute;left:318px;top:692px;width:56px;height:56px;border-radius:50%;background:var(--color-action-primary-bg);color:white;font-size:24px;font-weight:500;cursor:pointer}
 @media(max-width:389px){.system-screen{transform-origin:top center;transform:scale(calc(100vw / 390))}}
 .privacy-analytics{overflow:visible}
+.privacy-encrypted-entry{width:100%;min-height:72px;padding:12px 14px;border:1px solid var(--color-border-default);border-radius:16px;background:var(--color-bg-surface);color:var(--color-text-primary);text-align:left;display:flex;flex-direction:column;gap:4px;cursor:pointer}
+.privacy-encrypted-entry strong{font-size:14px;line-height:20px;font-weight:600}
+.privacy-encrypted-entry span{font-size:12px;line-height:16px;color:var(--color-text-secondary)}

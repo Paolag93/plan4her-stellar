@@ -4,8 +4,8 @@ import{PLAN_BLOCKS,type PlanBlockData}from'../plan/planData'
 import{CompleteBlockScreen,type CompletionResult}from'./CompleteBlockScreen'
 import{CycleContextHelpScreen}from'./CycleContextHelpScreen'
 import{CycleContextScreen,type CycleContextValues}from'./CycleContextScreen'
-import{MoreScreen}from'./MoreScreen'
-import{TodayScreen}from'./TodayScreen'
+import{MoreScreen,type MoreCommunityLinks}from'./MoreScreen'
+import{TodayScreen,type TodayGoal}from'./TodayScreen'
 import type{DailyDayKey,DailyTaskId,DailyTaskData}from'./todayData'
 import{MissedBlockScreen}from'../recovery/MissedBlockScreen'
 import{RecoveryAppliedScreen,type RecoveryAppliedKind}from'../recovery/RecoveryAppliedScreen'
@@ -73,9 +73,11 @@ export interface DailyFlowProps{
  onPlanningPreferences?:()=>void
  onPrivacy?:()=>void
  onGuidance?:()=>void
+ community?:MoreCommunityLinks
+ goal?:TodayGoal
 }
 
-export function DailyFlow({blocks,tasks,weekDays,cycle,onToggleTaskDone,onComplete,onPreviewRecovery,onApplyRecovery,onUndoRecovery,onSaveCycle,qa,entry='today',navigationKey=0,onPlan,onTasks,onQuickCapture,onAddWithDetails,onTask,onOpenRationale,onEditBlock,onPlanningPreferences,onPrivacy,onGuidance}:DailyFlowProps){
+export function DailyFlow({blocks,tasks,weekDays,cycle,onToggleTaskDone,onComplete,onPreviewRecovery,onApplyRecovery,onUndoRecovery,onSaveCycle,qa,entry='today',navigationKey=0,onPlan,onTasks,onQuickCapture,onAddWithDetails,onTask,onOpenRationale,onEditBlock,onPlanningPreferences,onPrivacy,onGuidance,community,goal}:DailyFlowProps){
  const[selectedDay,setSelectedDay]=useState<DailyDayKey>(()=>qa?dayFromQa(qa):(['sun','mon','tue','wed','thu','fri','sat']as DailyDayKey[])[new Date().getDay()])
  const[cycleDraft,setCycleDraft]=useState<CycleContextValues|undefined>()
  const[selectedBlock,setSelectedBlock]=useState<PlanBlockData|undefined>(()=>blocks===undefined?PLAN_BLOCKS[0]:blocks[0])
@@ -102,9 +104,9 @@ export function DailyFlow({blocks,tasks,weekDays,cycle,onToggleTaskDone,onComple
   case'preview':return<RecoveryPreviewScreen proposal={proposal} kind={previewKind} onBack={()=>setView('options')} onKeep={()=>setView('today')} onApply={applyPreview}/>
   case'applied':return<RecoveryAppliedScreen proposal={proposal} selectedBlock={selectedBlock} kind={appliedKind} onBackToday={()=>setView('today')} onUndo={()=>{if(onUndoRecovery?.()!==false)setView('today')}} onNavigate={navigate} onEditBlock={onEditBlock} onOpenRationale={onOpenRationale}/>
   case'recovery-help':return<RecoveryHelpScreen onBack={()=>setView('options')}/>
-  case'more':return<MoreScreen onPlanningPreferences={onPlanningPreferences} onCycleContext={()=>openCycle('more')} onPrivacy={onPrivacy} onHelp={onGuidance} onNavigate={navigate}/>
+  case'more':return<MoreScreen onPlanningPreferences={onPlanningPreferences} onCycleContext={()=>openCycle('more')} onPrivacy={onPrivacy} onHelp={onGuidance} onNavigate={navigate} community={community}/>
   case'cycle':return<CycleContextScreen value={cycleDraft??cycle} initialEnabled={qa!=='cycle-context-off'} initialFocused={qa==='cycle-context-focused'} onBack={()=>setView(cycleReturn)} onSave={values=>{if(onSaveCycle?.(values)!==false)setView('more')}} onHelp={values=>{if(cycle)setCycleDraft(values);setView('cycle-help')}}/>
   case'cycle-help':return<CycleContextHelpScreen onBack={()=>setView('cycle')}/>
-  default:return<TodayScreen blocks={blocks} tasks={tasks} weekDays={weekDays} cycle={cycle} onToggleTaskDone={onToggleTaskDone} initialDay={selectedDay} onDayChange={setSelectedDay} initialDone={doneFromQa(qa)} onUpdateProgress={block=>{setSelectedBlock(block);setProposal(undefined);setRecoveryError(null);setCompletion(null);setView('complete')}} onViewPlan={onPlan} onTask={onTask} onPhase={()=>openCycle('today')} onNavigate={navigate} onQuickCapture={onQuickCapture} onAddWithDetails={onAddWithDetails} onOpenRationale={onOpenRationale} onEditBlock={onEditBlock}/>
+  default:return<TodayScreen goal={goal} blocks={blocks} tasks={tasks} weekDays={weekDays} cycle={cycle} onToggleTaskDone={onToggleTaskDone} initialDay={selectedDay} onDayChange={setSelectedDay} initialDone={doneFromQa(qa)} onUpdateProgress={block=>{setSelectedBlock(block);setProposal(undefined);setRecoveryError(null);setCompletion(null);setView('complete')}} onViewPlan={onPlan} onTask={onTask} onPhase={()=>openCycle('today')} onNavigate={navigate} onQuickCapture={onQuickCapture} onAddWithDetails={onAddWithDetails} onOpenRationale={onOpenRationale} onEditBlock={onEditBlock}/>
  }
 }

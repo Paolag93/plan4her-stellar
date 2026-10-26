@@ -14,7 +14,9 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4173',
     viewport: { width: 390, height: 844 },
     screenshot: 'only-on-failure',
-    trace: 'retain-on-failure'
+    trace: 'retain-on-failure',
+    // Optional override for sandboxes whose preinstalled Chromium differs from the pinned Playwright build.
+    ...(process.env.PW_CHROMIUM_EXECUTABLE ? { launchOptions: { executablePath: process.env.PW_CHROMIUM_EXECUTABLE } } : {})
   },
   webServer: {
     command: 'npm run build && npm run preview -- --host 127.0.0.1',

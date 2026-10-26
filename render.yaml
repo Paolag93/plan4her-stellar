@@ -1,0 +1,23 @@
+# Optional one-click blueprint for a SEPARATE HackMeridian demo (never the original preview).
+# Secrets marked sync:false are entered by the owner in the Render dashboard, not committed.
+services:
+  - type: web
+    name: plan4her-hackmeridian
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/status
+    envVars:
+      - key: NODE_VERSION
+        value: 22.20.0
+      - key: PINATA_NETWORK
+        value: public
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: PINATA_JWT
+        sync: false
+      - key: DEMO_ACCESS_CODE
+        sync: false
+      - key: PINATA_GATEWAY
+        sync: false
