@@ -414,3 +414,13 @@ button { border: 0; }
     var(--color-bg-brand-soft);
 }
 #root .rhythm-preview__intro { padding: var(--space-5); border-radius: var(--radius-xl); }
+
+/* Live Today cards: content-sized status badge (the generic full-width child rule above outranked it)
+   and the overflow action in the top-right corner instead of an extra row of empty space. */
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > .today-plan-block__badge { display: inline-flex; align-items: center; width: auto; height: auto; min-height: 24px; padding: 3px 10px; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 44px; column-gap: 4px; row-gap: 8px; align-items: start; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > * { grid-column: 1 / -1; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > strong { grid-column: 1; grid-row: 1; align-self: center; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > .today-plan-block__badge { justify-self: start; }
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block > .today-plan-block__more,
+#root :is(.today-screen--live, .complete-block-screen--live) .today-plan-block:has(> p) > .today-plan-block__more { grid-column: 2; grid-row: 1; margin: -6px -6px 0 0; }

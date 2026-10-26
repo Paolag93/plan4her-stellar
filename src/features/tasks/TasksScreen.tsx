@@ -206,4 +206,4 @@ export function TasksScreen({
 }
 
 /** Shows the planner work type so cycle-aware placement is legible. */
-function taskMeta(task:TaskItem):string{return task.workType&&task.workType!=='general'?`${task.meta} · ${WORK_TYPE_LABELS[task.workType]}`:task.meta}
+function taskMeta(task:TaskItem):string{return task.meta}

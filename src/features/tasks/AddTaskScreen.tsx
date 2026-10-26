@@ -7,8 +7,6 @@ import { TextField } from '../../components/TextField'
 import { TimePickerOverlay } from '../../components/TimePickerOverlay'
 import { pickerTimeMinutes, pickerTimeValue } from '../../components/pickerValues'
 import { durationMinutes as parseDuration, localISO } from '../../domain/planner'
-import type { WorkType } from '../../domain/cyclePreferences'
-import { WorkTypeField } from '../cycle-preferences/WorkTypeField'
 import type { TaskItem } from './TasksScreen'
 import './AddTaskScreen.css'
 
@@ -34,7 +32,6 @@ export function AddTaskScreen({ onBack, onCancel, onSave, liveMode = false }: Ad
   const [startTime, setStartTime] = useState(liveMode ? '11:30' : '11:30 AM')
   const [endTime, setEndTime] = useState(liveMode ? '13:00' : '1:00 PM')
   const [importance, setImportance] = useState<Importance>('Important')
-  const [workType, setWorkType] = useState<WorkType>('general')
   const [overlay, setOverlay] = useState<Overlay>(null)
 
   const fixed = taskType === 'Fixed'
@@ -56,7 +53,6 @@ export function AddTaskScreen({ onBack, onCancel, onSave, liveMode = false }: Ad
     const savedStart = liveMode ? `${String(Math.floor(startMinutes / 60)).padStart(2,'0')}:${String(startMinutes % 60).padStart(2,'0')}` : startTime
     const meta = fixed ? `${liveMode ? displayDate(fixedDate) : `Mon ${fixedDay} Oct`} · ${startTime}–${endTime}` : savedDuration
     onSave({ id: crypto.randomUUID(), title: task.trim(), meta, kind: taskType, duration: savedDuration, importance,
-      ...(liveMode ? { workType } : {}),
       fixedDate: fixed ? (liveMode ? fixedDate : `Mon ${fixedDay} Oct`) : undefined,
       startTime: fixed ? savedStart : undefined,
       deadline: !fixed && deadlineDay ? (liveMode ? deadlineDate ?? isoDate(deadlineDay) : `Fri ${deadlineDay} Oct`) : undefined })
@@ -101,7 +97,6 @@ export function AddTaskScreen({ onBack, onCancel, onSave, liveMode = false }: Ad
               <div className="add-task-screen__importance add-task-screen__importance--fixed"><ImportanceSelector value={importance} onChange={setImportance} /></div>
             </>
           )}
-          {liveMode ? <WorkTypeField value={workType} onChange={setWorkType} fixed={fixed} /> : null}
         </section>
 
         <Button className={`add-task-screen__save ${fixed ? 'add-task-screen__save--fixed' : ''}`} type="button" disabled={!valid} onClick={save}>Save as Unscheduled</Button>

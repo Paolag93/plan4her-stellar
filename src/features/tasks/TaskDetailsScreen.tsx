@@ -6,8 +6,7 @@ import { TextField } from '../../components/TextField'
 import { TimePickerOverlay } from '../../components/TimePickerOverlay'
 import { pickerTimeValue } from '../../components/pickerValues'
 import { isISODate, localISO } from '../../domain/planner'
-import type { WorkType } from '../../domain/cyclePreferences'
-import { WorkTypeField } from '../cycle-preferences/WorkTypeField'
+import { WorkTypeField, type WorkTypeChoice } from '../cycle-preferences/WorkTypeField'
 import type { CanonicalTaskId, TaskItem } from './TasksScreen'
 import { DeleteTaskConfirmationScreen } from './DeleteTaskConfirmationScreen'
 import './TaskDetailsScreen.css'
@@ -102,7 +101,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
   const [fixedDate, setFixedDate] = useState(task.fixedDate ?? (liveMode ? localISO() : descriptor?.fixedDate ?? 'Fri 27 Oct'))
   const [startTime, setStartTime] = useState(task.startTime ?? descriptor?.startTime ?? '09:00')
   const [importance, setImportance] = useState<Importance>(task.importance ?? 'Important')
-  const [workType, setWorkType] = useState<WorkType>(task.workType ?? 'general')
+  const [workType, setWorkType] = useState<WorkTypeChoice>(task.workType ?? 'auto')
   const [focused, setFocused] = useState<Focused>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [overlay, setOverlay] = useState<'duration' | 'start' | null>(null)
@@ -168,7 +167,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
       fixedDate: liveMode ? (fixed ? fixedDate : undefined) : fixedDate,
       startTime: liveMode ? (fixed ? savedStart : undefined) : startTime,
       importance,
-      ...(liveMode ? { workType } : {}),
+      ...(liveMode ? { workType: workType === 'auto' ? undefined : workType } : {}),
       meta: fixed ? `${fixedDate} · ${savedStart} · ${savedDuration}` : savedDuration,
     }
     onSave(updated)
@@ -285,7 +284,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
               </div>
             </>
           )}
-          {liveMode ? <WorkTypeField value={workType} onChange={setWorkType} fixed={fixed} /> : null}
+          {liveMode ? <WorkTypeField value={workType} onChange={setWorkType} title={title} fixed={fixed} /> : null}
         </section>
 
         <Button

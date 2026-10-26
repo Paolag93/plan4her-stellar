@@ -4,7 +4,12 @@ const cache=new Map();function load(file){file=path.resolve(file);if(cache.has(f
 const d=load(path.join(__dirname,'index.ts'));
 const today='2026-10-12';// Monday
 const tasks=d.starterTasksForPack('sample');
-assert.equal(tasks.length,11);assert.ok(tasks.every(t=>t.workType),'every sample task has a planner work type');
+assert.equal(tasks.length,11);assert.ok(tasks.every(t=>t.workType===undefined),'sample tasks carry no hand-set type');
+// Automatic classification: the local rules infer each sample task's type from its title, and the planner uses it.
+assert.deepEqual(Object.fromEntries(tasks.map(t=>[t.id,d.effectiveWorkType(t)])),{'sample-grant':'creation-start','sample-reel':'communication','sample-client':'communication','sample-coffee':'communication','sample-strength':'energizing-movement','sample-yoga':'restorative','sample-slides':'finishing-admin','sample-expenses':'finishing-admin','sample-priorities':'review-planning','sample-meals':'general','sample-dentist':'general'});
+for(const [text,type] of [['45-minute strength training session','energizing-movement'],['Gentle yoga','restorative'],['Prepare client presentation','communication'],["Prepare slides for Friday's client presentation",'communication'],['Review monthly expenses','finishing-admin'],['Buy groceries','general'],['Call dentist','general'],['Finish the novel draft','general'],['Run errands','general'],['Water the plants','general'],['Restaurant booking','general']])assert.equal(d.inferWorkType(text),type,text);
+assert.equal(d.effectiveWorkType({title:'Strength training',workType:'general'}),'general','an explicit type, even general, overrides inference');
+assert.equal(d.effectiveWorkType({title:'Strength training',workType:'restorative'}),'restorative','a stored user correction wins');
 const state={...d.createInitialState(),tasks};assert.equal(d.validateState(state),true);
 const input={tasks,availability:state.availability,commitments:[],cyclePreferences:d.createDefaultCyclePreferences(),cycleMode:'natural',weekStart:today};
 assert.equal(d.lastPeriodForCycleDay(1,today),today);assert.equal(d.lastPeriodForCycleDay(10,today),'2026-10-03');
@@ -32,4 +37,4 @@ assert.equal(base.cycleBasics,null,'building a proposal does not touch state');
 const applied=d.applyProposal(base,proposal,cycle);assert.deepEqual(applied.cycleBasics,cycle.basics);assert.equal(applied.cycleMode,'natural');assert.equal(d.validateState(applied),true,'cycleBefore history entry persists');
 const undone=d.undoLastChange(applied);assert.equal(undone.cycleMode,null);assert.equal(undone.cycleBasics,null);assert.deepEqual(undone.acceptedPlan,accepted);
 const plain=d.applyProposal(base,proposal);assert.equal(plain.cycleBasics,null,'a plan-only apply keeps the cycle');}
-console.log('Rhythm preview tests passed: apply/undo commit cycle with plan, typed sample week, cycle day → phase per day, menstrual favors rest and planning, follicular takes strength and deep work, ovulatory takes client and visibility tasks, moved-task detection, no task dropped, neutral when off.');
+console.log('Rhythm preview tests passed: automatic local activity classification (ambiguous stays neutral, overrides win), apply/undo commit cycle with plan, typed sample week, cycle day → phase per day, menstrual favors rest and planning, follicular takes strength and deep work, ovulatory takes client and visibility tasks, moved-task detection, no task dropped, neutral when off.');
