@@ -18,13 +18,6 @@ export type PlanningTemplate = typeof PLANNING_TEMPLATES[number]
 export const TEMPLATE_LABELS: Record<PlanningTemplate, string> = {
   balanced: 'Balanced', 'high-output': 'High-output', recovery: 'Recovery',
 }
-/** Short, confident guidance shown with an estimated phase. */
-export const PHASE_GUIDANCE: Record<CyclePhase, string> = {
-  Menstrual: 'Best for rest and gentle planning',
-  Follicular: 'Best for starting and strong movement',
-  Ovulatory: 'Best for presenting and connecting',
-  Luteal: 'Best for finishing and organizing',
-}
 export interface CyclePreferences {
   template: PlanningTemplate
   phaseWork: Record<CyclePhase, WorkType[]>

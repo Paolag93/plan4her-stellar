@@ -12,7 +12,7 @@ export function MoreScreen({onCycleContext,onPlanningPreferences,onPrivacy,onHel
    <h1>Preferences &amp; support</h1>
    <p className="more-screen__intro">Planning context, community, privacy and help in one place.</p>
    <p className="more-screen__label">PLANNING</p>
-   {onRhythm?<Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onRhythm}>Rhythm preview</Button>:null}
+   {onRhythm?<Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onRhythm}>Explore your week</Button>:null}
    <Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onCycleContext}>Cycle context</Button>
    {onPlanningPreferences?<Button className="more-screen__menu" hierarchy="secondary" type="button" onClick={onPlanningPreferences}>Planning preferences</Button>:null}
    {community?<><p className="more-screen__label">COMMUNITY</p>

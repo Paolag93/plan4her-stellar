@@ -24,4 +24,12 @@ assert.ok(moved.has('sample-strength')&&moved.has('sample-client'),'changing cyc
 for(const day of [1,6,12,15,20,27])assert.equal(at(day).plan.unscheduled.length,0,`day ${day} keeps every task`);
 // Neutral without natural cycle mode: same inputs, cycle off, no phase signals.
 const off=d.generateWeeklyPlan({...input,cycleMode:null});assert.ok(!off.blocks.some(b=>b.signals.some(s=>s.title==='Cycle preference')));
-console.log('Rhythm preview tests passed: typed sample week, cycle day → phase per day, menstrual favors rest and planning, follicular takes strength and deep work, ovulatory takes client and visibility tasks, moved-task detection, no task dropped, neutral when off.');
+// Approval semantics: a cycle change is committed only with Apply, and Undo restores the prior cycle and plan.
+{const accepted=d.generateWeeklyPlan({...input,cycleMode:null});const base={...state,acceptedPlan:accepted,onboardingComplete:true,cycleMode:null,cycleBasics:null};
+const cycle={mode:'natural',basics:{lastPeriodStart:d.lastPeriodForCycleDay(12,today),cycleLength:28}};
+const proposal=d.proposeAdjustment(accepted,{...input,cycleMode:'natural',cycleBasics:cycle.basics,weekStart:accepted.weekStart},'week',today);
+assert.equal(base.cycleBasics,null,'building a proposal does not touch state');
+const applied=d.applyProposal(base,proposal,cycle);assert.deepEqual(applied.cycleBasics,cycle.basics);assert.equal(applied.cycleMode,'natural');assert.equal(d.validateState(applied),true,'cycleBefore history entry persists');
+const undone=d.undoLastChange(applied);assert.equal(undone.cycleMode,null);assert.equal(undone.cycleBasics,null);assert.deepEqual(undone.acceptedPlan,accepted);
+const plain=d.applyProposal(base,proposal);assert.equal(plain.cycleBasics,null,'a plan-only apply keeps the cycle');}
+console.log('Rhythm preview tests passed: apply/undo commit cycle with plan, typed sample week, cycle day → phase per day, menstrual favors rest and planning, follicular takes strength and deep work, ovulatory takes client and visibility tasks, moved-task detection, no task dropped, neutral when off.');

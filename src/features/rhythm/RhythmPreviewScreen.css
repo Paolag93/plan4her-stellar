@@ -21,7 +21,6 @@
 .rhythm-dial__head > div { display: flex; flex-direction: column; }
 .rhythm-dial__label { color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-xs); font-weight: 500; }
 .rhythm-dial__day { font-size: 48px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.rhythm-dial__note { font-size: var(--font-size-sm); line-height: var(--line-height-sm); color: var(--color-text-primary); }
 .rhythm-dial__slider { width: 100%; height: var(--size-touch-min); margin: 0; accent-color: var(--p4h-brand-teal-600); cursor: pointer; }
 .rhythm-dial__track { display: flex; gap: 3px; height: 6px; margin-top: -14px; border-radius: var(--radius-full); overflow: hidden; }
 .rhythm-dial__track span { display: block; height: 100%; }
@@ -55,7 +54,6 @@
 .rhythm-task--moved { background: color-mix(in srgb, var(--phase-color, var(--p4h-brand-blue-300)) 28%, white); animation: rhythm-land .45s ease; }
 .rhythm-task__title { font-size: var(--font-size-sm); line-height: var(--line-height-sm); font-weight: 500; overflow-wrap: anywhere; }
 .rhythm-task__meta { font-size: var(--font-size-xs); line-height: var(--line-height-xs); color: var(--color-text-secondary); }
-.rhythm-task__fit { color: var(--p4h-brand-teal-800); font-weight: 500; }
 .rhythm-task__moved { color: var(--color-text-primary); font-weight: 600; }
 @keyframes rhythm-land { from { transform: translateY(-4px); opacity: .4; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .rhythm-task--moved { animation: none; } .rhythm-dial, .rhythm-task { transition: none; } }

@@ -1,33 +1,26 @@
 import { useId, useMemo, useState } from 'react'
 import { AppHeader } from '../../components/AppHeader'
 import { Button } from '../../components/Button'
-import { CYCLE_PHASES, WORK_TYPE_LABELS, estimateCycleContext, type CyclePhase, type CyclePreferences, type WorkType } from '../../domain/cyclePreferences'
+import { CYCLE_PHASES, WORK_TYPE_LABELS, estimateCycleContext, type CyclePhase, type WorkType } from '../../domain/cyclePreferences'
 import { previewRhythm } from '../../domain/rhythmPreview'
 import { generateWeeklyPlan } from '../../domain/planner'
 import type { PlannerInput, TaskItem, WeeklyPlan } from '../../domain/types'
 import './RhythmPreviewScreen.css'
 
-const PHASE_NOTE: Record<CyclePhase, string> = {
-  Menstrual: 'Turn inward. Rest, reflect, plan gently.',
-  Follicular: 'Fresh energy. Start, create, move strongly.',
-  Ovulatory: 'Most outward. Present, connect, collaborate.',
-  Luteal: 'Detail mode. Finish, organize, wind down.',
-}
-
 export interface RhythmPreviewScreenProps {
   input: PlannerInput
-  preferences: CyclePreferences
   accepted: WeeklyPlan | null
   savedDay: number | null
   cycleLength: number
   today: string
   onBack: () => void
-  onApply?: (day: number) => void
+  /** Opens the change review for this cycle day. Must not save anything. */
+  onReview?: (day: number) => void
   onEditPreferences?: () => void
   onAddTasks?: () => void
 }
 
-export function RhythmPreviewScreen({ input, preferences, accepted, savedDay, cycleLength, today, onBack, onApply, onEditPreferences, onAddTasks }: RhythmPreviewScreenProps) {
+export function RhythmPreviewScreen({ input, accepted, savedDay, cycleLength, today, onBack, onReview, onEditPreferences, onAddTasks }: RhythmPreviewScreenProps) {
   const [day, setDay] = useState(savedDay ?? 1)
   const sliderId = useId()
   const taskById = useMemo(() => new Map(input.tasks.map(task => [task.id, task] as [string, TaskItem])), [input.tasks])
@@ -38,17 +31,17 @@ export function RhythmPreviewScreen({ input, preferences, accepted, savedDay, cy
   const segments = CYCLE_PHASES.map(phase => ({ phase, days: Array.from({ length: cycleLength }, (_, i) => i + 1).filter(n => phaseForDay(n, cycleLength) === phase).length }))
 
   return <main className="rhythm-preview live-content-screen" data-testid="rhythm-preview">
-    <AppHeader title="Rhythm preview" onBack={onBack} />
-    <div className="rhythm-preview__content" tabIndex={0} role="region" aria-label="Rhythm preview content">
+    <AppHeader title="Week preview" onBack={onBack} />
+    <div className="rhythm-preview__content" tabIndex={0} role="region" aria-label="Explore your week content">
       <section className="rhythm-preview__intro">
-        <span className="rhythm-eyebrow">Cycle-aware planning</span>
-        <h2>Watch your week follow your rhythm</h2>
-        <p>Change your cycle day. Plan4Her re-plans your week instantly.</p>
+        <span className="rhythm-eyebrow">Preview</span>
+        <h2>Explore your week</h2>
+        <p>Try another cycle day to see an alternative schedule. Your plan stays as it is unless you apply the changes.</p>
       </section>
 
       <section className="rhythm-dial" data-phase={todayPhase?.toLowerCase() ?? 'neutral'} aria-label="Cycle day">
         <div className="rhythm-dial__head">
-          <div><span className="rhythm-dial__label">Today is cycle day</span><strong className="rhythm-dial__day">{day}</strong></div>
+          <div><span className="rhythm-dial__label">Cycle day today</span><strong className="rhythm-dial__day">{day}</strong></div>
           {todayPhase ? <span className="rhythm-phase-pill" data-phase={todayPhase.toLowerCase()}>{todayPhase}</span> : null}
         </div>
         <label className="sr-only" htmlFor={sliderId}>Cycle day</label>
@@ -58,7 +51,6 @@ export function RhythmPreviewScreen({ input, preferences, accepted, savedDay, cy
           <button type="button" className="rhythm-step" onClick={() => setDay(d => Math.max(1, d - 1))} aria-label="Previous cycle day" disabled={day <= 1}>−1 day</button>
           <button type="button" className="rhythm-step" onClick={() => setDay(d => Math.min(cycleLength, d + 1))} aria-label="Next cycle day" disabled={day >= cycleLength}>+1 day</button>
         </div>
-        {todayPhase ? <p className="rhythm-dial__note">{PHASE_NOTE[todayPhase]}</p> : null}
       </section>
 
       {!input.tasks.length ? <section className="rhythm-empty">
@@ -67,45 +59,42 @@ export function RhythmPreviewScreen({ input, preferences, accepted, savedDay, cy
         {onAddTasks ? <Button type="button" hierarchy="secondary" onClick={onAddTasks}>Go to Tasks</Button> : null}
       </section> : <>
         <p className="rhythm-moved" role="status" aria-live="polite">
-          {preview.moved.size ? <><strong>{preview.moved.size} {preview.moved.size === 1 ? 'task moves' : 'tasks move'}</strong> to better-suited days.</> : day === savedDay ? 'This is your current rhythm.' : 'Your week already fits this rhythm.'}
+          {preview.moved.size ? <strong>{preview.moved.size} {preview.moved.size === 1 ? 'task moved' : 'tasks moved'}</strong> : day === savedDay ? 'This is your current plan.' : 'No changes for this day.'}
         </p>
         <ol className="rhythm-week" aria-label="Week preview">
           {preview.days.map(d => <li key={d.dateISO} className="rhythm-day" data-phase={d.phase?.toLowerCase() ?? 'neutral'} data-today={d.dateISO === today || undefined}>
             <div className="rhythm-day__head">
               <span className="rhythm-day__date"><strong>{d.short}</strong> {d.number}</span>
-              {d.phase ? <span className="rhythm-day__phase"><i aria-hidden="true" />{d.phase} · day {d.cycleDay}</span> : null}
+              {d.phase ? <span className="rhythm-day__phase"><i aria-hidden="true" />Day {d.cycleDay} · {d.phase}</span> : null}
             </div>
             {d.blocks.length ? <ul className="rhythm-day__tasks">
               {d.blocks.map(block => {
                 const task = block.taskId ? taskById.get(block.taskId) : undefined
                 const type = (task?.workType ?? 'general') as WorkType
-                const fits = Boolean(d.phase && type !== 'general' && preferences.phaseWork[d.phase].includes(type))
                 const moved = Boolean(block.taskId && preview.moved.has(block.taskId))
                 return <li key={block.id} className={`rhythm-task${moved ? ' rhythm-task--moved' : ''}`}>
                   <span className="rhythm-task__title">{block.title}</span>
-                  <span className="rhythm-task__meta">
-                    {block.fixed ? 'Fixed' : type !== 'general' ? WORK_TYPE_LABELS[type] : 'No type'}
-                    {fits ? <span className="rhythm-task__fit"> · fits {d.phase!.toLowerCase()}</span> : null}
-                    {moved ? <span className="rhythm-task__moved"> · moved here</span> : null}
-                  </span>
+                  {block.fixed || type !== 'general' || moved ? <span className="rhythm-task__meta">
+                    {block.fixed ? 'Fixed' : type !== 'general' ? WORK_TYPE_LABELS[type] : 'Task'}
+                    {moved ? <span className="rhythm-task__moved"> · moved</span> : null}
+                  </span> : null}
                 </li>
               })}
             </ul> : <p className="rhythm-day__open">Open</p>}
           </li>)}
         </ol>
-        {!typed ? <p className="rhythm-hint">Tip: give tasks a work type so your rhythm can place them.</p> : null}
+        {!typed ? <p className="rhythm-hint">Tip: give tasks a work type to see more options.</p> : null}
       </>}
 
       <details className="rhythm-details">
-        <summary>How each phase is used</summary>
-        <ul>{CYCLE_PHASES.map(phase => <li key={phase}><span className="rhythm-phase-pill" data-phase={phase.toLowerCase()}>{phase}</span> {preferences.phaseWork[phase].length ? preferences.phaseWork[phase].map(t => WORK_TYPE_LABELS[t]).join(' · ') : 'No preference'}</li>)}</ul>
-        <p>Deadlines, availability and fixed commitments always come first. Cycle days are estimated from your last period.</p>
+        <summary>How this works</summary>
+        <p>Plan4Her arranges tasks using your planning preferences, which you can change at any time. Deadlines, availability and fixed commitments always come first. Cycle days are estimated from your last period.</p>
       </details>
 
       <div className="rhythm-actions">
-        {onApply ? <Button type="button" disabled={day === savedDay || !input.tasks.length} onClick={() => onApply(day)}>{day === savedDay ? 'This is your current rhythm' : `Use cycle day ${day}`}</Button> : null}
-        {onEditPreferences ? <Button type="button" hierarchy="secondary" onClick={onEditPreferences}>Edit what each phase favors</Button> : null}
-        {onApply && accepted ? <p className="rhythm-hint">You’ll review every change before your plan updates.</p> : null}
+        {onReview && accepted ? <Button type="button" disabled={day === savedDay || !input.tasks.length} onClick={() => onReview(day)}>Review changes</Button> : null}
+        {onEditPreferences ? <Button type="button" hierarchy="secondary" onClick={onEditPreferences}>Planning preferences</Button> : null}
+        {onReview && accepted ? <p className="rhythm-hint">Nothing changes until you choose Apply changes.</p> : null}
       </div>
     </div>
   </main>
@@ -119,9 +108,9 @@ function phaseForDay(day: number, length: number): CyclePhase | null {
 }
 
 /** Shared entry point into the rhythm preview (Today, Plan, More). */
-export function RhythmEntry({ onOpen, subtitle = 'Change your cycle day and watch tasks move.' }: { onOpen: () => void; subtitle?: string }) {
+export function RhythmEntry({ onOpen, subtitle = 'Preview your schedule on another cycle day.' }: { onOpen: () => void; subtitle?: string }) {
   return <button type="button" className="rhythm-entry" onClick={onOpen}>
-    <span><strong>See your rhythm at work</strong><small>{subtitle}</small></span>
+    <span><strong>Explore your week</strong><small>{subtitle}</small></span>
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" /></svg>
   </button>
 }

@@ -1,5 +1,5 @@
 import { validateTaskSelectionProposal } from './taskSelection'
-import type { AppState, WeeklyPlan, PlanProposal, PlanHistoryEntry, PlannerInput, Availability, BlockStatus, PlanBlockData, TaskItem } from './types'
+import type { AppState, WeeklyPlan, PlanProposal, PlanHistoryEntry, PlannerInput, Availability, BlockStatus, PlanBlockData, TaskItem, CycleSnapshot } from './types'
 import type { PlanBlockEdit } from '../features/plan/planData'
 import { comparePlanBlocks } from '../features/plan/planData'
 import { clone, generateWeeklyPlan, makeBlock, minutes, durationMinutes, overlaps, availabilityWindow, recalculate, localISO, resolveDate } from './planner'
@@ -186,16 +186,18 @@ function assertApplicable(state:AppState,p:PlanProposal,current:WeeklyPlan|null)
  if(errors.length)throw new Error(errors.join(' '))
 }
 function mirrorsAccepted(state:AppState):boolean{return !state.draftPlan||JSON.stringify(state.draftPlan)===JSON.stringify(state.acceptedPlan)}
-export function applyProposal(state:AppState,p:PlanProposal):AppState {
+/** Applies an approved proposal. An optional cycle change is committed in the same step and recorded for Undo. */
+export function applyProposal(state:AppState,p:PlanProposal,cycle?:CycleSnapshot):AppState {
  assertApplicable(state,p,state.acceptedPlan)
  const next=clone(state)
  const entry:PlanHistoryEntry={id:`change-${Date.now()}-${state.history.length}`,kind:p.kind,label:p.label,createdAt:new Date().toISOString(),before:clone(p.before),after:clone(p.after)}
+ if(cycle){entry.cycleBefore={mode:state.cycleMode,basics:clone(state.cycleBasics)};next.cycleMode=cycle.mode;next.cycleBasics=clone(cycle.basics)}
  next.acceptedPlan=clone(p.after);if(p.kind==='accept'||mirrorsAccepted(state))next.draftPlan=clone(p.after);next.history=[...next.history,entry].slice(-30);next.onboardingComplete=true
  return syncTaskCompletion(next)
 }
-export function applyDraftProposal(state:AppState,p:PlanProposal):AppState {
+export function applyDraftProposal(state:AppState,p:PlanProposal,cycle?:CycleSnapshot):AppState {
  assertApplicable(state,p,state.draftPlan)
- return {...clone(state),draftPlan:clone(p.after)}
+ return {...clone(state),draftPlan:clone(p.after),...(cycle?{cycleMode:cycle.mode,cycleBasics:clone(cycle.basics)}:{})}
 }
 export function acceptPlan(state:AppState,plan:WeeklyPlan):AppState {return applyProposal(state,proposal(state.acceptedPlan,plan,'accept','Accept plan',[...validatePlan(plan,state.availability,state.tasks),...planningIssues(plan)]))}
 export function undoLastChange(state:AppState):AppState {
@@ -204,7 +206,7 @@ export function undoLastChange(state:AppState):AppState {
  const current=state.acceptedPlan??last.after,target=last.before?reconcileExecution(last.before,current,last.after):null
  if(target){const errors=validatePlan(target,state.availability,state.tasks);if(errors.length)throw new Error(errors.join(' '))}
  const next=clone(state)
- next.acceptedPlan=target;if(last.kind==='accept'||mirrorsAccepted(state))next.draftPlan=clone(target??reconcileExecution(last.after,current,last.after));next.history.pop();next.onboardingComplete=!!next.acceptedPlan
+ next.acceptedPlan=target;if(last.kind==='accept'||mirrorsAccepted(state))next.draftPlan=clone(target??reconcileExecution(last.after,current,last.after));next.history.pop();if(last.cycleBefore){next.cycleMode=last.cycleBefore.mode;next.cycleBasics=clone(last.cycleBefore.basics)}next.onboardingComplete=!!next.acceptedPlan
  return syncTaskCompletion(next)
 }
 export function updateBlockStatus(state:AppState,id:string,status:BlockStatus):AppState {const next=clone(state);if(!next.acceptedPlan)return next;next.acceptedPlan.blocks=next.acceptedPlan.blocks.map(b=>b.id===id?{...b,status,completedMinutes:status==='done'?durationMinutes(b.duration):status==='partial'?Math.floor(durationMinutes(b.duration)/2):0,remainingMinutes:status==='done'?0:status==='partial'?Math.ceil(durationMinutes(b.duration)/2):durationMinutes(b.duration)}:b);if(mirrorsAccepted(state))next.draftPlan=clone(next.acceptedPlan);return syncTaskCompletion(next)}
