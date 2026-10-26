@@ -99,14 +99,14 @@ export function EncryptedBackupScreen({ app, community, onBack, onUploaded, onRe
   })
 
   return <CommunityScreen title="Encrypted backup" onBack={onBack} testId="encrypted-backup">
-    <section className="community-intro"><span>OPTIONAL · YOU CONTROL THE KEY</span><h2>Back up privately</h2><p>Your tasks, cycle context, plans and Rhythm Pool commitments are encrypted on this device with your passphrase before anything leaves it. Plan4Her never receives your passphrase or unencrypted data.</p></section>
+    <section className="community-intro"><span>OPTIONAL · YOU HOLD THE KEY</span><h2>Your backup, your key</h2><p>Your tasks, cycle context, plans and Rhythm Pool commitments are encrypted on this device with your passphrase before anything leaves it. Plan4Her never receives your passphrase or unencrypted data.</p></section>
     <aside className="community-notice">
       <strong>What to know</strong>
       <ul>
-        <li>Encryption: AES-256-GCM. Your passphrase protects the key (PBKDF2-SHA-256, 600,000 rounds).</li>
-        <li>If you lose your passphrase, the backup cannot be recovered by anyone, including us.</li>
-        <li>IPFS is public, content-addressed storage. Anyone with the CID can download the encrypted file, but not read it without your passphrase.</li>
-        <li>IPFS copies cannot be guaranteed deleted. Clearing this device does not remove them.</li>
+        <li>Encrypted on your device with AES-256-GCM. Your passphrase protects the key.</li>
+        <li>Lose your passphrase and nobody can recover the backup, including us.</li>
+        <li>IPFS is public storage. Anyone with the CID can download the encrypted file, but only your passphrase can open it.</li>
+        <li>IPFS copies can’t be guaranteed deleted, and clearing this device doesn’t remove them.</li>
         <li>For this demo, use synthetic data only.</li>
       </ul>
     </aside>

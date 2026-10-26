@@ -31,9 +31,9 @@ export function StartScreen({ onBuildFirstWeek, onHowItWorks }: StartScreenProps
         <span className="start-brand__name">Plan4Her</span>
       </header>
 
-      <h1 className="start-title">A weekly plan that adapts to you</h1>
+      <h1 className="start-title">Your life isn’t linear. Your plan shouldn’t be.</h1>
       <p className="start-description">
-        Plan4Her organizes your tasks around the time you actually have. Cycle context can add optional planning context.
+        Plan4Her builds your week around your time, your goals and, if you choose, your cycle. Flexible by design. Private by default.
       </p>
 
       <section className="week-preview" aria-label="Your week preview">
@@ -50,7 +50,7 @@ export function StartScreen({ onBuildFirstWeek, onHowItWorks }: StartScreenProps
 
       <section className="value-promise">
         <strong>You stay in control</strong>
-        <span>Preview the week, adjust it, and undo changes anytime.</span>
+        <span>Preview your week, adjust anything and undo any change.</span>
       </section>
 
       <section className="trust-strip" aria-label="Product principles">
@@ -61,7 +61,7 @@ export function StartScreen({ onBuildFirstWeek, onHowItWorks }: StartScreenProps
 
       <button className="start-how" type="button" onClick={onHowItWorks}>See how Plan4Her works</button>
       <Button className="start-primary" type="button" onClick={onBuildFirstWeek}>Build my first week</Button>
-      <p className="start-footnote">Cycle context is optional · Private by default</p>
+      <p className="start-footnote">Cycle-aware when you want it · Private by default</p>
     </main>
   )
 }
