@@ -15,24 +15,26 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 | Four-week aggregate ratio, 70% threshold, skipped weeks count as 3 not done | Implemented & tested | domain tests; `community-result` E2E |
 | Completion verification | Self-reported only | UI terms |
 | Community members / average | Simulation (labelled); own % only with consent | UI, domain test |
-| DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Code complete, live verification pending** | `src/stellar/vault.ts`; see below |
+| DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Confirmed on Stellar Testnet** (synthetic key via the app's vault code); Freighter browser signing same path, to be shown in video | tx hashes below |
 | Rewards (pledged realized yield or confirmed sponsor funds) | Simulation (labelled); no distribution contract; no sponsor confirmed | `simulateRewardPool` tests |
 | AES-256-GCM encrypted backup + restore | Implemented & tested (browser + Node) | `encryption.test.cjs`, E2E |
 | Pinata/IPFS upload & retrieval | **Code complete, tested with fake Pinata; live upload pending** `PINATA_JWT` | `server/api.test.ts` |
 | Accountability partners, thematic 30/90-day challenges | Removed from primary journey (product decision 2026-10-26) | — |
 | Billing (Premium USD 6.99/month), yield-sharing contract, sponsor system, Confidential Tokens | Not implemented (planned) | — |
-| Separate public HTTPS demo | Deployed by founder on Render: https://plan4her-stellar.onrender.com (not yet verified from the build environment, whose network policy blocks it) | `DEPLOYMENT.md` |
+| Separate public HTTPS demo | **Live and verified**: https://plan4her-stellar.onrender.com — onboarding, 4 tabs, Rhythm Pool join/commitments/persistence, savings consent and no-wallet state, encrypted backup wrong/right passphrase, at 390 px and 1280 px, 0 console errors; `/api/status` reports IPFS upload enabled | `DEPLOYMENT.md` |
 
-## On-chain evidence (Stellar Testnet)
-- Network: Stellar **Testnet** (`Test SDF Network ; September 2015`), RPC `https://soroban-testnet.stellar.org`.
-- Vault: DeFindex `xlm_paltalabs_vault` `CCLV4H7WTLJQ7ATLHBBQV2WW3OINF3FOY5XZ7VPHZO7NH3D2ZS4GFSF6` (from DeFindex's published `public/testnet.contracts.json`, commit `a0fcabf`, 2026-07-01). Asset: native XLM SAC `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC`; the app re-verifies the asset on chain before enabling deposits.
-- Wallet: founder's own Freighter Testnet account (synthetic, no real value).
-- Deposit tx hash / explorer link: **PENDING — requires founder wallet signature in a browser**.
-- Vault shares and balance read method: `balance(id)`, `total_supply()`, `get_asset_amounts_per_shares(shares)` via Soroban RPC simulation.
-- Withdrawal tx hash / explorer link: **PENDING**.
-- Realized yield: **NO VERIFIED YIELD**.
+## On-chain evidence (Stellar Testnet) — CONFIRMED 2026-10-26
+Executed by Claude from the build environment with `npm run testnet:smoke`, which drives the app's own `src/stellar/vault.ts` (build → simulate → sign → submit → poll) with a **throwaway synthetic Testnet key** funded by Friendbot. The only difference from the browser is the signer: a local key instead of Freighter. Both hashes were independently re-checked on Horizon (`successful: true`).
 
-**Why pending:** this Claude Code cloud environment's network policy returned HTTP 403 for `soroban-testnet.stellar.org`, `horizon-testnet.stellar.org`, `friendbot.stellar.org`, `api.defindex.io`, `api.pinata.cloud` and `stellar.expert` (recorded 2026-10-25 23:18 UTC). No transaction was sent and none is claimed. In the browser the SDK chunk loads without errors and the no-wallet path was verified.
+- Network: Stellar **Testnet**, RPC `https://soroban-testnet.stellar.org`.
+- Vault: DeFindex `xlm_paltalabs_vault` `CCLV4H7WTLJQ7ATLHBBQV2WW3OINF3FOY5XZ7VPHZO7NH3D2ZS4GFSF6`; asset verified on chain as native XLM SAC `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` (`get_assets`).
+- Synthetic account: `GD7ZEYR5K6JJKSAYVY2UMXHP7G2OTS7CKW3KGQPYVYGKDX6XEG2YNG5D`.
+- **Deposit** 10 XLM (`invest = true`) → 59,963 shares minted. Ledger 5391335. Tx `f82db6197d0dcf63dde25a9ec4ed178288bbd2e7af1f64a22d8c02485d8aff09` — https://stellar.expert/explorer/testnet/tx/f82db6197d0dcf63dde25a9ec4ed178288bbd2e7af1f64a22d8c02485d8aff09
+- Redeemable value read from chain after deposit: 9.9998467 XLM.
+- **Withdraw** 29,981 shares (50%) → 4.99984 XLM returned (min accepted 4.9498416 with 1% slippage). Ledger 5391336. Tx `43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5` — https://stellar.expert/explorer/testnet/tx/43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5
+- Final position: 29,982 shares, redeemable 5.0000067 XLM. App accounting: realized result **−0.0000767 XLM**, unrealized −0.0000766 XLM (rounding/fees). **NO VERIFIED POSITIVE YIELD.**
+- Network fee (max, simulated) for the deposit: 0.0305637 XLM.
+- A Freighter-signed deposit by the founder in the browser is still recommended for the demo video; it uses the same code path.
 
 ## Encrypted storage evidence
 - Payload: `{format:'plan4her-encrypted-bundle', v:1, app, community}` (synthetic data in tests).

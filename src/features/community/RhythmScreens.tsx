@@ -116,15 +116,15 @@ export function CommitmentsScreen({ participation, week, tasks, mode, replacing,
 
 const STATUS_LABEL: Record<Commitment['status'], string> = { open: 'To do', done: 'Done', missed: 'Missed', replaced: 'Replaced' }
 
-export function RhythmProgressScreen({ participation, today, onBack, onSetCommitments, onStatus, onReplace, onSavings, onRewards, onLeave, onRestart, error }: {
-  participation: Participation; today: string; onBack: () => void; onSetCommitments: (week: number) => void
+export function RhythmProgressScreen({ participation, today, onBack, onNavigate, onSetCommitments, onStatus, onReplace, onSavings, onRewards, onLeave, onRestart, error }: {
+  participation: Participation; today: string; onBack: () => void; onNavigate: (tab: RootTab) => void; onSetCommitments: (week: number) => void
   onStatus: (week: number, id: string, status: 'done' | 'missed' | 'open') => void; onReplace: (week: number, item: Commitment) => void
   onSavings: () => void; onRewards: () => void; onLeave: () => void; onRestart: () => void; error?: string | null
 }) {
   const progress = poolProgress(participation, today)
   const editable = editableWeek(participation, today)
   const current = participation.weeks.find(w => w.week === Math.max(1, progress.week))
-  return <CommunityScreen title="My rhythm" onBack={onBack} testId="rhythm-progress">
+  return <CommunityScreen title="My rhythm" onBack={onBack} onNavigate={onNavigate} testId="rhythm-progress">
     <section className="community-intro">
       <span>RHYTHM POOL · {day(participation.startDate).toUpperCase()} – {day(poolEndDate(participation)).toUpperCase()}</span>
       <h2>{progress.ended ? 'Your four-week result' : progress.started ? `Week ${progress.week} of ${POOL_WEEKS}` : `Starts in ${progress.daysUntilStart} day${progress.daysUntilStart === 1 ? '' : 's'}`}</h2>
