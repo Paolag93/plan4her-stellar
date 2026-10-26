@@ -98,7 +98,7 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
 
   const unit = (v: bigint | null) => v === null ? '—' : formatAmount(v)
   return <CommunityScreen title="Savings · Testnet" onBack={onBack} onNavigate={onNavigate} testId="savings">
-    <div className="community-card__top"><span className="community-badge community-badge--brand">Stellar Testnet</span><span className="community-badge">DeFindex vault</span><span className="community-badge">Non-custodial</span></div>
+    <div className="community-card__top"><span className="community-badge community-badge--brand">Stellar Testnet</span><span className="community-badge">Your wallet, your keys</span></div>
     {!address ? <>
       <p className="community-help">Connect the Freighter browser wallet on Testnet. Plan4Her never sees your secret key: you review and approve every transaction in Freighter.</p>
       <Button type="button" loading={Boolean(busy)} onClick={connect}>Connect Freighter (Testnet)</Button>
@@ -106,22 +106,30 @@ export function SavingsScreen({ community, today, onBack, onNavigate, onChange, 
     </> : <>
       <div className="community-rows">
         <Row label="Wallet" value={<span className="community-mono">{short(address)}</span>} note="Your address is public on Stellar. Plan4Her never puts your goals, tasks or cycle data on-chain." />
-        <Row label="Vault" value={<a className="community-link" href={explorer(`contract/${VAULT_ID}`)} target="_blank" rel="noreferrer">{short(VAULT_ID)}</a>} note={snapshot ? (snapshot.assetVerified ? 'Asset verified on chain: native XLM' : 'Asset NOT verified: deposits disabled') : undefined} />
       </div>
-      <Button hierarchy="secondary" type="button" loading={Boolean(busy)} onClick={() => refresh()}>Refresh from chain</Button>
+      {snapshot && !snapshot.assetVerified ? <p className="community-error" role="alert">The vault’s asset could not be verified on chain, so deposits are turned off.</p> : null}
+      <Button hierarchy="secondary" type="button" loading={Boolean(busy)} onClick={() => refresh()}>Refresh balance</Button>
     </>}
     {busy ? <p className="community-help" role="status">{busy}</p> : null}
     {error ? <div className="community-error" role="alert"><p>{error.message}</p>{error.fund ? <a className="community-link" href={`https://friendbot.stellar.org/?addr=${encodeURIComponent(error.fund)}`} target="_blank" rel="noreferrer">Fund with Friendbot (Testnet)</a> : null}</div> : null}
 
     <p className="community-label">My position</p>
-    <div className="community-rows" data-testid="position">
+    <div className="community-position" data-testid="position">
+    <div className="community-rows">
       <Row label="Wallet balance" value={snapshot ? unit(snapshot.walletBalance) : '—'} note={snapshot ? `Read ${new Date(snapshot.readAt).toLocaleTimeString()}` : 'Connect to read from chain'} />
-      <Row label="My vault shares" value={snapshot ? snapshot.shares.toString() : '—'} note="Owned by my wallet" />
       <Row label="Redeemable now" value={snapshot ? unit(snapshot.redeemable) : '—'} note="Vault's current value of my shares" />
       <Row label="Net contribution" value={unit(summary.contributed)} note="Deposits minus the cost of shares withdrawn" />
       <Row label="Change vs net contribution" value={summary.unrealized === null ? '—' : unit(summary.unrealized)} note="Not yet withdrawn. Can be negative." />
       <Row label="Realized yield" value={unit(summary.realized)} note={summary.realized > 0n ? 'From completed withdrawals' : 'None realized yet'} />
-      <Row label="APY" value="Not available" note="Not verified for this Testnet vault" />
+    </div>
+    <details className="community-details">
+      <summary>Technical details</summary>
+      <div className="community-rows">
+        <Row label="Vault" value={<a className="community-link" href={explorer(`contract/${VAULT_ID}`)} target="_blank" rel="noreferrer">{short(VAULT_ID)}</a>} note={snapshot ? (snapshot.assetVerified ? 'DeFindex vault · asset verified on chain: native XLM' : 'DeFindex vault · asset not verified') : 'DeFindex vault on Stellar Testnet'} />
+        <Row label="My vault shares" value={snapshot ? snapshot.shares.toString() : '—'} note="Owned by my wallet" />
+        <Row label="APY" value="Not available" note="Not verified for this Testnet vault" />
+      </div>
+    </details>
     </div>
 
     {address && snapshot ? <>
@@ -186,13 +194,15 @@ export function RewardsSimulationScreen({ community, today, onBack }: { communit
   const result = simulateRewardPool(participants, 20, CONFIRMED_SPONSOR_FUNDS)
   return <CommunityScreen title="Rewards simulation" onBack={onBack} testId="rewards-simulation">
     <aside className="community-notice community-notice--warning"><strong>SIMULATION: no rewards are paid</strong><p>This models a proposed Rhythm Pool rule on your device. Nothing is distributed on-chain and no funds move.</p></aside>
-    <p className="community-h2">Possible reward sources</p>
-    <ul className="community-help">
+    <details className="community-details">
+    <summary>How the proposed rule works</summary>
+    <ul>
       <li><strong>Pledged yield:</strong> members can choose to pledge 20% of their own <strong>positive realized</strong> yield. A verified way to distribute it doesn’t exist yet.</li>
       <li><strong>Sponsor funds:</strong> counted only once confirmed. None are confirmed for this demo.</li>
       <li>Neither source is guaranteed. Deposits (principal) are never part of the pot; losses contribute nothing.</li>
       <li>Members who complete at least {percent(ELIGIBILITY_THRESHOLD)} of their four-week commitments share the pot equally. Falling short never touches anyone’s deposit.</li>
     </ul>
+    </details>
     <div className="community-rows" data-testid="reward-table">
       <Row label="Your realized yield" value={formatAmount(mine.realized > 0n ? mine.realized : 0n)} note={mine.realized > 0n ? 'From your confirmed withdrawals' : 'No verified yield yet'} />
       <Row label="Your yield pledge" value={p?.pledgeYield ? '20% authorized' : 'Not authorized'} />

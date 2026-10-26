@@ -1,6 +1,6 @@
 import type { CycleBasics } from './types'
 
-export const WORK_TYPES = ['general', 'review-planning', 'creation-start', 'communication', 'finishing-admin'] as const
+export const WORK_TYPES = ['general', 'review-planning', 'creation-start', 'communication', 'finishing-admin', 'energizing-movement', 'restorative'] as const
 export type WorkType = typeof WORK_TYPES[number]
 export const WORK_TYPE_LABELS: Record<WorkType, string> = {
   general: 'General',
@@ -8,6 +8,8 @@ export const WORK_TYPE_LABELS: Record<WorkType, string> = {
   'creation-start': 'Creation / start',
   communication: 'Communication',
   'finishing-admin': 'Finishing / admin',
+  'energizing-movement': 'Energizing movement',
+  restorative: 'Rest & gentle movement',
 }
 export const CYCLE_PHASES = ['Menstrual', 'Follicular', 'Ovulatory', 'Luteal'] as const
 export type CyclePhase = typeof CYCLE_PHASES[number]
@@ -28,8 +30,8 @@ export function createDefaultCyclePreferences(): CyclePreferences {
   return {
     template: 'balanced',
     phaseWork: {
-      Menstrual: ['review-planning'], Follicular: ['creation-start'],
-      Ovulatory: ['communication'], Luteal: ['finishing-admin'],
+      Menstrual: ['review-planning', 'restorative'], Follicular: ['creation-start', 'energizing-movement'],
+      Ovulatory: ['communication', 'energizing-movement'], Luteal: ['finishing-admin', 'restorative'],
     },
   }
 }

@@ -32,22 +32,26 @@ export function DaySection({
  </section>
 }
 
-export function EmptyDay({day,date,id}:{day:string;date:string;id:string}){
+export function EmptyDay({day,date,id,phase}:{day:string;date:string;id:string;phase?:string}){
  return <section className="plan-day-empty" id={id}>
-  <header><div><strong>{day}</strong><span>{date}</span></div></header>
+  <header><div><strong>{day}</strong><span>{date}</span></div>{phase?<PhaseTag phase={phase}/>:null}</header>
   <strong className="plan-day-empty__title">No planned blocks</strong>
   <span className="plan-day-empty__body">Leave this day open, or capture a task for later.</span>
  </section>
 }
 
-export function PlanAgenda({blocks,week=WEEK_DAYS,idPrefix,onOpen,onMore,changedBlockIds=[],todayISO}:{blocks:PlanBlockData[];week?:readonly PlanWeekDay[];idPrefix:string;onOpen:(block:PlanBlockData)=>void;onMore:(block:PlanBlockData)=>void;changedBlockIds?:readonly string[];todayISO?:string}){
+/** Passive phase label for a day header; color comes from the phase tokens. */
+export function PhaseTag({phase}:{phase:string}){return <span className="plan-phase-tag" data-phase={phase.toLowerCase()}><i aria-hidden="true"/>{phase}</span>}
+
+export function PlanAgenda({blocks,week=WEEK_DAYS,idPrefix,onOpen,onMore,changedBlockIds=[],todayISO,phases}:{blocks:PlanBlockData[];week?:readonly PlanWeekDay[];idPrefix:string;onOpen:(block:PlanBlockData)=>void;onMore:(block:PlanBlockData)=>void;changedBlockIds?:readonly string[];todayISO?:string;phases?:Readonly<Record<string,string>>}){
  return <>{week.map(day=>{
   const dayBlocks=blocks.filter(block=>day.dateISO&&block.dateISO?day.dateISO===block.dateISO:day.label===block.day)
   const id=`${idPrefix}-${day.dateISO??day.short.toLowerCase()}`
-  if(!dayBlocks.length)return <EmptyDay key={id} id={id} day={day.label} date={day.date}/>
+  const phase=day.dateISO?phases?.[day.dateISO]:undefined
+  if(!dayBlocks.length)return <EmptyDay key={id} id={id} day={day.label} date={day.date} phase={phase}/>
   const current=Boolean(todayISO&&day.dateISO===todayISO)
   return <section key={id} id={id} className={`plan-day${current?' plan-day--current':''}`} style={{height:'auto',flexBasis:'auto'}}>
-   <header><div><strong>{day.label}</strong><span>{day.date}</span></div>{current?<em>Today</em>:null}</header>
+   <header><div><strong>{day.label}</strong><span>{day.date}</span></div>{phase?<PhaseTag phase={phase}/>:null}{current?<em>Today</em>:null}</header>
    {dayBlocks.map(block=><PlanBlockCard key={block.id} block={block} status={changedBlockIds.includes(block.id)?'Changed':block.status} onOpen={()=>onOpen(block)} onMore={()=>onMore(block)}/>) }
   </section>
  })}</>

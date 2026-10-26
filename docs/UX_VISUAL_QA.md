@@ -28,3 +28,41 @@ Date: 2026-10-25/26. Branch `ccr-068e87ad-nj66jj`.
 - Pixel comparison against Figma for the new screens: not possible without Figma access.
 - Physical device, screen reader and Freighter mobile testing: not performed.
 - Desktop: app stays centred at 390 px like the existing screens.
+
+## UX pass (2026-10-26, branch `ccr-068e87ad-nj66jj`)
+- **Explore your week** (Plan, Today, More): a cycle-day slider re-runs the real planner (`previewRhythm` → `proposeAdjustment`). Each day shows neutral context ("Day 14 · Ovulatory"). Tasks show their work type and "moved". The status line reads "N tasks moved".
+- **Work types** added: Energizing movement and Rest & gentle movement. Default phase mapping:
+  - Menstrual: review/planning, rest
+  - Follicular: creation, energizing movement
+  - Ovulatory: communication, energizing movement
+  - Luteal: finishing/admin, rest
+- **Sample week starter pack** with 11 typed tasks across work, movement, social life, self-care, admin and home.
+- **Live plan day headers** show a passive phase tag. Today's cycle card shows the estimated day and phase without prescriptive advice. Task cards show the work type.
+- **Interaction language:**
+  - Section labels keep the Figma accent token (guarded by tests) but are semibold and letter-spaced.
+  - Links are underlined; actions are buttons.
+  - Status pills are flat and borderless; selectable chips have a dark border.
+- **Progressive disclosure:**
+  - Rhythm Pool terms use collapsible sections (commitments open; money/rewards and privacy collapsed).
+  - The backup's "What to know" and the rewards rule are collapsed.
+- **Watercolor wash:** a subtle CSS wash on intro panels, inspired by the brand's watercolor figure illustrations. The illustrations themselves were provided only as chat images, not files, so they are not embedded.
+- **Baselines:** `p6-starter-tasks` was refreshed (new fourth starter card). All other baselines pass unchanged.
+
+## Approval and neutral-copy pass (2026-10-26)
+- **Nothing is applied automatically.** The slider, the preview and opening **Review changes** never write to storage; this is checked by comparing `localStorage` byte for byte in `tests/rhythm.spec.ts`.
+  - **Back** returns to the preview, and **Keep plan as is** leaves the saved cycle and plan unchanged.
+  - **Apply changes** commits the plan and the cycle day together in one save.
+  - **Undo** restores both the prior plan and the prior cycle. The history entry records `cycleBefore`; the persistence validator accepts it as an optional field, so older saves still load.
+- Saving Cycle Context in settings updates only the cycle. It never rearranges the accepted plan.
+- **Prescriptive copy removed:**
+  - Phase guidance ("Best for …") on Today
+  - Phase notes and "fits {phase}" in the preview
+  - The phase→activity mapping list
+  - "Watch your week follow your rhythm"
+  - The onboarding "energy tends to build" example
+
+  The associations live only in the planner, as editable **Planning preferences**.
+- **Savings progressive disclosure:**
+  - The vault contract, share count and APY sit under a collapsed **Technical details** section.
+  - Still visible: wallet balance, redeemable value, net contribution, change (can be negative), realized yield, Testnet status, fees, slippage, risk text, the public-transaction notice and the simulation label. An unverified vault asset shows a visible warning and deposits stay disabled.
+- **Baselines:** none regenerated. The full suite passes: 357 Playwright tests, plus the domain and server tests.

@@ -7,3 +7,4 @@ export * from './starters'
 export * from './taskSelection'
 
 export * from './cyclePreferences'
+export * from './rhythmPreview'

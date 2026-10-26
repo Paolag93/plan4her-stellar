@@ -4,6 +4,7 @@ import { AppHeader } from '../../components/AppHeader'
 import { BottomNav, type RootTab } from '../../components/BottomNav'
 import { Button } from '../../components/Button'
 import { TaskCard, type TaskKind } from '../../components/TaskCard'
+import { WORK_TYPE_LABELS } from '../../domain/cyclePreferences'
 import type { WorkType } from '../../domain/cyclePreferences'
 import './TasksScreen.css'
 
@@ -136,7 +137,7 @@ export function TasksScreen({
             <p className="tasks-screen__selection-count">{backlog.length} {backlog.length === 1 ? 'TASK' : 'TASKS'}</p>
             <div className="tasks-screen__selection-list">
               {backlog.map((task) => (
-                <TaskCard key={task.id} title={task.title} meta={task.meta} kind={task.kind} done={task.done}
+                <TaskCard key={task.id} title={task.title} meta={taskMeta(task)} kind={task.kind} done={task.done}
                   checkboxMode="selection" selected={selected.includes(task.id)} onToggleSelection={() => toggleSelection(task)}
                   onOpen={() => onOpenTask?.(task)} onToggleDone={() => toggleDone(task)} />
               ))}
@@ -148,7 +149,7 @@ export function TasksScreen({
             <p className="tasks-screen__selection-intro">These tasks are already on your plan. Open one to view its details.</p>
             <div className="tasks-screen__selection-list">
               {plannedTasks.map((task) => (
-                <TaskCard key={task.id} title={task.title} meta={task.meta} kind={task.kind} done={task.done}
+                <TaskCard key={task.id} title={task.title} meta={taskMeta(task)} kind={task.kind} done={task.done}
                   checkboxMode="none" onOpen={() => onOpenTask?.(task)} onToggleDone={() => toggleDone(task)} />
               ))}
             </div>
@@ -165,7 +166,7 @@ export function TasksScreen({
               <TaskCard
                 key={task.id}
                 title={task.title}
-                meta={task.meta}
+                meta={taskMeta(task)}
                 kind={task.kind}
                 done={task.done}
                 onOpen={() => onOpenTask?.(task)}
@@ -203,3 +204,6 @@ export function TasksScreen({
     </main>
   )
 }
+
+/** Shows the planner work type so cycle-aware placement is legible. */
+function taskMeta(task:TaskItem):string{return task.workType&&task.workType!=='general'?`${task.meta} · ${WORK_TYPE_LABELS[task.workType]}`:task.meta}

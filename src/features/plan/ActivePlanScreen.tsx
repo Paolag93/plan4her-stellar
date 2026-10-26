@@ -1,3 +1,4 @@
+import{RhythmEntry}from'../rhythm/RhythmPreviewScreen'
 import{useState}from'react'
 import{AppHeader}from'../../components/AppHeader'
 import{BottomNav,type RootTab}from'../../components/BottomNav'
@@ -8,7 +9,7 @@ import{PlanBlockActionsOverlay}from'./PlanBlockActionsOverlay'
 import'./ActivePlanScreen.css'
 
 export type ActivePlanMode='active'|'week-applied'|'today-applied'|'restored'
-export function ActivePlanScreen({mode,onAdjust,onRecentChanges,onUndo,onNavigate,onAddTask,onOpenRationale,onEditBlock,blocks,week,scheduledLoad,todayISO,changedBlockIds}:PlanViewDataProps&{changedBlockIds?:string[];mode:ActivePlanMode;onAdjust:()=>void;onRecentChanges:()=>void;onUndo:()=>void;onNavigate:(tab:RootTab)=>void;onAddTask:()=>void;onOpenRationale:(block:PlanBlockData,source:'direct'|'overlay')=>void;onEditBlock:(block:PlanBlockData,source:'direct'|'overlay')=>void}){
+export function ActivePlanScreen({onRhythm,mode,onAdjust,onRecentChanges,onUndo,onNavigate,onAddTask,onOpenRationale,onEditBlock,blocks,week,scheduledLoad,phases,todayISO,changedBlockIds}:PlanViewDataProps&{onRhythm?:()=>void;changedBlockIds?:string[];mode:ActivePlanMode;onAdjust:()=>void;onRecentChanges:()=>void;onUndo:()=>void;onNavigate:(tab:RootTab)=>void;onAddTask:()=>void;onOpenRationale:(block:PlanBlockData,source:'direct'|'overlay')=>void;onEditBlock:(block:PlanBlockData,source:'direct'|'overlay')=>void}){
  const[menuBlock,setMenuBlock]=useState<PlanBlockData|null>(null)
  const applied=mode!=='active',weekApplied=mode==='week-applied',restored=mode==='restored'
  const node=mode==='active'?'4198:286':weekApplied?'4317:5381':restored?'4318:5535':'4380:6044'
@@ -22,9 +23,9 @@ export function ActivePlanScreen({mode,onAdjust,onRecentChanges,onUndo,onNavigat
   <AppHeader title="Plan"/>
   <div className="active-plan-screen__scroll" style={blocks!==undefined?{height:620,maxHeight:'calc(100% - 208px)'}:undefined}>
    {applied?<div className="active-plan-screen__success" aria-hidden="true"><svg viewBox="0 0 22 22"><path d="m5 11.5 4 4 8-9"/></svg></div>:null}
-   <h1>{title}</h1><p className="active-plan-screen__intro">{body}</p><ScheduledLoad value={scheduledLoad}/><WeekJumpStrip onJump={jump} blocks={blocks} week={week}/><p className="active-plan-screen__section-label">WEEK AGENDA</p>
+   <h1>{title}</h1><p className="active-plan-screen__intro">{body}</p><ScheduledLoad value={scheduledLoad}/><WeekJumpStrip onJump={jump} blocks={blocks} week={week}/>{blocks!==undefined&&onRhythm?<RhythmEntry onOpen={onRhythm}/>:null}<p className="active-plan-screen__section-label">WEEK AGENDA</p>
    {!applied?<p className="active-plan-screen__hint">Use ••• for rationale, timing changes or moving a block.</p>:null}
-   {blocks!==undefined?<PlanAgenda blocks={blocks} week={week} todayISO={todayISO} idPrefix="active-day" changedBlockIds={changedBlockIds} onOpen={block=>onOpenRationale(block,'direct')} onMore={setMenuBlock}/>:<>
+   {blocks!==undefined?<PlanAgenda blocks={blocks} week={week} todayISO={todayISO} phases={phases} idPrefix="active-day" changedBlockIds={changedBlockIds} onOpen={block=>onOpenRationale(block,'direct')} onMore={setMenuBlock}/>:<>
    {PLAN_BLOCKS.map(block=><DaySection key={block.id} block={block} idPrefix="active-day" time={timeFor(block)} status={changed(block)?'Changed':undefined} onOpen={()=>block.id==='prepare'&&onOpenRationale(block,'direct')} onMore={()=>setMenuBlock(block)}/>)}
    <EmptyDay day="Saturday" date="28 Oct" id="active-day-sat"/><EmptyDay day="Sunday" date="29 Oct" id="active-day-sun"/>
    </>}

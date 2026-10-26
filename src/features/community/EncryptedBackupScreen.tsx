@@ -100,8 +100,8 @@ export function EncryptedBackupScreen({ app, community, onBack, onUploaded, onRe
 
   return <CommunityScreen title="Encrypted backup" onBack={onBack} testId="encrypted-backup">
     <section className="community-intro"><span>OPTIONAL · YOU HOLD THE KEY</span><h2>Your backup, your key</h2><p>Your tasks, cycle context, plans and Rhythm Pool commitments are encrypted on this device with your passphrase before anything leaves it. Plan4Her never receives your passphrase or unencrypted data.</p></section>
-    <aside className="community-notice">
-      <strong>What to know</strong>
+    <details className="community-details">
+      <summary>What to know</summary>
       <ul>
         <li>Encrypted on your device with AES-256-GCM. Your passphrase protects the key.</li>
         <li>Lose your passphrase and nobody can recover the backup, including us.</li>
@@ -109,7 +109,7 @@ export function EncryptedBackupScreen({ app, community, onBack, onUploaded, onRe
         <li>IPFS copies can’t be guaranteed deleted, and clearing this device doesn’t remove them.</li>
         <li>For this demo, use synthetic data only.</li>
       </ul>
-    </aside>
+    </details>
     <p className="community-label">Create a backup</p>
     <PassphraseField label="Passphrase (12+ characters)" value={pass} onChange={setPass} />
     <PassphraseField label="Repeat passphrase" value={confirm} onChange={setConfirm} />

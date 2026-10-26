@@ -23,3 +23,8 @@
 .plan-day-empty{width:358px;height:74px;flex:0 0 74px;display:flex;flex-direction:column;gap:4px;background:#fff}
 .plan-day-empty__title{width:358px;font-size:16px;line-height:22px;font-weight:600;color:var(--color-text-primary)}
 .plan-day-empty__body{width:358px;font-size:13px;line-height:18px;font-weight:400;color:var(--color-text-secondary)}
+
+/* Live plans: passive phase label in day headers (never a button). */
+.plan-phase-tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:color-mix(in srgb,var(--phase-color,var(--color-bg-subtle)) 40%,white);font-size:12px;line-height:16px;font-weight:500;color:var(--color-text-primary);white-space:nowrap}
+.plan-phase-tag i{width:8px;height:8px;border-radius:50%;background:var(--phase-color,var(--color-border-default))}
+.plan-phase-tag[data-phase='menstrual']{--phase-color:var(--p4h-phase-menstrual)}.plan-phase-tag[data-phase='follicular']{--phase-color:var(--p4h-phase-follicular)}.plan-phase-tag[data-phase='ovulatory']{--phase-color:var(--p4h-phase-ovulatory)}.plan-phase-tag[data-phase='luteal']{--phase-color:var(--p4h-phase-luteal)}

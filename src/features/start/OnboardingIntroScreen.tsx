@@ -35,7 +35,7 @@ export function OnboardingIntroScreen({ step, onBack, onContinue, onSetUp }: Onb
         {rhythm ? 'Plan4Her uses your estimated cycle phase to place each kind of work where it can fit best. You always have the final say.' : 'Plan4Her proposes your week. Nothing moves until you review it.'}
       </p>
       {rhythm ? (
-        <PhaseContextCard day="Day 8" pattern="Energy may be rising" planNote="Example: Plan4Her places focused work where your energy tends to build." />
+        <PhaseContextCard day="Day 8" pattern="Follicular · estimated" planNote="Example: Plan4Her arranges your week using planning preferences you can edit." />
       ) : (
         <section className="privacy-principles onboarding-intro__principles" aria-label="Privacy principles">
           {principles.map(([title, body]) => <article className="privacy-principle" key={title}><h2>{title}</h2><p>{body}</p></article>)}

@@ -63,7 +63,7 @@ test('preferences save locally, cancel discards edits, and the accepted plan sta
   await page.getByRole('radio', { name: /^Recovery / }).check()
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click()
   await expect.poll(async () => (await saved(page)).cyclePreferences?.template).toBe('recovery')
-  expect((await saved(page)).cyclePreferences?.phaseWork.Follicular).toEqual(['creation-start', 'communication'])
+  expect((await saved(page)).cyclePreferences?.phaseWork.Follicular).toEqual(['creation-start', 'energizing-movement', 'communication'])
   expect((await saved(page)).acceptedPlan).toEqual(initial.acceptedPlan)
 
   await page.reload()
@@ -73,21 +73,21 @@ test('preferences save locally, cancel discards edits, and the accepted plan sta
   expect((await saved(page)).acceptedPlan).toEqual(initial.acceptedPlan)
 })
 
-test('empty phase choices persist and reset changes only the draft mapping', async ({ page }) => {
+test('edited phase choices persist and reset changes only the draft mapping', async ({ page }) => {
   await seed(page)
   await openPreferences(page)
   const menstrual = page.getByRole('group', { name: 'Menstrual Estimated', exact: true })
   await menstrual.getByRole('checkbox', { name: 'Review / planning', exact: true }).uncheck()
   await page.getByRole('radio', { name: /^High-output / }).check()
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click()
-  await expect.poll(async () => (await saved(page)).cyclePreferences?.phaseWork.Menstrual).toEqual([])
+  await expect.poll(async () => (await saved(page)).cyclePreferences?.phaseWork.Menstrual).toEqual(['restorative'])
   await page.reload()
   await openPreferences(page)
   await expect(menstrual.getByRole('checkbox', { name: 'Review / planning', exact: true })).not.toBeChecked()
   await page.getByRole('button', { name: 'Reset phase mapping', exact: true }).click()
   await expect(menstrual.getByRole('checkbox', { name: 'Review / planning', exact: true })).toBeChecked()
   await expect(page.getByRole('radio', { name: /^High-output / })).toBeChecked()
-  expect((await saved(page)).cyclePreferences?.phaseWork.Menstrual).toEqual([])
+  expect((await saved(page)).cyclePreferences?.phaseWork.Menstrual).toEqual(['restorative'])
   await page.getByRole('button', { name: 'Save preferences', exact: true }).click()
   await expect.poll(async () => (await saved(page)).cyclePreferences?.phaseWork).toEqual(createDefaultCyclePreferences().phaseWork)
 })

@@ -14,11 +14,13 @@ import{EmptyTodayScreen}from'../system/ConditionalSystemScreens'
 import{localISO}from'../../domain/planner'
 import'./TodayScreen.css'
 import'../community/community.css'
+import{RhythmEntry}from'../rhythm/RhythmPreviewScreen'
 
 export interface TodayGoal{title:string;challengeTitle:string;summary:string;checkedInToday:boolean;actionLabel?:string;onCheckIn:()=>void;onOpen:()=>void}
 
 export interface TodayScreenProps{
  goal?:TodayGoal
+ onRhythm?:()=>void
  blocks?:PlanBlockData[]
  tasks?:DailyTaskData[]
  weekDays?:ReadonlyArray<{short:string;number:string;label?:string;date?:string;dateISO?:string}>
@@ -38,7 +40,7 @@ export interface TodayScreenProps{
  onEditBlock:(block:PlanBlockData)=>void
 }
 
-export function TodayScreen({goal,blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
+export function TodayScreen({goal,onRhythm,blocks,tasks,weekDays,cycle,onToggleTaskDone,onDayChange,initialDay='mon',initialDone={},onUpdateProgress,onViewPlan,onTask,onPhase,onNavigate,onQuickCapture,onAddWithDetails,onOpenRationale,onEditBlock}:TodayScreenProps){
  const[day,setDay]=useState<DailyDayKey>(initialDay)
  const[meetingDone,setMeetingDone]=useState(Boolean(initialDone.meeting))
  const[groceriesDone,setGroceriesDone]=useState(Boolean(initialDone.groceries))
@@ -68,6 +70,7 @@ export function TodayScreen({goal,blocks,tasks,weekDays,cycle,onToggleTaskDone,o
    {controlled&&goal&&selectedDate===localISO()?<><p className="today-screen__section-label">RHYTHM POOL</p><section className="today-goal-card" aria-label="Rhythm Pool"><button type="button" className="today-goal-card__open" onClick={goal.onOpen}><span>{goal.challengeTitle}</span><strong>{goal.title}</strong></button><p>{goal.summary}</p>{goal.checkedInToday?<p role="status">Checked in for today.</p>:<Button type="button" hierarchy="secondary" onClick={goal.onCheckIn}>{goal.actionLabel??'Check in for today'}</Button>}</section></>:null}
    <p className="today-screen__section-label">CYCLE CONTEXT</p>
    <PhaseContextCard phase={cycleContext?(cycleContext.phase??'Cycle context'):undefined} tone={cycleContext?(cycleContext.phase??'neutral'):undefined} estimated={cycleContext?cycleStatus==='estimated':undefined} day={cycleContext?cycleDayLabel:data.phase.day} pattern={cycleContext?(cycleStatus==='estimated'?'Planned with your rhythm':'Your preferences'):data.phase.pattern} planNote={cycleContext?cycleNote:data.phase.note} footnote={cycleContext&&cycleStatus!=='estimated'?'You can update your cycle preferences anytime.':undefined} onOpen={onPhase}/>
+   {controlled&&onRhythm?<RhythmEntry onOpen={onRhythm} />:null}
    <p className="today-screen__quick-rule">Quick capture saves new tasks as Unscheduled.</p>
   </div>
   <BottomNav active="today" onNavigate={onNavigate}/>

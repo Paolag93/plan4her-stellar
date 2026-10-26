@@ -5,7 +5,7 @@ export interface PlanWeekDay { short:string;number:string;label:string;date:stri
 export interface PlanBlockEdit { id:PlanBlockId;title:string;date:string;dateISO?:string;start:string;duration:string;fixed:boolean }
 export interface PlanChangeData { id:string;title:string;kind:string;before:string;after:string;note:string }
 export interface PlanComparisonProps { changes?:PlanChangeData[];before?:PlanBlockData[];after?:PlanBlockData[];previousVersion?:string;currentVersion?:string;scheduledLoad?:number }
-export interface PlanViewDataProps { blocks?:PlanBlockData[];week?:readonly PlanWeekDay[];scheduledLoad?:number;todayISO?:string }
+export interface PlanViewDataProps { blocks?:PlanBlockData[];week?:readonly PlanWeekDay[];scheduledLoad?:number;todayISO?:string;/** dateISO → estimated phase, live plans only. */phases?:Readonly<Record<string,string>> }
 
 export interface PlanSignal{title:string;body:string}
 export interface PlanBlockData{
