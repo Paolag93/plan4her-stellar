@@ -4,6 +4,7 @@ import { Button } from '../../components/Button'
 import { ImportanceSelector, type Importance } from '../../components/ImportanceSelector'
 import { TextField } from '../../components/TextField'
 import { TimePickerOverlay } from '../../components/TimePickerOverlay'
+import { CommitmentDateOverlay } from '../../components/CommitmentDateOverlay'
 import { pickerTimeValue } from '../../components/pickerValues'
 import { isISODate, localISO } from '../../domain/planner'
 import { WorkTypeField, type WorkTypeChoice } from '../cycle-preferences/WorkTypeField'
@@ -104,7 +105,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
   const [workType, setWorkType] = useState<WorkTypeChoice>(task.workType ?? 'auto')
   const [focused, setFocused] = useState<Focused>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const [overlay, setOverlay] = useState<'duration' | 'start' | null>(null)
+  const [overlay, setOverlay] = useState<'duration' | 'start' | 'deadline' | 'fixed-date' | null>(null)
 
   if (confirmDelete) {
     return (
@@ -151,7 +152,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
   const validDate = isISODate
   const noDeadline = !deadline.trim() || /^(none|no deadline)$/i.test(deadline.trim())
   const invalidDate = liveMode && (fixed ? !validDate(fixedDate) : !noDeadline && !validDate(deadline))
-  const timingError = invalidDate ? 'Enter a valid date in YYYY-MM-DD format.' : liveMode && fixed && validTime && startMinutes + durationMinutes > 1440 ? 'Choose a start time and duration that end by midnight.' : undefined
+  const timingError = invalidDate ? (liveMode ? 'Choose a valid date from the calendar.' : 'Enter a valid date in YYYY-MM-DD format.') : liveMode && fixed && validTime && startMinutes + durationMinutes > 1440 ? 'Choose a start time and duration that end by midnight.' : undefined
   const valid = Boolean(title.trim()) && (!liveMode || (Number.isInteger(durationMinutes) && durationMinutes > 0 && durationMinutes <= 1440 && (fixed ? validDate(fixedDate) && validTime && startMinutes + durationMinutes <= 1440 : noDeadline || validDate(deadline))))
 
   const save = () => {
@@ -173,6 +174,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
     onSave(updated)
   }
 
+  const showDate = (value: string) => isISODate(value) ? new Intl.DateTimeFormat('en', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${value}T12:00:00`)) : value
   const setType = (next: TaskType) => {
     setTaskType(next)
     setFocused(null)
@@ -227,7 +229,15 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
                 onClick={() => { setFocused('duration'); if (liveMode) setOverlay('duration') }}
                 onChangeText={setDuration}
               />
-              <TextField
+              {liveMode ? <TextField
+                className="task-details-screen__deadline"
+                label="Deadline · optional"
+                text={noDeadline ? 'None' : showDate(deadline.trim())}
+                invalid={invalidDate}
+                supportingText={invalidDate ? 'Choose a date from the calendar, or clear the deadline.' : undefined}
+                filled={!noDeadline}
+                onClick={() => setOverlay('deadline')}
+              /> : <TextField
                 className="task-details-screen__deadline"
                 label="Deadline · optional"
                 text={deadline}
@@ -239,7 +249,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
                 editable
                 onClick={() => setFocused('timing')}
                 onChangeText={setDeadline}
-              />
+              />}
               <p className="task-details-screen__importance-label">IMPORTANCE · OPTIONAL</p>
               <div className="task-details-screen__importance">
                 <ImportanceSelector value={importance} onChange={setImportance} />
@@ -247,7 +257,15 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
             </>
           ) : (
             <>
-              <TextField
+              {liveMode ? <TextField
+                className="task-details-screen__date"
+                label="Date"
+                text={showDate(fixedDate)}
+                invalid={invalidDate}
+                supportingText={invalidDate ? 'Choose a date from the calendar.' : undefined}
+                filled
+                onClick={() => setOverlay('fixed-date')}
+              /> : <TextField
                 className="task-details-screen__date"
                 label="Date"
                 text={fixedDate}
@@ -259,7 +277,7 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
                 editable
                 onClick={() => setFocused('timing')}
                 onChangeText={setFixedDate}
-              />
+              />}
               <TextField
                 className="task-details-screen__start"
                 label="Start time"
@@ -304,6 +322,8 @@ export function TaskDetailsScreen({ task, onBack, onSave, onDelete, liveMode = f
         </button>
       </section>
       {overlay === 'duration' ? <TimePickerOverlay mode="start" title="Duration" ariaLabel="Task duration" selected={duration} options={['30 min', '45 min', '60 min', '90 min']} customEntry="duration" onClose={() => setOverlay(null)} onSelect={value => { setDuration(value); setOverlay(null) }} /> : null}
+      {overlay === 'deadline' ? <CommitmentDateOverlay selectedDay={isISODate(deadline.trim()) ? Number(deadline.trim().slice(8, 10)) : null} month={isISODate(deadline.trim()) ? deadline.trim().slice(0, 7) : localISO().slice(0, 7)} ariaLabel="Task deadline" onSelectDate={value => { setDeadline(value); setOverlay(null) }} onClear={noDeadline ? undefined : () => { setDeadline(''); setOverlay(null) }} clearLabel="Clear deadline" onClose={() => setOverlay(null)} onSelect={() => undefined} /> : null}
+      {overlay === 'fixed-date' ? <CommitmentDateOverlay selectedDay={isISODate(fixedDate) ? Number(fixedDate.slice(8, 10)) : null} month={isISODate(fixedDate) ? fixedDate.slice(0, 7) : localISO().slice(0, 7)} ariaLabel="Task fixed date" onSelectDate={value => { setFixedDate(value); setOverlay(null) }} onClose={() => setOverlay(null)} onSelect={() => undefined} /> : null}
       {overlay === 'start' ? <TimePickerOverlay mode="start" selected={startTime} options={['10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM']} customEntry="time" onClose={() => setOverlay(null)} onSelect={value => { setStartTime(pickerTimeValue(value)); setOverlay(null) }} /> : null}
     </main>
   )

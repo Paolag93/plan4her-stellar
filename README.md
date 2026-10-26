@@ -2,13 +2,15 @@
 
 > **HackMeridian 2026 · Scale track.** *Your goals. Your rhythm. Our community.* Plan4Her is a privacy-first, cycle-aware planner for women (freemium; Premium planned at USD 6.99/month, no billing implemented). The hackathon showcases the Premium **Rhythm Pool**: one shared community where each member runs her own four-week challenge built from 3–5 weekly commitments taken from her existing plan, with optional non-custodial savings in a DeFindex vault on **Stellar Testnet** and client-side encrypted backups to IPFS.
 
-**Journey:** More → Rhythm Pool → Review terms → Set weekly commitments → (optional) Connect wallet & deposit → Participate → Track consistency → Four-week result.
+**Journey:** More (or Today) → Rhythm Pool → Join Rhythm Pool → accept terms → Set weekly commitments → (optional) Connect wallet & deposit → Participate → Track consistency → Four-week result.
 
 ## HackMeridian: what is implemented, simulated and planned
 
 | Capability | Status |
 | --- | --- |
 | Cycle-aware weekly planner, tasks, Today, recovery, local JSON backup | **Pre-existing** (original commit `9ec0c99`) |
+| "Explore your week": preview a different cycle day → review moved tasks (old → new day) → Apply or keep; Undo restores plan + cycle | **Implemented & tested** (hackathon period) |
+| Automatic activity type from the task title (strength → energizing movement, yoga → rest, client presentation → communication, expenses → admin; unclear → neutral) | **Implemented & tested** as **local keyword rules**, not an AI model; nothing leaves the device; optional correction in Edit task |
 | Rhythm Pool: join any day, four-week (28-day) challenge starting next Monday | **Implemented & tested** (on this device) |
 | 3–5 weekly commitments chosen from the existing schedule; fixed weekly denominator; free rescheduling; one replacement per week with audit history; done/missed/undo; completing the task in Tasks marks it done | **Implemented & tested** |
 | Aggregate four-week ratio, 70% eligibility threshold (unset elapsed weeks count as 3 not done) | **Implemented & tested** |
@@ -26,6 +28,19 @@
 Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · submission pack: [`docs/SUBMISSION.md`](docs/SUBMISSION.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
 
 **Money safety:** Testnet only, no real funds. Deposits are held as the user's own vault shares in her own wallet; missing commitments never confiscates, locks or penalizes them. The shared vault does not redistribute yield by habit completion. Stellar transactions and vault deposits are public, not confidential. Deposits are **not guaranteed** (smart-contract, strategy, liquidity, asset and depeg risk). Estimated APY is not shown because it could not be verified. Rewards are a simulation.
+
+### Try the demo (fresh browser, no account, about 1 minute)
+1. Open https://plan4her-stellar.onrender.com and tap **Build my first week**.
+2. **Continue** → **Continue without cycle context** → choose **A full week, ready to plan** → **Continue** → **Continue** → **Skip for now** → **Accept week**.
+3. **Plan** → **Explore your week**. Move the slider to cycle day **1**, then **12**: the list shows which tasks move and to which day.
+4. **Review changes** → **Apply changes** (or **Keep plan as is**). **Undo** restores both the plan and the cycle day.
+
+Data stays in the browser (no account, nothing shared). The planner only uses the remaining days of the current week. Early in the week, several tasks move. Later in the week, fewer days remain, so fewer tasks can move, and the preview says so. On a Sunday evening, the sample week may not fit at all.
+
+**Prior work disclosure.**
+- **Before HackMeridian:** the Plan4Her planning MVP (planner, tasks, Today, cycle context), its branding and its Figma designs.
+- **Earlier CYRA experiments:** AES-GCM encryption and IPFS/Pinata storage. Only used as reference; key custody and upload authorization were rebuilt here.
+- **New during HackMeridian:** the Stellar/DeFindex Testnet savings, the Rhythm Pool, server-authorized encrypted IPFS backups, Explore your week with explicit approval, and local activity-type inference.
 
 ### Try the Testnet savings flow
 1. Install the [Freighter](https://www.freighter.app/) browser extension, create an account and switch the network to **Testnet**; fund it with Friendbot (Freighter offers this).

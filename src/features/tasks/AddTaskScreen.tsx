@@ -21,7 +21,7 @@ export interface AddTaskScreenProps {
 }
 
 export function AddTaskScreen({ onBack, onCancel, onSave, liveMode = false }: AddTaskScreenProps) {
-  const [task, setTask] = useState('Prepare grant application')
+  const [task, setTask] = useState(liveMode ? '' : 'Prepare grant application')
   const [taskType, setTaskType] = useState<TaskType>('Flexible')
   const [taskFocused, setTaskFocused] = useState(false)
   const [duration, setDuration] = useState('60 min')
