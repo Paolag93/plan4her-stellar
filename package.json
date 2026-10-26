@@ -12,7 +12,8 @@
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.server.json --noEmit",
     "test:domain": "node src/domain/domain.test.cjs && node src/domain/taskSelection.test.cjs && node src/domain/cyclePreferences.test.cjs && node src/domain/community.test.cjs && node src/domain/encryption.test.cjs",
     "test:server": "node server/api.test.ts",
-    "start": "node server/index.ts"
+    "start": "node server/index.ts",
+    "testnet:smoke": "esbuild scripts/testnet-vault-smoke.ts --bundle --platform=node --format=cjs --alias:@stellar/freighter-api=./scripts/testnet-stub-freighter.js --outfile=.testnet-smoke.cjs --log-level=warning && NODE_USE_ENV_PROXY=1 node .testnet-smoke.cjs"
   },
   "dependencies": {
     "@fontsource/poppins": "^5.1.1",

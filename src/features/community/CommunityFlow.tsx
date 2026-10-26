@@ -88,7 +88,7 @@ export function CommunityFlow({ entry, navigationKey, community, app, tasks, tod
       onConfirm={choices => { if (apply(s => confirmCommitments(s, view.week, choices, today))) reset({ name: 'progress' }) }} /> : <RhythmHomeScreen community={community} today={today} onBack={onExit} onNavigate={onNavigate} onTerms={() => reset({ name: 'terms' })} onProgress={() => undefined} />
     case 'replace': return participation ? <CommitmentsScreen participation={participation} week={view.week} tasks={tasks} mode="replace" replacing={view.item} today={today} error={error} onBack={back} onAddTasks={() => onNavigate('tasks')}
       onConfirm={([choice]) => { if (choice && apply(s => replaceCommitment(s, view.week, view.item.id, choice))) back() }} /> : null
-    case 'progress': return participation ? <RhythmProgressScreen participation={participation} today={today} error={error} onBack={back}
+    case 'progress': return participation ? <RhythmProgressScreen participation={participation} today={today} error={error} onBack={back} onNavigate={onNavigate}
       onSetCommitments={week => push({ name: 'commitments', week })}
       onStatus={(week, id, status) => apply(s => setCommitmentStatus(s, week, id, status, today))}
       onReplace={(week, item) => push({ name: 'replace', week, item })}

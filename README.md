@@ -14,12 +14,14 @@
 | Aggregate four-week ratio, 70% eligibility threshold (unset elapsed weeks count as 3 not done) | **Implemented & tested** |
 | Completion verification | **Self-reported** — not proof of real-world activity |
 | Community members and average | **Simulated sample data**, labelled; your % joins only with consent; works with one member |
-| DeFindex XLM vault deposit / withdraw / on-chain position via Freighter (individually owned positions) | **Implemented; live Testnet transaction pending wallet signature** |
+| DeFindex XLM vault deposit / withdraw / on-chain position via Freighter (individually owned positions) | **Confirmed on Stellar Testnet**: deposit [`f82db619…`](https://stellar.expert/explorer/testnet/tx/f82db6197d0dcf63dde25a9ec4ed178288bbd2e7af1f64a22d8c02485d8aff09), withdraw [`43cb8311…`](https://stellar.expert/explorer/testnet/tx/43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5) (synthetic key, app's vault code); no positive yield verified |
 | Rewards from voluntarily pledged positive realized yield or confirmed sponsor funds | **Simulation only** (no distribution contract; no sponsor confirmed) |
 | AES-256-GCM encrypted backup, passphrase-wrapped key, download/restore | **Implemented & tested** |
 | Encrypted upload/retrieve via Pinata/IPFS (server-held JWT, access code, rate limits, ciphertext only) | **Implemented & tested with a fake Pinata; live upload needs `PINATA_JWT` on the server** |
 | Accountability partners, thematic challenges | **Removed from the primary journey** (product decision) |
 | Billing, yield-sharing contract, sponsor system, Confidential Tokens | **Planned / not implemented** |
+
+**Live demo (Stellar Testnet, synthetic data):** https://plan4her-stellar.onrender.com
 
 Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
 
