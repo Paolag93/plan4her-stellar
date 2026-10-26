@@ -1,25 +1,29 @@
 # Plan4HER
 
-> **HackMeridian 2026 · Scale track.** *Your goals. Your rhythm. Our community.* Plan4Her is a privacy-first planner for women: cycle-aware weekly planning (existing), plus — new this hackathon — free 30/90-day community habit challenges with personal goals, accountability partners with field-level consent, optional non-custodial savings in a DeFindex vault on **Stellar Testnet**, and client-side encrypted backups to IPFS.
+> **HackMeridian 2026 · Scale track.** *Your goals. Your rhythm. Our community.* Plan4Her is a privacy-first, cycle-aware planner for women (freemium; Premium planned at USD 6.99/month, no billing implemented). The hackathon showcases the Premium **Rhythm Pool**: one shared community where each member runs her own four-week challenge built from 3–5 weekly commitments taken from her existing plan, with optional non-custodial savings in a DeFindex vault on **Stellar Testnet** and client-side encrypted backups to IPFS.
 
-## HackMeridian: what is new, and what is real
+**Journey:** More → Rhythm Pool → Review terms → Set weekly commitments → (optional) Connect wallet & deposit → Participate → Track consistency → Four-week result.
 
-| Capability | Status | Where |
-| --- | --- | --- |
-| Cycle-aware weekly planner, tasks, Today, recovery, local backup | **Pre-existing** (before HackMeridian, original commit `9ec0c99`) | Today · Plan · Tasks |
-| 30/90-day challenges, personal goals, check-ins, Today goal card | **Implemented & tested** (local to this device) | More → Community challenges |
-| Goal sessions → tasks placed by the existing cycle-aware planner | **Implemented & tested** | Progress → "Add this week's sessions to Tasks" |
-| Accountability partners, allow-listed sharing, revocation | **Implemented & tested; partner accounts simulated** (no multi-user backend yet) | More → Accountability partners |
-| Other challenge members / group average | **Simulated sample data**, labelled in the UI | Community |
-| DeFindex XLM vault deposit / withdraw / on-chain balance via Freighter | **Implemented; live Testnet transaction pending founder wallet signature** (this build environment could not reach Stellar Testnet) | More → Savings & rewards · Testnet |
-| Community reward pot (yield-only, principal never touched) | **Simulation**, labelled; nothing is paid | Savings → How rewards would work |
-| AES-256-GCM encrypted backup, passphrase-wrapped key, download/restore | **Implemented & tested** (works offline) | More → Encrypted backup |
-| Encrypted upload/retrieve via Pinata/IPFS, server-held JWT, rate limits | **Implemented & tested against a fake Pinata; live upload pending Pinata key + deployment** | Encrypted backup |
-| OpenZeppelin Confidential Tokens | **Not implemented** (no client SDK; not compatible with DeFindex vault privacy) | — |
+## HackMeridian: what is implemented, simulated and planned
+
+| Capability | Status |
+| --- | --- |
+| Cycle-aware weekly planner, tasks, Today, recovery, local JSON backup | **Pre-existing** (original commit `9ec0c99`) |
+| Rhythm Pool: join any day, four-week (28-day) challenge starting next Monday | **Implemented & tested** (on this device) |
+| 3–5 weekly commitments chosen from the existing schedule; fixed weekly denominator; free rescheduling; one replacement per week with audit history; done/missed/undo; completing the task in Tasks marks it done | **Implemented & tested** |
+| Aggregate four-week ratio, 70% eligibility threshold (unset elapsed weeks count as 3 not done) | **Implemented & tested** |
+| Completion verification | **Self-reported** — not proof of real-world activity |
+| Community members and average | **Simulated sample data**, labelled; your % joins only with consent; works with one member |
+| DeFindex XLM vault deposit / withdraw / on-chain position via Freighter (individually owned positions) | **Implemented; live Testnet transaction pending wallet signature** |
+| Rewards from voluntarily pledged positive realized yield or confirmed sponsor funds | **Simulation only** (no distribution contract; no sponsor confirmed) |
+| AES-256-GCM encrypted backup, passphrase-wrapped key, download/restore | **Implemented & tested** |
+| Encrypted upload/retrieve via Pinata/IPFS (server-held JWT, access code, rate limits, ciphertext only) | **Implemented & tested with a fake Pinata; live upload needs `PINATA_JWT` on the server** |
+| Accountability partners, thematic challenges | **Removed from the primary journey** (product decision) |
+| Billing, yield-sharing contract, sponsor system, Confidential Tokens | **Planned / not implemented** |
 
 Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
 
-**Money safety:** Testnet only, no real funds. Deposits are held as the user's own vault shares in her own wallet; missing a goal never confiscates, locks or penalizes them. Deposits are **not guaranteed** (smart-contract, strategy, liquidity, asset and depeg risk). Estimated APY is not shown because it could not be verified. Rewards are a simulation.
+**Money safety:** Testnet only, no real funds. Deposits are held as the user's own vault shares in her own wallet; missing commitments never confiscates, locks or penalizes them. The shared vault does not redistribute yield by habit completion. Stellar transactions and vault deposits are public, not confidential. Deposits are **not guaranteed** (smart-contract, strategy, liquidity, asset and depeg risk). Estimated APY is not shown because it could not be verified. Rewards are a simulation.
 
 ### Try the Testnet savings flow
 1. Install the [Freighter](https://www.freighter.app/) browser extension, create an account and switch the network to **Testnet**; fund it with Friendbot (Freighter offers this).
@@ -76,7 +80,7 @@ In the app, open More → Privacy & data → Back up & move your data. Download 
 
 ## Privacy and scope
 
-Tasks, cycle details, plans and community goals are stored in this browser's localStorage, without encryption at rest. Optional encrypted backups are encrypted on the device with the user's passphrase before download or IPFS upload; IPFS ciphertext is public by CID and cannot be guaranteed deleted. They are not saved to GitHub. Switching browser, device, profile or site origin does not transfer them; deleting site data can erase them. Do not treat localStorage as secure encrypted storage or a backup.
+Tasks, cycle details, plans and Rhythm Pool commitments are stored in this browser's localStorage, without encryption at rest. Optional encrypted backups are encrypted on the device with the user's passphrase before download or IPFS upload; IPFS ciphertext is public by CID and cannot be guaranteed deleted. They are not saved to GitHub. Switching browser, device, profile or site origin does not transfer them; deleting site data can erase them. Do not treat localStorage as secure encrypted storage or a backup.
 
 The current build has no account/cloud sync (only user-initiated encrypted backups), connected AI provider, external calendar sync or native iOS/Android release. UI preferences do not establish those integrations. Deployment hosts may log normal web requests under their own policies.
 

@@ -10,7 +10,7 @@
  */
 import { Account, Address, BASE_FEE, Contract, Keypair, Networks, TransactionBuilder, nativeToScVal, rpc, scValToNative, xdr, type Transaction } from '@stellar/stellar-sdk'
 import * as freighter from '@stellar/freighter-api'
-import { minWithSlippage, type VaultLedgerEntry } from '../domain/community'
+import { minWithSlippage, type VaultLedgerEntry } from '../domain/savings'
 
 export const TESTNET = {
   name: 'Stellar Testnet',
