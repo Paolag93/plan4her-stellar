@@ -68,9 +68,8 @@ Executed by Claude from the build environment with `npm run testnet:smoke`, whic
 - New tests: `tests/community.spec.ts` (Rhythm Pool live flow, savings gating, rewards labelling, encrypted backup roundtrip, four-week result, navigation, 44 px targets at 320/390/768 px), 9 new axe WCAG scans.
 - CI: `.github/workflows/ci.yml` now also runs typecheck and server tests.
 
-## Submission deliverables
-- GitHub repo: private until founder review.
-- Separate deployed demo URL: https://plan4her-stellar.onrender.com (Render, from `main`).
-- Demo video: script in `docs/DEMO_SCRIPT.md`.
-- Hackathon submission: not submitted by Claude.
-- Real-money readiness: **Testnet demonstration only; no return or capital guarantee.** Production would need real accounts/auth, a multi-user backend for partners, an audited contract if rewards were ever distributed on chain, legal/compliance review and a security review.
+## Release scope
+
+This is a Stellar Testnet prototype. Reward distribution is simulated; production would require real authentication, multi-user backend infrastructure, smart-contract security review and applicable legal/compliance assessment.
+
+The final October 26 hotfix (merged PR #10) added local title-based task classification, corrected the exact date picker and mobile spacing, clarified Rhythm Pool access, and added targeted browser regression tests. The PR reports a clean full Git-history and bundle secret scan; see [PR #10](https://github.com/Paolag93/plan4her-stellar/pull/10) for its verification notes.

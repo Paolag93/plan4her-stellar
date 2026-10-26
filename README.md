@@ -1,104 +1,83 @@
-# Plan4HER
+# Plan4Her
 
-> **HackMeridian 2026 · Scale track.** *Your goals. Your rhythm. Our community.* Plan4Her is a privacy-first, cycle-aware planner for women (freemium; Premium planned at USD 6.99/month, no billing implemented). The hackathon showcases the Premium **Rhythm Pool**: one shared community where each member runs her own four-week challenge built from 3–5 weekly commitments taken from her existing plan, with optional non-custodial savings in a DeFindex vault on **Stellar Testnet** and client-side encrypted backups to IPFS.
+**Women aren't linear. Their productivity tools shouldn't be.**
 
-**Journey:** More (or Today) → Rhythm Pool → Join Rhythm Pool → accept terms → Set weekly commitments → (optional) Connect wallet & deposit → Participate → Track consistency → Four-week result.
+**Your goals. Your rhythm. Our community.**
 
-## HackMeridian: what is implemented, simulated and planned
+Plan4Her is a privacy-first, cycle-aware productivity planner for women. It combines editable weekly planning, personal goals and optional cycle context with four-week community commitments and voluntary, non-custodial savings on Stellar Testnet.
 
-| Capability | Status |
-| --- | --- |
-| Cycle-aware weekly planner, tasks, Today, recovery, local JSON backup | **Pre-existing** (original commit `9ec0c99`) |
-| "Explore your week": preview a different cycle day → review moved tasks (old → new day) → Apply or keep; Undo restores plan + cycle | **Implemented & tested** (hackathon period) |
-| Automatic activity type from the task title (strength → energizing movement, yoga → rest, client presentation → communication, expenses → admin; unclear → neutral) | **Implemented & tested** as **local keyword rules**, not an AI model; nothing leaves the device; optional correction in Edit task |
-| Rhythm Pool: join any day, four-week (28-day) challenge starting next Monday | **Implemented & tested** (on this device) |
-| 3–5 weekly commitments chosen from the existing schedule; fixed weekly denominator; free rescheduling; one replacement per week with audit history; done/missed/undo; completing the task in Tasks marks it done | **Implemented & tested** |
-| Aggregate four-week ratio, 70% eligibility threshold (unset elapsed weeks count as 3 not done) | **Implemented & tested** |
-| Completion verification | **Self-reported** — not proof of real-world activity |
-| Community members and average | **Simulated sample data**, labelled; your % joins only with consent; works with one member |
-| DeFindex XLM vault deposit / withdraw / on-chain position via Freighter (individually owned positions) | **Confirmed on Stellar Testnet with the founder's Freighter wallet in the live app**: deposit 10 XLM [`a5f2129e…`](https://stellar.expert/explorer/testnet/tx/a5f2129e0fa6a8fd3796d389c09436c29885e0c0fbe3cbd8decc01144ef65578), withdraw 4.99984 XLM [`0d514e97…`](https://stellar.expert/explorer/testnet/tx/0d514e9702d5f650393bdb916059683655adf89e52ee2b3becb52f7bcbc094f6). Separate automated synthetic-key check: [`f82db619…`](https://stellar.expert/explorer/testnet/tx/f82db6197d0dcf63dde25a9ec4ed178288bbd2e7af1f64a22d8c02485d8aff09), [`43cb8311…`](https://stellar.expert/explorer/testnet/tx/43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5). No positive yield verified |
-| Rewards from voluntarily pledged positive realized yield or confirmed sponsor funds | **Simulation only** (no distribution contract; no sponsor confirmed) |
-| AES-256-GCM encrypted backup, passphrase-wrapped key, download/restore | **Implemented & tested** |
-| Encrypted upload/retrieve via Pinata/IPFS (server-held JWT, access code, rate limits, ciphertext only) | **Live upload, retrieval by CID and decryption confirmed** on the deployed app: [`bafkreidxzbfnpgu…`](https://gateway.pinata.cloud/ipfs/bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe) (public content is ciphertext only) |
-| Accountability partners, thematic challenges | **Removed from the primary journey** (product decision) |
-| Billing, yield-sharing contract, sponsor system, Confidential Tokens | **Planned / not implemented** |
+**Status:** Functional web MVP and HackMeridian 2026 **Scale** prototype. This is **not** a production financial product. The planner is currently deterministic; task-type inference uses local rules, not a connected AI model.
 
-**Live demo (Stellar Testnet, synthetic data):** https://plan4her-stellar.onrender.com
+**[Open the live demo](https://plan4her-stellar.onrender.com)** · **[Source provenance](docs/HACKMERIDIAN_PROVENANCE.md)** · **[Technical architecture](docs/HACKMERIDIAN_ARCHITECTURE.md)** · **[Verification evidence](docs/HACKMERIDIAN_EVIDENCE.md)**
 
-Details: [`docs/HACKMERIDIAN_ARCHITECTURE.md`](docs/HACKMERIDIAN_ARCHITECTURE.md) · evidence ledger: [`docs/HACKMERIDIAN_EVIDENCE.md`](docs/HACKMERIDIAN_EVIDENCE.md) · submission pack: [`docs/SUBMISSION.md`](docs/SUBMISSION.md) · deployment: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) · demo script: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) · UX QA: [`docs/UX_VISUAL_QA.md`](docs/UX_VISUAL_QA.md).
+## Explore the product
 
-**Money safety:** Testnet only, no real funds. Deposits are held as the user's own vault shares in her own wallet; missing commitments never confiscates, locks or penalizes them. The shared vault does not redistribute yield by habit completion. Stellar transactions and vault deposits are public, not confidential. Deposits are **not guaranteed** (smart-contract, strategy, liquidity, asset and depeg risk). Estimated APY is not shown because it could not be verified. Rewards are a simulation.
+No account is needed to test the planning and Rhythm Pool flows. In a fresh browser:
 
-### Try the demo (fresh browser, no account, about 1 minute)
-1. Open https://plan4her-stellar.onrender.com and tap **Build my first week**.
-2. **Continue** → **Continue without cycle context** → choose **A full week, ready to plan** → **Continue** → **Continue** → **Skip for now** → **Accept week**.
-3. **Plan** → **Explore your week**. Move the slider to cycle day **1**, then **12**: the list shows which tasks move and to which day.
-4. **Review changes** → **Apply changes** (or **Keep plan as is**). **Undo** restores both the plan and the cycle day.
+1. Select **Build my first week**, then **Continue without cycle context**.
+2. Choose **A full week, ready to plan**, continue through availability, skip fixed commitments if desired, and **Accept week**.
+3. Open **Plan → Explore your week**. Compare cycle days **1** and **12**. The preview identifies any genuinely moved tasks and their previous and proposed dates.
+4. **Review changes**, then choose **Apply changes** or **Keep plan as is**. **Undo** restores both the accepted plan and the preceding cycle context.
+5. Open **More → Rhythm Pool** to explore four-week commitments and optional **Savings & rewards · Testnet**.
 
-Data stays in the browser (no account, nothing shared). The planner only uses the remaining days of the current week. Early in the week, several tasks move. Later in the week, fewer days remain, so fewer tasks can move, and the preview says so. On a Sunday evening, the sample week may not fit at all.
+The starter pack contains 11 realistic work, movement, personal and administrative tasks. Task categories are inferred locally from task titles; ambiguous tasks remain neutral and users can correct categories in task details. Fixed appointments and deadlines take precedence over phase preferences. Movement depends on remaining availability; changing cycle day does not guarantee that every task will move. The preview never changes saved data without approval.
 
-**Prior work disclosure.**
-- **Before HackMeridian:** the Plan4Her planning MVP (planner, tasks, Today, cycle context), its branding and its Figma designs.
-- **Earlier CYRA experiments:** AES-GCM encryption and IPFS/Pinata storage. Only used as reference; key custody and upload authorization were rebuilt here.
-- **New during HackMeridian:** the Stellar/DeFindex Testnet savings, the Rhythm Pool, server-authorized encrypted IPFS backups, Explore your week with explicit approval, and local activity-type inference.
+The free Render deployment may need time to wake after inactivity.
 
-### Try the Testnet savings flow
-1. Install the [Freighter](https://www.freighter.app/) browser extension, create an account and switch the network to **Testnet**; fund it with Friendbot (Freighter offers this).
-2. In Plan4Her: More → Savings & rewards · Testnet → accept the three risk notes → Connect Freighter → Review deposit → sign in Freighter.
+## Product capabilities and status
 
-### Server (optional, for IPFS upload)
-`npm start` serves `dist/` and `/api/*` (Node 22.18+). Configure `PINATA_JWT`, `DEMO_ACCESS_CODE`, `SESSION_SECRET` in the host's environment — see `.env.example`. Without them, everything else works and IPFS upload says it is not enabled. Tests: `npm run test:server`.
+| Area | Implemented | Qualification |
+| --- | --- | --- |
+| Weekly planning | Task capture, flexible tasks with deadlines, fixed appointments with exact date/time, availability, draft/review/accept, Today and recovery | Local-first MVP; phase preferences are editable, not universal biological predictions |
+| Cycle-aware preview | Proposed schedule for another cycle day, moved-task comparison, explicit Apply / Keep / Undo | Uses the actual deterministic scheduling engine; no connected AI service |
+| Automatic activity classification | Local task-title rules with neutral fallback and optional user correction | Heuristic classification, **not** an LLM |
+| Rhythm Pool | Join after terms acceptance, select 3–5 weekly commitments over four weeks, self-report completion, replace one unfinished commitment per week, inspect progress | Individual participation and history are saved on this device; example community members/averages are **simulated** |
+| Stellar savings | Freighter wallet signing; on-chain DeFindex Testnet XLM vault deposit, withdrawal and position reading | Voluntary, non-custodial, **Testnet only**; no verified positive yield; funds can lose value |
+| Community rewards | Illustrative eligibility and potential reward-pool calculations | **Simulation only**: no on-chain payout, no confirmed sponsor and no yield-sharing distribution contract |
+| Privacy / IPFS | Local AES-256-GCM encryption; a passphrase-protected data key; encrypted file backup/restore; optional encrypted Pinata/IPFS upload and CID retrieval | IPFS ciphertext is publicly accessible by CID and cannot be guaranteed erased; no cloud account sync |
 
-A local-first weekly planning web app built with React 19, TypeScript and Vite 6. Package version: 0.1.0. It includes task capture and selection, weekly draft/accept flows, Today, completion/recovery and browser-local persistence. Scheduling is deterministic, with editable phase/work preferences and Balanced, High-output and Recovery placement templates; cycle context is estimated. See [CONTINUATION.md](CONTINUATION.md) for remaining product work and release qualifications.
+### Verified Stellar Testnet transactions
 
-## Run independently
+- [10 XLM deposit through the founder's Freighter wallet](https://stellar.expert/explorer/testnet/tx/a5f2129e0fa6a8fd3796d389c09436c29885e0c0fbe3cbd8decc01144ef65578)
+- [4.99984 XLM withdrawal through the founder's Freighter wallet](https://stellar.expert/explorer/testnet/tx/0d514e9702d5f650393bdb916059683655adf89e52ee2b3becb52f7bcbc094f6)
+- [Encrypted synthetic-data backup on IPFS](https://gateway.pinata.cloud/ipfs/bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe), uploaded, retrieved and decrypted in the application. Full live restoration was not executed; automated round-trip tests cover restoration.
 
-Use Node.js 22 (the CI version) and npm. No ChatGPT subscription, Sites runtime, API key or paid service is needed to run or build the source. This repository includes the dependency lockfile, assets, configuration and tests. Initial dependency and browser downloads require internet access.
+Stellar wallet and vault transactions are **public**. Plan4Her does not write tasks, cycle history or health context to the blockchain. Testnet tokens have no real-money value. No guaranteed yield, principal protection, insurance or completed reward distribution is implied.
 
-Clone the repository with an account that has access, then run:
+## What existed before vs. what was added at HackMeridian
 
-```sh
+**Before HackMeridian — Plan4Her:** A separate, functioning React/TypeScript web MVP with tasks, weekly scheduling, optional cycle context, daily planning, local persistence and UX/UI design. The source baseline was copied from [the original Plan4Her repository](https://github.com/Paolag93/plan4HER-) at commit [`9ec0c99`](https://github.com/Paolag93/plan4HER-/commit/9ec0c99ea8ff839c44dfb2a8bb4f9e1cdf55fbf5). Early discovery included **13 user interviews** and **13 waitlist questionnaire responses**; the samples may overlap and do not represent active users or paying customers.
+
+**Earlier, separate work — CYRA:** Prior ETHGlobal-winning project [CYRA](https://github.com/OlaOlaPaola/Cyra) explored AES-256-GCM encryption and IPFS/Pinata. It informed this project's privacy approach, but its client-side credentials and key handling were **not** copied unchanged.
+
+**Built and integrated during HackMeridian 2026:** Rhythm Pool; live **Stellar Testnet** wallet/vault deposits and withdrawals through Freighter and DeFindex; a rebuilt encrypted IPFS backup implementation with server-held Pinata credentials and passphrase-protected key wrapping; a clearer cycle-aware plan preview and approval experience; local task-category inference; and additional regression testing.
+
+See [the source-provenance record](docs/HACKMERIDIAN_PROVENANCE.md) and [implementation evidence](docs/HACKMERIDIAN_EVIDENCE.md) for reproducible detail.
+
+## Development
+
+Node.js 22.18+ and npm are required.
+
+```bash
 npm ci
 npm run dev
 ```
 
-Use the local URL printed by Vite. Private-repository access and any hosting account are managed separately from ChatGPT access.
-
-## Build and verify
-
-```sh
+```bash
 npm run typecheck
 npm run test:domain
+npm run test:server
 npm run build
 npx playwright install chromium
 npm run test:e2e
 ```
 
-On Linux, Playwright may also need system dependencies (`npx playwright install --with-deps chromium`). The end-to-end configuration starts a production build and preview server on port 4173; stop stale preview servers before testing a changed build. `npm run test:visual` runs `tests/visual.spec.ts` only; the full end-to-end command also includes other visual and accessibility tests.
+The frontend uses React, TypeScript and Vite. The optional server provides the authenticated, rate-limited encrypted-backup API and holds the Pinata JWT outside the browser. The DeFindex integration uses the Stellar Testnet and Freighter; users sign transactions in their own wallet. For server configuration see [deployment documentation](docs/DEPLOYMENT.md) and [`.env.example`](.env.example). Never commit environment secrets or private keys.
 
-To inspect the production build locally:
+## Privacy and release limitations
 
-```sh
-npm run build
-npm run preview -- --host 127.0.0.1
-```
+Tasks, schedules, cycle context and local Rhythm Pool participation are saved in **browser localStorage without at-rest encryption**. A backup is encrypted **before** file export or IPFS upload. Losing the backup passphrase makes encrypted data unrecoverable. Deleting local browser data can erase locally saved plans; IPFS copies cannot be reliably removed.
 
-Preview is a local verification server, not a production hosting service.
+The prototype does **not** include production accounts, cross-device sync, a connected AI model, verified community membership, real reward redistribution, premium billing, mainnet launch or production financial compliance/audits. The 70% challenge threshold is a product rule demonstrated locally, not a guarantee of any earnings.
 
-## Deploy a static build
-
-Publish the contents of `dist/` to a static HTTPS host. The existing asset paths, manifest ID, start URL and scope assume the domain root (`/`). Deployment under a subdirectory requires adapting Vite base, asset paths and PWA manifest settings and retesting installation/offline behavior. No backend is required by the current implementation.
-
-Use HTTPS outside localhost for service-worker/PWA behavior. The PWA is configured for automatic updates, but an already-open tab or installed app may keep an older version until the update activates. Reopen/reload after deployment and verify the served build. If investigating stale assets, use browser developer tools to inspect/unregister the service worker and clear its asset caches; do not clear all site data casually, because that also removes locally saved plans. This repository does not by itself provide a production hosting URL or native-store publication.
-
-## Move your saved app data
-
-In the app, open More → Privacy & data → Back up & move your data. Download a full JSON backup before changing browsers or hosting origins. On the new installation, choose that file, review the summary and confirm replacement. CSV downloads are readable task/plan summaries and cannot restore the app. Files are generated locally and are unencrypted; keep them private.
-
-## Privacy and scope
-
-Tasks, cycle details, plans and Rhythm Pool commitments are stored in this browser's localStorage, without encryption at rest. Optional encrypted backups are encrypted on the device with the user's passphrase before download or IPFS upload; IPFS ciphertext is public by CID and cannot be guaranteed deleted. They are not saved to GitHub. Switching browser, device, profile or site origin does not transfer them; deleting site data can erase them. Do not treat localStorage as secure encrypted storage or a backup.
-
-The current build has no account/cloud sync (only user-initiated encrypted backups), connected AI provider, external calendar sync or native iOS/Android release. UI preferences do not establish those integrations. Deployment hosts may log normal web requests under their own policies.
-
-Do not commit real user exports, source specifications containing private material, credentials, `.env` files, installed dependencies or generated build/test caches. Create portable source archives from reviewed tracked files, excluding `.git`, `node_modules`, `dist` and test output. Preserve the lockfile and source assets.
+**Documentation:** [Architecture](docs/HACKMERIDIAN_ARCHITECTURE.md) · [Evidence](docs/HACKMERIDIAN_EVIDENCE.md) · [Provenance](docs/HACKMERIDIAN_PROVENANCE.md) · [Deployment](docs/DEPLOYMENT.md) · [UX quality checks](docs/UX_VISUAL_QA.md)

@@ -1,6 +1,6 @@
 # Plan4Her — HackMeridian 2026 architecture decisions
 
-This document records what was built during HackMeridian on top of the existing Plan4Her MVP, and why. It describes the code on branch `ccr-068e87ad-nj66jj`. Status labels follow `docs/HACKMERIDIAN_EVIDENCE.md`.
+This document records what was built during HackMeridian on top of the existing Plan4Her MVP, and why. It describes the merged HackMeridian implementation on `main`. Status labels follow `docs/HACKMERIDIAN_EVIDENCE.md`.
 
 ## 1. Product model (final, 2026-10-26)
 

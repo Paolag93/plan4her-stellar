@@ -1,27 +1,31 @@
-# HackMeridian Scale — Source Provenance and Repository Isolation
+# Plan4Her — Source Provenance
 
-This is **Paolag93/plan4her-stellar**, an independent private template copy prepared for HackMeridian 2026. The user explicitly requires the existing Plan4Her original to remain untouched.
+This repository is the HackMeridian 2026 Scale continuation of an existing Plan4Her MVP. The original and HackMeridian repositories have distinct histories.
 
-## Source of pre-existing work
-- Source repository **READ ONLY**: https://github.com/Paolag93/plan4HER-
-- Source `main` commit at copying/verification: `9ec0c99ea8ff839c44dfb2a8bb4f9e1cdf55fbf5`
-- Separate destination: https://github.com/Paolag93/plan4her-stellar
-- Initial destination commit (before these handoff docs): `302bef0ef2d42f11df4fdfea91ce0db7c4fa47f6`
-- GitHub connector verification on October 25, 2026: **297 tracked files in each repository; path lists and per-file blob SHAs matched exactly**, including resources and tests; neither has missing/different files at initial comparison.
-- They are independent Git repositories, not the same branch. Editing the destination does not write to the source. Do not merge back into the original unless the owner explicitly requests that as a separate future action.
+## Existing Plan4Her MVP
 
-## Existing features (before HackMeridian)
-- React/TypeScript/Vite PWA and design assets, onboarding, tasks, weekly plans and daily experience.
-- Deterministic cycle-aware editable preferences/templates; no connected AI model.
-- LocalStorage persistence, backup/import and CSV export; not yet encrypted.
-- Existing Playwright / TypeScript / domain tests.
+- Original source: https://github.com/Paolag93/plan4HER-
+- Snapshot commit: `9ec0c99ea8ff839c44dfb2a8bb4f9e1cdf55fbf5`
+- Independent HackMeridian repository: https://github.com/Paolag93/plan4her-stellar
+- Initial copied snapshot in this repository: `302bef0ef2d42f11df4fdfea91ce0db7c4fa47f6`
+- At the initial October 25 copy, tracked paths and file blob SHAs were verified as matching across the 297 source files.
 
-## Legacy inspiration
-- https://github.com/OlaOlaPaola/Cyra — earlier hackathon work; includes AES-GCM and IPFS/Pinata code, but contains known security flaws. Do not reuse unchanged; do not represent unverified mocked blockchain interactions as deployed.
+The pre-existing application included onboarding, task management, deterministic cycle-aware weekly planning, Today, local data persistence, JSON import/export, and automated tests. It did not include live Stellar vault savings or encrypted IPFS backups.
 
-## Implemented in separate HackMeridian repo after copying
-- Claude working instructions and architecture brief (documentation only at time of creation).
-- All other HackMeridian functionality must be recorded in subsequent commits, PRs and the evidence report, alongside genuine Testnet transactions and actual test results.
+Initial product discovery before HackMeridian included 13 user interviews and 13 waitlist survey responses; participation may overlap. These are preliminary discovery inputs, not paid-user or adoption metrics.
 
-## Review and publication restrictions
-The destination should remain private until credential scanning and owner approval. Do not modify the original repository, its existing preview website or any production domain. Do not upload health data, secrets or private keys to GitHub.
+## CYRA: separate earlier project
+
+[CYRA](https://github.com/OlaOlaPaola/Cyra), a previous ETHGlobal-winning project, explored Web Crypto AES-256-GCM encryption and IPFS/Pinata storage.
+
+The CYRA proof of concept was useful prior work but included security problems: Pinata credentials could be included in the frontend build, and a raw AES key was stored as Base64 alongside a content identifier. Base64 is not encryption. The current Plan4Her backup design was rebuilt with server-side credentials and password-based AES key wrapping rather than reusing those unsafe patterns.
+
+## HackMeridian additions
+
+- Rhythm Pool: four-week personal commitments, local progress and clearly simulated community aggregates.
+- Stellar: real Freighter-signed DeFindex vault deposits and withdrawals on **Testnet**.
+- Privacy: client-side encrypted backup envelopes, server-authenticated Pinata/IPFS upload, retrieval and authenticated decryption.
+- Product UX: a cycle-day scheduling preview with comparison and explicit approval, optional Undo, local activity-type inference, and refined task scheduling controls.
+- Verification: transaction hashes, IPFS CID, domain/server/browser tests and CI.
+
+See [architecture](HACKMERIDIAN_ARCHITECTURE.md) and [evidence](HACKMERIDIAN_EVIDENCE.md). Rewards are simulated, not distributed on-chain. No connected AI model or production mainnet integration is claimed.
