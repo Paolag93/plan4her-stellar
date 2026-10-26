@@ -21,7 +21,7 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 | Pinata/IPFS upload & retrieval | **Code complete, tested with fake Pinata; live upload pending** `PINATA_JWT` | `server/api.test.ts` |
 | Accountability partners, thematic 30/90-day challenges | Removed from primary journey (product decision 2026-10-26) | — |
 | Billing (Premium USD 6.99/month), yield-sharing contract, sponsor system, Confidential Tokens | Not implemented (planned) | — |
-| Separate public HTTPS demo | Render blueprint in repo; URL to be recorded by founder | `DEPLOYMENT.md` |
+| Separate public HTTPS demo | Deployed by founder on Render: https://plan4her-stellar.onrender.com (not yet verified from the build environment, whose network policy blocks it) | `DEPLOYMENT.md` |
 
 ## On-chain evidence (Stellar Testnet)
 - Network: Stellar **Testnet** (`Test SDF Network ; September 2015`), RPC `https://soroban-testnet.stellar.org`.
@@ -56,7 +56,7 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 
 ## Submission deliverables
 - GitHub repo: private until founder review.
-- Separate deployed demo URL: pending approval.
+- Separate deployed demo URL: https://plan4her-stellar.onrender.com (Render, from `main`).
 - Demo video: script in `docs/DEMO_SCRIPT.md`.
 - Hackathon submission: not submitted by Claude.
 - Real-money readiness: **Testnet demonstration only; no return or capital guarantee.** Production would need real accounts/auth, a multi-user backend for partners, an audited contract if rewards were ever distributed on chain, legal/compliance review and a security review.
