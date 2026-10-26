@@ -15,7 +15,7 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 | Four-week aggregate ratio, 70% threshold, skipped weeks count as 3 not done | Implemented & tested | domain tests; `community-result` E2E |
 | Completion verification | Self-reported only | UI terms |
 | Community members / average | Simulation (labelled); own % only with consent | UI, domain test |
-| DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Confirmed on Stellar Testnet** (synthetic key via the app's vault code); Freighter browser signing same path, to be shown in video | tx hashes below |
+| DeFindex Testnet vault deposit / balance / withdraw (individual positions) | **Confirmed on Stellar Testnet** — (A) founder's own Freighter wallet through the deployed app; (B) separate automated check with a throwaway synthetic key | tx hashes below |
 | Rewards (pledged realized yield or confirmed sponsor funds) | Simulation (labelled); no distribution contract; no sponsor confirmed | `simulateRewardPool` tests |
 | AES-256-GCM encrypted backup + restore | Implemented & tested (browser + Node) | `encryption.test.cjs`, E2E |
 | Pinata/IPFS upload & retrieval | **Live upload, retrieval and decryption confirmed** on the deployed app (CID `bafkreidxzbfnpgu…`); live restore replacement not exercised | below; `server/api.test.ts` |
@@ -23,7 +23,15 @@ Status vocabulary: **Pre-existing** · **Implemented & tested** (automated tests
 | Billing (Premium USD 6.99/month), yield-sharing contract, sponsor system, Confidential Tokens | Not implemented (planned) | — |
 | Separate public HTTPS demo | **Live and verified**: https://plan4her-stellar.onrender.com — onboarding, 4 tabs, Rhythm Pool join/commitments/persistence, savings consent and no-wallet state, encrypted backup wrong/right passphrase, at 390 px and 1280 px, 0 console errors; `/api/status` reports IPFS upload enabled | `DEPLOYMENT.md` |
 
-## On-chain evidence (Stellar Testnet) — CONFIRMED 2026-10-26
+## On-chain evidence A — founder's Freighter wallet via the deployed app (2026-10-26)
+Performed by the founder in desktop Chrome on https://plan4her-stellar.onrender.com, signing in her own **Freighter** wallet on Testnet. The app reported both as confirmed and showed vault shares, balances and transaction history. Claude independently re-checked both on Horizon: `successful: true`, one `invoke_host_function` each, contract and arguments decoded below.
+
+- Wallet (Testnet): `GCTVW7VYEJAKVWI6RP7IVED62BNXVEFZVWBADHZM7P7NDEO5K2QNM4IE`.
+- **Deposit 10 XLM** — `deposit([100000000], [99000000], GCTVW7…M4IE, invest=true)` on vault `CCLV4H7WTLJQ7ATLHBBQV2WW3OINF3FOY5XZ7VPHZO7NH3D2ZS4GFSF6`. Ledger 5391879, 2026-10-26T02:49:42Z. Tx `a5f2129e0fa6a8fd3796d389c09436c29885e0c0fbe3cbd8decc01144ef65578` — https://stellar.expert/explorer/testnet/tx/a5f2129e0fa6a8fd3796d389c09436c29885e0c0fbe3cbd8decc01144ef65578
+- **Withdraw 29,981 shares → 4.99984 XLM** — `withdraw(29981, [49498416], GCTVW7…M4IE)` on the same vault. Ledger 5391926, 2026-10-26T02:53:37Z. Tx `0d514e9702d5f650393bdb916059683655adf89e52ee2b3becb52f7bcbc094f6` — https://stellar.expert/explorer/testnet/tx/0d514e9702d5f650393bdb916059683655adf89e52ee2b3becb52f7bcbc094f6
+- No positive yield is claimed.
+
+## On-chain evidence B — synthetic-key automated check by Claude (2026-10-26)
 Executed by Claude from the build environment with `npm run testnet:smoke`, which drives the app's own `src/stellar/vault.ts` (build → simulate → sign → submit → poll) with a **throwaway synthetic Testnet key** funded by Friendbot. The only difference from the browser is the signer: a local key instead of Freighter. Both hashes were independently re-checked on Horizon (`successful: true`).
 
 - Network: Stellar **Testnet**, RPC `https://soroban-testnet.stellar.org`.
@@ -34,7 +42,6 @@ Executed by Claude from the build environment with `npm run testnet:smoke`, whic
 - **Withdraw** 29,981 shares (50%) → 4.99984 XLM returned (min accepted 4.9498416 with 1% slippage). Ledger 5391336. Tx `43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5` — https://stellar.expert/explorer/testnet/tx/43cb831154278282c0043dd042231519e5e64a5a03239779eb4dcc470a3b31b5
 - Final position: 29,982 shares, redeemable 5.0000067 XLM. App accounting: realized result **−0.0000767 XLM**, unrealized −0.0000766 XLM (rounding/fees). **NO VERIFIED POSITIVE YIELD.**
 - Network fee (max, simulated) for the deposit: 0.0305637 XLM.
-- A Freighter-signed deposit by the founder in the browser is still recommended for the demo video; it uses the same code path.
 
 ## Encrypted storage evidence
 - Payload: `{format:'plan4her-encrypted-bundle', v:1, app, community}` (synthetic data in tests).

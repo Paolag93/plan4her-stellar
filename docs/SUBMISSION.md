@@ -19,9 +19,10 @@ Plan4Her is a privacy-first, cycle-aware productivity app for women, with a comm
 
 **What we built during HackMeridian.**
 - Rhythm Pool: join any day; four complete weeks from the next Monday; 3–5 weekly commitments with a fixed denominator; one replacement per week with an audit history; self-reported done/missed; 70% four-week threshold; works with a single member.
-- Stellar Testnet + DeFindex: Freighter wallet, on-chain asset verification, simulated preview, user-signed deposit and withdrawal into the DeFindex XLM vault, shares and redeemable value read from chain, and average-cost accounting. **Confirmed on Testnet:**
-  - deposit `f82db619…aff09`
-  - withdraw `43cb8311…b31b5`
+- Stellar Testnet + DeFindex: Freighter wallet, on-chain asset verification, simulated preview, user-signed deposit and withdrawal into the DeFindex XLM vault, shares and redeemable value read from chain, and average-cost accounting. **Confirmed on Testnet with the founder's own Freighter wallet in the live app:**
+  - deposit 10 XLM `a5f2129e…65578` — https://stellar.expert/explorer/testnet/tx/a5f2129e0fa6a8fd3796d389c09436c29885e0c0fbe3cbd8decc01144ef65578
+  - withdraw 4.99984 XLM `0d514e97…094f6` — https://stellar.expert/explorer/testnet/tx/0d514e9702d5f650393bdb916059683655adf89e52ee2b3becb52f7bcbc094f6
+  - (separate automated check with a synthetic key: `f82db619…aff09`, `43cb8311…b31b5`)
 - Privacy: AES-256-GCM client-side encryption with a passphrase-wrapped key; encrypted backups to IPFS via Pinata, with the JWT held server-side only, access-code sessions, rate limits and a ciphertext-only server check. **Live CID:** `bafkreidxzbfnpgurblu2wozi6jhqlcch3v7aec5ifeym2loalxyoz7qlqe` (uploaded, retrieved, decrypted).
 - Tests: 354 automated browser tests plus domain and server tests; WCAG scans; CI on GitHub Actions.
 
